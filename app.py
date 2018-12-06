@@ -10,6 +10,11 @@ def hello_world():
     return 'Hello World!'
 
 
+@app.route('/test')
+def testupload():
+    return render_template("fileinput.html")
+
+
 @app.route('/config-graph')
 def config_graph():
     return render_template('graph_config.html')
@@ -32,4 +37,4 @@ def upload():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run()

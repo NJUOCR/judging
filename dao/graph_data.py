@@ -33,9 +33,7 @@ class GraphData(object):
         :param graph:
         :return:
         """
-        self.table.update_many({'_id': graph['名称']},
-                               {**{'_id': graph['名称']}, **graph},
-                               upsert=True)
+        self.table.save({**{'_id': graph['名称']}, **graph})
         return True
 
     def fetch(self, graph_name: str) -> dict:

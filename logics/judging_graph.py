@@ -24,6 +24,9 @@ class JudgingGraph:
             d = json.load(f)
             return JudgingGraph.from_json(d)
 
+    def save(self):
+        JudgingGraph._data.save(self.definition)
+
     def validate(self) -> bool:
         dic: dict = self.definition
         try:
