@@ -3,8 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/static/css/graph.css">
+    <script src="/static/lib/vue.js"></script>
+    <script src="/static/js/components/first-level-item.js"></script>
 </head>
 <body>
+<div id="graph-container">
+    <first-level-item v-for="(firstLevelItem, firstLevelIdx) in firstLevels"
+                      :item="firstLevelItem" :key="firstLevelIdx">
 
+    </first-level-item>
+
+</div>
+
+<script>
+    let graph = new Vue({
+        el: '#graph-container',
+        data: {
+            firstLevels: [
+                {
+                    name: 'vue.js'
+                },
+                {
+                    name: 'react.js'
+                }
+            ]
+        }
+    })
+</script>
 </body>
 </html>
