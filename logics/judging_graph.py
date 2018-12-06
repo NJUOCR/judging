@@ -1,7 +1,10 @@
 import json
 
+from dao.graph_data import GraphData
+
 
 class JudgingGraph:
+    _data = GraphData()
 
     def __init__(self):
         self.definition: dict = None
