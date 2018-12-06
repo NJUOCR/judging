@@ -26,13 +26,7 @@ def upload():
             filename = unet.secure_filename(file.filename)
             raw_path = os.path.join('./static/graph_configs', filename)
             file.save(raw_path)
-            dic = JudgingGraph.from_file("static/graph_configs/"+filename)
 
-            if dic.validate():
-                dic.save()
-                return jsonify("上传成功")
-            else:
-                return jsonify(error='json格式错误，请重新上传')
 
         else:
             return jsonify(error='no file is uploaded')
