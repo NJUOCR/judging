@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import utils.unet as unet
 import os
 
@@ -8,6 +8,11 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     return 'Hello World!'
+
+
+@app.route('/config-graph')
+def config_graph():
+    return render_template('graph_config.html')
 
 
 @app.route('/upload', methods=['POST'])
@@ -27,4 +32,4 @@ def upload():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True, host='0.0.0.0')

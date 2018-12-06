@@ -1,0 +1,48 @@
+
+/*第一层元素*/
+.first-level-container{
+    position: relative;
+    margin: 0 2px;
+    display: inline-block;
+}
+
+.box-arrow {
+    position: relative;
+    color: whitesmoke;
+    padding: 10px 1em;
+}
+
+.box-arrow-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.box-arrow .box-arrow-bg-top {
+    position: absolute;
+    top: 0;
+    height: 50%;
+    width: 100%;
+    -webkit-transform: skew(20deg);
+    -moz-transform: skew(20deg);
+    -o-transform: skew(20deg);
+    background-color: #F6630D;
+}
+
+.box-arrow .box-arrow-bg-bottom {
+    position: absolute;
+    bottom: 0;
+    height: 50%;
+    width: 100%;
+    -webkit-transform: skew(-20deg);
+    -moz-transform: skew(-20deg);
+    -o-transform: skew(-20deg);
+    background-color: #F6630D;
+}
+
+.box-arrow-text {
+    position: relative;
+    z-index: 1;
+}
