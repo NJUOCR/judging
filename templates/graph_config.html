@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="/static/css/graph.css">
+    <link rel="stylesheet" href="/static/css/graph-components.css">
     <script src="/static/lib/vue.js"></script>
-    <script src="/static/js/components/first-level-item.js"></script>
+    <script src="/static/js/components/graph-components.js"></script>
 </head>
 <body>
-<div id="graph-container">
-    <first-level-item v-for="(firstLevelItem, firstLevelIdx) in firstLevels"
-                      :item="firstLevelItem" :key="firstLevelIdx">
+<div id="graph-container" class="graph-container">
+    <first-level-item v-for="(firstLevelItem, firstLevelIdx) in structure.firstLevelItems"
+                      :first="firstLevelItem" :key="firstLevelIdx">
 
     </first-level-item>
 
@@ -20,6 +20,7 @@
     let graph = new Vue({
         el: '#graph-container',
         data: {
+            structure: {
             name: "默认",
             firstLevelItems: [
                 {
@@ -225,7 +226,8 @@
                 }
             ]
         }
-    })
+        }
+    });
 </script>
 </body>
 </html>

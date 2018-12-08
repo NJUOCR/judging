@@ -1,0 +1,107 @@
+/* global variables */
+:root{
+    --l1-bg-color: #F6630D;
+    --l1-fg-color: whitesmoke;
+    --l1-bd-color: #b54709;
+}
+
+
+.horizontal-list{
+    list-style: none;
+    padding: 0;
+    margin: .2em auto;
+
+}
+.horizontal-list>li{
+    display: inline-block;
+    margin: 0 2px;
+    flex-grow: 1;
+}
+
+.graph-container{
+    display: flex;
+    flex-wrap: nowrap;
+    /*justify-content: center;*/
+    overflow-x: auto;
+    text-align: center;
+}
+
+/*第一层元素*/
+.first-level-container{
+    position: relative;
+    margin: 0 5px;
+    display: inline-block;
+    align-items: flex-start;
+}
+
+.box-arrow {
+    position: relative;
+    padding: 10px 1em;
+}
+
+.box-arrow-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.box-arrow .box-arrow-bg-top {
+    position: absolute;
+    top: 0;
+    height: 50%;
+    width: 100%;
+    -webkit-transform: skew(20deg);
+    -moz-transform: skew(20deg);
+    -o-transform: skew(20deg);
+
+    background-color: var(--l1-bg-color);
+
+    border-left: 1px solid var(--l1-bd-color);
+    border-right: 1px solid var(--l1-bd-color);
+    border-bottom: 1px solid var(--l1-bd-color);
+}
+
+.box-arrow .box-arrow-bg-bottom {
+    position: absolute;
+    bottom: 0;
+    height: 50%;
+    width: 100%;
+    -webkit-transform: skew(-20deg);
+    -moz-transform: skew(-20deg);
+    -o-transform: skew(-20deg);
+
+    background-color: var(--l1-bg-color);
+
+    border-left: 1px solid var(--l1-bd-color);
+    border-right: 1px solid var(--l1-bd-color);
+    border-bottom: 1px solid var(--l1-bd-color);
+}
+
+.box-arrow-text {
+    color: var(--l1-fg-color);
+    font-size: 1.4em;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+}
+
+/*第二层元素*/
+.first-level-container>.horizontal-list{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+}
+.second-level-container{
+    display: inline-block;
+    background-color: #0070C0;
+    color: whitesmoke;
+    width: 100%;
+}
+
+.second-level-text{
+    font-size: 1.2em;
+    padding: 0.2em 0.5em;
+    white-space: nowrap;
+}

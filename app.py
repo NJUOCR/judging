@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Response
 from logics.judging_graph import JudgingGraph
 import utils.unet as unet
 import os
@@ -43,4 +43,4 @@ def upload():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
