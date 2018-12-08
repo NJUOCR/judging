@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, render_template, Response
 from logics.judging_graph import JudgingGraph
+from logics.get_graph import GetGraph
+import json
 import utils.unet as unet
 import os
 
@@ -9,6 +11,14 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     return 'Hello World!'
+
+
+@app.route('/getJson')
+def getList():
+    graph = GetGraph.getInstance("默认")
+    responseJson = graph.get_graph_from_name()
+    return Response(json.dumps(responseJson, ensure_ascii=False), content_type='application/json')
+
 
 
 @app.route('/test')

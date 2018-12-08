@@ -225,6 +225,17 @@
                     ]
                 }
             ]
+        },
+        created(){
+            var url  = "localhost:5000/getJson";
+            axios.get(url).then(function(result) {
+                // result是所有的返回回来的数据
+                // 包括了响应报文行
+                // 响应报文头
+                // 响应报文体
+                {#console.log(result.data.message);#}
+                {#this.name = result.data.message[0].name;#}
+            });
         }
         }
     });
