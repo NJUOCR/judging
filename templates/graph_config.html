@@ -10,7 +10,7 @@
 <body>
 <div id="graph-container" class="graph-container">
     <first-level-item v-for="(firstLevelItem, firstLevelIdx) in structure.firstLevelItems"
-                      :first="firstLevelItem" :key="firstLevelIdx">
+                      :first="firstLevelItem" :key="firstLevelIdx" :id="makeId(1, firstLevelIdx)">
 
     </first-level-item>
 
@@ -237,6 +237,11 @@
                 {#this.name = result.data.message[0].name;#}
             });
         }
+        },
+        methods: {
+            makeId: function (level, offset) {
+                return `l${level}-${offset}`
+            }
         }
     });
 </script>

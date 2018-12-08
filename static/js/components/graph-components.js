@@ -4,9 +4,9 @@ Vue.component('second-level-item', {
 `
 <div class='second-level-container'>
     <div class="second-level-text">
-    {{ second.name.substring(0, (1 + second.name.length)/2^0) }}
-    <br/>
-    {{ second.name.substring((1 + second.name.length)/2^0) }}
+        <div>{{ second.name.substring(0, (1 + second.name.length)/2^0) }}</div>
+        
+        <div>{{ second.name.substring((1 + second.name.length)/2^0) }}</div>
     </div>
 </div>
 `
