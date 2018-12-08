@@ -11,7 +11,7 @@
 <body>
 <div id="graph-container" class="graph-container">
     <first-level-item v-for="(firstLevelItem, firstLevelIdx) in structure.firstLevelItems"
-                      :first="firstLevelItem" :key="firstLevelIdx">
+                      :first="firstLevelItem" :key="firstLevelIdx" :id="makeId(1, firstLevelIdx)">
 
     </first-level-item>
 
@@ -22,211 +22,210 @@
         el: '#graph-container',
         data: {
             structure: {
-                name: "默认",
-                firstLevelItems: [
-                    {
-                        name: "人口失踪报案",
-                        secondLevelItems: [
-                            {
-                                name: "人口失踪情况",
-                                abstracts: [
-                                    {
-                                        name: "报案人",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "失踪人身份",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "失踪时间",
-                                        content: ""
-                                    }
-                                ],
-                                thirdLevelItems: {
-                                    testimonies: [],
-                                    documents: []
+            name: "默认",
+            firstLevelItems: [
+                {
+                    name: "人口失踪报案",
+                    secondLevelItems: [
+                        {
+                            name: "人口失踪情况",
+                            abstracts: [
+                                {
+                                    name: "报案人",
+                                    content: ""
+                                },
+                                {
+                                    name: "失踪人身份",
+                                    content: ""
+                                },
+                                {
+                                    name: "失踪时间",
+                                    content: ""
                                 }
+                            ],
+                            thirdLevelItems: {
+                                testimonies: [],
+                                documents: []
                             }
-                        ]
-                    },
+                        }
+                    ]
+                },
 
-                    {
-                        name: "查找被害人，确认死者身份",
-                        secondLevelItems: [
-                            {
-                                name: "死者身份信息及主要社会关系",
-                                abstracts: [
-                                    {
-                                        name: "身份信息",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "社会关系",
-                                        content: ""
-                                    }
-                                ],
-                                thirdLevelItems: {
-                                    testimonies: [],
-                                    victimStatements: [],
-                                    documents: [],
-                                    expertOpinions: []
+                {
+                    name: "查找被害人，确认死者身份",
+                    secondLevelItems: [
+                        {
+                            name: "死者身份信息及主要社会关系",
+                            abstracts: [
+                                {
+                                    name: "身份信息",
+                                    content: ""
+                                },
+                                {
+                                    name: "社会关系",
+                                    content: ""
                                 }
-                            },
-                            {
-                                name: "死亡时间",
-                                abstracts: [
-                                    {
-                                        name: "死亡时间",
-                                        content: ""
-                                    }
-                                ],
-                                thirdLevelItems: {
-                                    testimonies: [],
-                                    media: []
+                            ],
+                            thirdLevelItems: {
+                                testimonies: [],
+                                victimStatements: [],
+                                documents: [],
+                                expertOpinions: []
+                            }
+                        },
+                        {
+                            name: "死亡时间",
+                            abstracts: [
+                                {
+                                    name: "死亡时间",
+                                    content: ""
                                 }
+                            ],
+                            thirdLevelItems: {
+                                testimonies: [],
+                                media: []
                             }
-                        ]
-                    },
+                        }
+                    ]
+                },
 
-                    {
-                        name: "锁定犯罪嫌疑人及到案经过",
-                        secondLevelItems: [
-                            {
-                                name: "犯罪嫌疑人是如何被锁定与到案的",
-                                abstracts: [
-                                    {
-                                        name: "犯罪嫌疑人的锁定过程",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "犯罪嫌疑人的到案过程",
-                                        content: ""
-                                    }
-                                ],
-                                thirdLevelItems: {
-                                    documents: [],
-                                    testimonies: [],
-                                    media: []
+                {
+                    name: "锁定犯罪嫌疑人及到案经过",
+                    secondLevelItems: [
+                        {
+                            name: "犯罪嫌疑人是如何被锁定与到案的",
+                            abstracts: [
+                                {
+                                    name: "犯罪嫌疑人的锁定过程",
+                                    content: ""
+                                },
+                                {
+                                    name: "犯罪嫌疑人的到案过程",
+                                    content: ""
                                 }
+                            ],
+                            thirdLevelItems: {
+                                documents: [],
+                                testimonies: [],
+                                media: []
                             }
-                        ]
-                    },
+                        }
+                    ]
+                },
 
-                    {
-                        name: "查证犯罪事实",
-                        secondLevelItems: []
-                    },
+                {
+                    name: "查证犯罪事实",
+                    secondLevelItems: []
+                },
 
-                    {
-                        name: "证据充分性及排他性说明",
-                        secondLevelItems: [
-                            {
-                                name: "证明事项及相关证据缺失情况及原因",
-                                abstracts: [
-                                    {
-                                        name: "缺失情况及原因",
-                                        content: []
-                                    }
-                                ]
-                            },
-                            {
-                                name: "证据内容之间的冲突情况及原因",
-                                abstracts: [
-                                    {
-                                        name: "冲突情况及原因",
-                                        content: []
-                                    }
-                                ]
-                            },
-                            {
-                                name: "是否存在遗漏共犯或替人顶罪的情况",
-                                abstracts: [
-                                    {
-                                        name: "遗漏共犯的情况",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "替人顶罪的情况",
-                                        content: ""
-                                    }
-                                ]
-                            },
-                            {
-                                name: "其他关于证据链条完整性",
-                                abstracts: [
-                                    {
-                                        name: "其他",
-                                        content: []
-                                    }
-                                ]
-                            }
-                        ]
-                    },
+                {
+                    name: "证据充分性及排他性说明",
+                    secondLevelItems: [
+                        {
+                            name: "证明事项及相关证据缺失情况及原因",
+                            abstracts: [
+                                {
+                                    name: "缺失情况及原因",
+                                    content: []
+                                }
+                            ]
+                        },
+                        {
+                            name: "证据内容之间的冲突情况及原因",
+                            abstracts: [
+                                {
+                                    name: "冲突情况及原因",
+                                    content: []
+                                }
+                            ]
+                        },
+                        {
+                            name: "是否存在遗漏共犯或替人顶罪的情况",
+                            abstracts: [
+                                {
+                                    name: "遗漏共犯的情况",
+                                    content: ""
+                                },
+                                {
+                                    name: "替人顶罪的情况",
+                                    content: ""
+                                }
+                            ]
+                        },
+                        {
+                            name: "其他关于证据链条完整性",
+                            abstracts: [
+                                {
+                                    name: "其他",
+                                    content: []
+                                }
+                            ]
+                        }
+                    ]
+                },
 
-                    {
-                        name: "罪前罪后表现及其他量刑情节",
-                        secondLevelItems: [
-                            {
-                                name: "法定情节",
-                                abstracts: [
-                                    {
-                                        name: "累犯",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "立功",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "坦白",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "自首",
-                                        content: ""
-                                    }
-                                ]
-                            },
-                            {
-                                name: "酌定情节",
-                                abstracts: [
-                                    {
-                                        name: "犯罪前科",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "退赃",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "退赔",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "取得谅解",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "被害人过错",
-                                        content: ""
-                                    }
-                                ]
-                            }
-                        ]
-                    },
+                {
+                    name: "罪前罪后表现及其他量刑情节",
+                    secondLevelItems: [
+                        {
+                            name: "法定情节",
+                            abstracts: [
+                                {
+                                    name: "累犯",
+                                    content: ""
+                                },
+                                {
+                                    name: "立功",
+                                    content: ""
+                                },
+                                {
+                                    name: "坦白",
+                                    content: ""
+                                },
+                                {
+                                    name: "自首",
+                                    content: ""
+                                }
+                            ]
+                        },
+                        {
+                            name: "酌定情节",
+                            abstracts: [
+                                {
+                                    name: "犯罪前科",
+                                    content: ""
+                                },
+                                {
+                                    name: "退赃",
+                                    content: ""
+                                },
+                                {
+                                    name: "退赔",
+                                    content: ""
+                                },
+                                {
+                                    name: "取得谅解",
+                                    content: ""
+                                },
+                                {
+                                    name: "被害人过错",
+                                    content: ""
+                                }
+                            ]
+                        }
+                    ]
+                },
 
-                    {
-                        name: "涉嫌罪名",
-                        secondLevelItems: [
-                            {
-                                name: "罪名",
-                                abstracts: []
-                            }
-                        ]
-                    }
-                ]
-            }
+                {
+                    name: "涉嫌罪名",
+                    secondLevelItems: [
+                        {
+                            name: "罪名",
+                            abstracts: []
+                        }
+                    ]
+                }
+            ]
         },
         created:function(){
             var url  = "http://localhost:5000/getJson";
@@ -240,6 +239,12 @@
             console.log(this.structure)
             //this.name = result.data.message[0].name;
             });
+        }
+        },
+        methods: {
+            makeId: function (level, offset) {
+                return `l${level}-${offset}`
+            }
         }
     });
 </script>
