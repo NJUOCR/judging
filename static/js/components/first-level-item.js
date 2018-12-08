@@ -10,6 +10,9 @@ Vue.component('first-level-item', {
             <div class="box-arrow-bg-bottom"></div>
         </div>
     </div>
+    <ul>
+        <li v-for="item in items">{{ item.name }}</li>
+    </ul>
 </div>
 `
 });
