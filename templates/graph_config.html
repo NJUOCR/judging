@@ -226,20 +226,20 @@
                     ]
                 }
             ]
+        }
         },
         created:function(){
             var url  = "http://localhost:5000/getJson";
             axios.get(url).then(function(result) {
-            // result是所有的返回回来的数据
-            // 包括了响应报文行
-            // 响应报文头
-            // 响应报文体
-            console.log(result.data);
-            this.structure = result.data;
-            console.log(this.structure)
-            //this.name = result.data.message[0].name;
+                // result是所有的返回回来的数据
+                // 包括了响应报文行
+                // 响应报文头
+                // 响应报文体
+                console.log(result.data);
+                this.structure = result.data;
+                console.log(this.structure)
+                //this.name = result.data.message[0].name;
             });
-        }
         },
         methods: {
             makeId: function (level, offset) {
