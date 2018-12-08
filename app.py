@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template, Response
 from logics.judging_graph import JudgingGraph
 from logics.get_graph import GetGraph
+from logics.transfer_graph import TransferGraph
 import json
 import utils.unet as unet
 import os
@@ -17,6 +18,10 @@ def hello_world():
 def getList():
     graph = GetGraph.getInstance("默认")
     responseJson = graph.get_graph_from_name()
+    responseJson.pop("_id")
+    transfer = TransferGraph.getInstance(responseJson)
+    transfer.transfer_graph()
+    print(len(responseJson.items()))
     return Response(json.dumps(responseJson, ensure_ascii=False), content_type='application/json')
 
 
