@@ -4,18 +4,18 @@ from dao.graph_data import GraphData
 
 
 class JudgingGraph:
-    _data = GraphData()
+    _data: GraphData = GraphData()
 
-    def __init__(self):
-        self.definition: dict = None
+    def __init__(self, d=None):
+        self._definition: dict = d
 
     def define(self, d: dict) -> 'JudgingGraph':
-        self.definition = d
+        self._definition = d
         return self
 
     @staticmethod
     def from_json(d: dict) -> 'JudgingGraph':
-        graph = JudgingGraph().define(d)
+        graph = JudgingGraph(d)
         return graph
 
     @staticmethod
@@ -24,11 +24,16 @@ class JudgingGraph:
             d = json.load(f)
             return JudgingGraph.from_json(d)
 
+    @staticmethod
+    def from_db(graph_name: str) -> 'JudgingGraph':
+        d = JudgingGraph._data.fetch(graph_name)
+        return JudgingGraph(d) if d else None
+
     def save(self):
-        JudgingGraph._data.save(self.definition)
+        JudgingGraph._data.save(self._definition)
 
     def validate(self) -> bool:
-        dic: dict = self.definition
+        dic: dict = self._definition
         try:
             if len(dic.keys()) != 2:
                 return False
@@ -68,6 +73,17 @@ class JudgingGraph:
         except KeyError:
             return False
         return True
+
+    @property
+    def definition(self) -> dict:
+        return self.definition
+    
+    @staticmethod
+    def translate_definition(to: str, d: dict) -> dict:
+        assert to in ('en', 'zh')
+        d_copy = d.copy()
+        # todo ...
+        return d_copy
 
 
 if __name__ == "__main__":

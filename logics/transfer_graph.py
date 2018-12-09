@@ -1,5 +1,5 @@
-
-
+# fixme 转换逻辑迁移到`logics.judging_graph`中的`JudgingGraph.translate_definition()`
+# ps. 没必要为转换的逻辑专门写一个工具类
 class TransferGraph:
 
     def __init__(self):

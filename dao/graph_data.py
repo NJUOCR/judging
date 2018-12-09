@@ -6,8 +6,12 @@ class GraphData(object):
     _instance = None
     _instance_lock = Lock()
 
+    host = 'nju-vm'
+    port = 27017
+
     def __init__(self):
-        self.table = MongoClient(host='nju-vm', port=27017).get_database('judging').get_collection('graph')
+        self.table = MongoClient(host=GraphData.host, port=GraphData.port).get_database('judging').get_collection(
+                'graph')
 
     def __new__(cls, *args, **kwargs):
         """

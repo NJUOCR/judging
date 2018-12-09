@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify, render_template, Response
 from logics.judging_graph import JudgingGraph
-from logics.get_graph import GetGraph
-from logics.transfer_graph import TransferGraph
 import json
 import utils.unet as unet
 import os
@@ -14,20 +12,30 @@ def hello_world():
     return 'Hello World!'
 
 
-@app.route('/getJson')
-def getList():
-    graph = GetGraph.getInstance("默认")
-    responseJson = graph.get_graph_from_name()
-    responseJson.pop("_id")
-    transfer = TransferGraph.getInstance(responseJson)
-    transfer.transfer_graph()
-    print(len(responseJson.items()))
-    return Response(json.dumps(responseJson, ensure_ascii=False), content_type='application/json')
+@app.route('/get-graph')
+def get_graph():
+    """
+    获取图的详细定义
+    :return:
+    """
+    # 从数据库获取一个图
+    graph = JudgingGraph.from_db('默认')
+    # 转化成英文
+    response_json = JudgingGraph.translate_definition('en', graph.definition)
+    # 返回
+    return Response(json.dumps(response_json, ensure_ascii=False), content_type='application/json')
 
+
+@app.route('/get-graph-list')
+def get_graph_list():
+    """
+    获取图的列表，只取图的名字
+    :return:
+    """
 
 
 @app.route('/test')
-def testupload():
+def test_upload():
     return render_template("fileinput.html")
 
 
