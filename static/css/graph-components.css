@@ -5,7 +5,7 @@
     --l1-bd-color: #b54709;
 }
 
-@keyframes standout {
+@keyframes stand-out {
     0% {
         z-index: 10;
     }
@@ -14,6 +14,21 @@
         box-shadow: .1rem .5rem 1rem rgba(0, 0, 0, .8);
         font-size: 120%;
         z-index: 10;
+    }
+}
+
+@keyframes stand-in {
+    0% {
+        top: -1rem;
+        box-shadow: .1rem .5rem 1rem rgba(0, 0, 0, .8);
+        font-size: 120%;
+        z-index: 10;
+    }
+    100% {
+        top: 0;
+        box-shadow: none;
+        font-size: 100%;
+        z-index: 0;
     }
 }
 
@@ -50,8 +65,16 @@
 /*}*/
 
 .graph-item-selected {
-    animation: standout .5s forwards;
+    animation: stand-out .5s forwards ease-in;
+}
 
+.graph-item-unselected{
+    animation: stand-in .3s forwards ease-out;
+
+}
+
+.graph-item-selectable:hover {
+    font-weight: bold;
 }
 
 /*第一层元素*/
@@ -60,6 +83,7 @@
     margin: 0 5px;
     align-items: flex-start;
     height: fit-content;
+    cursor: pointer;
 }
 
 .box-arrow {

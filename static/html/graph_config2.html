@@ -11,7 +11,7 @@
     <!--<div class="graph-mask"></div>-->
     <div v-for="(first, firstLevelIdx) in structure.firstLevelItems"
          class="first-level-container" @click="select(1, firstLevelIdx);">
-        <div class="box-arrow" :class="{ 'graph-item-selected': isSelected(firstLevelIdx) }">
+        <div class="box-arrow graph-item-selectable" :class="[ isSelected(firstLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected' ]">
             <div class="box-arrow-text">{{ first.name }}</div>
             <div class="box-arrow-bg">
                 <div class="box-arrow-bg-top"></div>
@@ -21,8 +21,8 @@
         <ul class="horizontal-list">
             <li v-for="(second, secondLevelIdx) in first.secondLevelItems">
                 <div class='second-level-container' @click="select(2, secondLevelIdx);">
-                    <div class="second-level-text"
-                         :class="{ 'graph-item-selected': isSelected(firstLevelIdx, secondLevelIdx) }">
+                    <div class="second-level-text graph-item-selectable"
+                         :class="[ isSelected(firstLevelIdx, secondLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected']">
                         <div>{{ second.name.substring(0, (1 + second.name.length)/2^0) }}</div>
                         <div>{{ second.name.substring((1 + second.name.length)/2^0) }}</div>
                     </div>
@@ -31,9 +31,8 @@
                             :style="{width: parseInt(100 * third.name.length /
                                     second.thirdLevelItems.map(i => i.name.length).reduce((x1, x2) => x1+x2)) + '%'}">
                             <div class="third-level-container" @click="select(3, thirdLevelIdx)">
-                                <div class="third-level-text"
-                                     :class="{ 'graph-item-selected':
-                                                isSelected(firstLevelIdx, secondLevelIdx, thirdLevelIdx) }">
+                                <div class="third-level-text graph-item-selectable"
+                                     :class="[isSelected(firstLevelIdx, secondLevelIdx, thirdLevelIdx) ? 'graph-item-selected':'graph-item-unselected' ]">
                                     {{ third.name }}
                                 </div>
                             </div>
