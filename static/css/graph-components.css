@@ -1,34 +1,61 @@
 /* global variables */
-:root{
+:root {
     --l1-bg-color: #F6630D;
     --l1-fg-color: whitesmoke;
     --l1-bd-color: #b54709;
 }
 
+@keyframes standout {
+    0% {
+        z-index: 10;
+    }
+    100% {
+        top: -.5rem;
+        box-shadow: .5rem .5rem 1rem rgba(0, 0, 0, .8);
+        font-size: 120%;
+        z-index: 10;
+    }
+}
 
-.horizontal-list{
+.horizontal-list {
     display: flex;
     list-style: none;
     padding: 0;
     margin: .2em auto;
 
 }
-.horizontal-list>li{
+
+.horizontal-list > li {
     display: inline-block;
     /*margin: 0 2px;*/
     flex-grow: 1;
 }
 
-.graph-container{
+.graph-container {
     display: flex;
     flex-wrap: nowrap;
     /*justify-content: center;*/
+    position: relative;
     overflow-x: auto;
     text-align: center;
+    padding-top: 1rem;
+}
+
+/*.graph-mask{*/
+/*background-color: rgba(255, 255, 255, 0.5);*/
+/*width: 100%;*/
+/*height: 100%;*/
+/*position: absolute;*/
+/*z-index: 10;*/
+/*}*/
+
+.graph-item-selected {
+    animation: standout .5s forwards;
+
 }
 
 /*第一层元素*/
-.first-level-container{
+.first-level-container {
     position: relative;
     margin: 0 5px;
     display: inline-block;
@@ -89,35 +116,39 @@
 }
 
 /*第二层元素*/
-.first-level-container>.horizontal-list{
+.first-level-container > .horizontal-list {
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-around;
 }
-.second-level-container{
+
+.second-level-container {
     display: inline-block;
     color: whitesmoke;
     width: 100%;
     margin: 0 2px;
 }
 
-.second-level-text{
+.second-level-text {
     background-color: #0070C0;
+    border: 3px solid #055b98;
     font-size: 1.1em;
     margin: 0 2px;
     padding: 0.2em 0.5em;
     white-space: nowrap;
+    position: relative;
 }
 
 /* 第三层元素 */
 
-.third-level-text{
+.third-level-text {
     background-color: #00B050;
+    border: 2px solid #238e23;
     margin: 0 2px;
     padding: 0.3em 0.3em;
-    
+    position: relative;
 }
 
-.second-level-container>.horizontal-list>li{
+.second-level-container > .horizontal-list > li {
     min-width: 2em;
 }

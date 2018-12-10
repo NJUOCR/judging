@@ -7,10 +7,11 @@
     <script src="/static/lib/vue.js"></script>
 </head>
 <body>
-<div id="graph-container" class="graph-container" @click="select">
+<div id="graph-container" class="graph-container" @click="select(0, 0)">
+    <!--<div class="graph-mask"></div>-->
     <div v-for="(first, firstLevelIdx) in structure.firstLevelItems"
-         class="first-level-container" @click="firstLevelSelect(firstLevelIdx);">
-        <div class="box-arrow">
+         class="first-level-container" @click="select(1, firstLevelIdx);">
+        <div class="box-arrow" :class="{ 'graph-item-selected': isSelected(firstLevelIdx) }">
             <div class="box-arrow-text">{{ first.name }}</div>
             <div class="box-arrow-bg">
                 <div class="box-arrow-bg-top"></div>
@@ -19,20 +20,21 @@
         </div>
         <ul class="horizontal-list">
             <li v-for="(second, secondLevelIdx) in first.secondLevelItems">
-                <div class='second-level-container' @click="secondLevelSelect(secondLevelIdx);">
-                    <div class="second-level-text">
+                <div class='second-level-container' @click="select(2, secondLevelIdx);">
+                    <div class="second-level-text"
+                         :class="{ 'graph-item-selected': isSelected(firstLevelIdx, secondLevelIdx) }">
                         <div>{{ second.name.substring(0, (1 + second.name.length)/2^0) }}</div>
-
                         <div>{{ second.name.substring((1 + second.name.length)/2^0) }}</div>
                     </div>
                     <ul class="horizontal-list">
                         <li v-for="(third, thirdLevelIdx) in second.thirdLevelItems"
                             :style="{width: parseInt(100 * third.name.length /
                                     second.thirdLevelItems.map(i => i.name.length).reduce((x1, x2) => x1+x2)) + '%'}">
-                            <div class="third-level-container" @click="thirdLevelSelect(thirdLevelIdx)" data-level="3">
-                                <div class="third-level-text">
+                            <div class="third-level-container" @click="select(3, thirdLevelIdx)">
+                                <div class="third-level-text"
+                                     :class="{ 'graph-item-selected':
+                                                isSelected(firstLevelIdx, secondLevelIdx, thirdLevelIdx) }">
                                     {{ third.name }}
-
                                 </div>
                             </div>
                         </li>
@@ -48,39 +50,11 @@
 </div>
 
 <script>
-    let selector = {
-        methods: {
-            thirdLevelSelect: function (idx) {
-                let e = window.event;
-                e['selection'] = [-1, -1, idx];
-            },
 
-            secondLevelSelect: function (idx) {
-                let e = window.event;
-                if (e['selection']) {
-                    e['selection'][1] = idx;
-                } else {
-                    e['selection'] = [-1, idx];
-                }
-            },
-
-            firstLevelSelect: function (idx) {
-                /*
-                 * 这个方法会最后一个收到事件，即，点击事件会从子元素逐一冒泡到根元素
-                 */
-                let e = window.event;
-                if (e['selection']) {
-                    e['selection'][0] = idx;
-                } else {
-                    e['selection'] = [idx];
-                }
-            }
-        }
-    };
     let graph = new Vue({
         el: '#graph-container',
         data: {
-            selection: [],
+            selection: [-1, -1, -1],
             structure: {
                 name: "默认",
                 firstLevelItems: [
@@ -322,6 +296,52 @@
             }
         },
 
+        methods: {
+            select: function (level, idx) {
+                /*
+                * `this.selection`是一个列表，保存当前选择的项目，
+                * 值为`-1`表示这一层没有项目被选中
+                *
+                * > 注意：在选择低层的项目时，会同时选中它所有的父级项目
+                * */
+                let e = window.event;
+                switch (level) {
+                    case 3:
+                        e['selection'] = [-1, -1, idx];
+                        break;
+                    case 2:
+                        if (e['selection']) {
+                            e['selection'][1] = idx;
+                        } else {
+                            e['selection'] = [-1, idx, -1];
+                        }
+                        break;
+                    case 1:
+                        if (e['selection']) {
+                            e['selection'][0] = idx;
+                        } else {
+                            e['selection'] = [idx, -1, -1];
+                        }
+                        break;
+                    case 0:
+                        this.selection = e['selection'] || [];
+                        console.log(this.selection);
+                }
+                this.selection = e['selection'];
+            },
+
+            isSelected: function (...idxTree) {
+                // `...`称为rest parameters, 传入方法的所有参数将被转为数组存入`idxTree`
+                if (idxTree.length === 0)   return false;
+                for(let i=0;i<idxTree.length;i++){
+                    if(idxTree[i] !== this.selection[i])
+                        return false
+                }
+                return true;
+            }
+        },
+
+
         created: function () {
             return;
             const url = "http://localhost:5000/getJson";
@@ -341,24 +361,6 @@
                 //this.name = result.data.message[0].name;
             });
         },
-        methods: {
-            select: function () {
-                /*
-                * `this.selection`是一个列表，保存当前选择的项目，
-                * 列表长度为0时，表示没有任何项目被选中
-                * 列表长度为1时，表示选择了一个L1的项目
-                * 列表长度为2时，表示选择了[L1, L2]的项目
-                * 列表长度为3时，表示选择了[L1, L2, L3]的项目
-                *
-                * > 注意：在选择低层的项目时，会同时选中它所有的父级项目
-                * */
-                let e = window.event;
-                this.selection = e['selection'];
-            },
-            makeId: function (level, offset) {
-                return `l${level}-${offset}`
-            }
-        }
     });
 
     let detail = new Vue({
