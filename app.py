@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, Response
+from flask import Flask, request, jsonify, render_template, Response, send_file
 from logics.judging_graph import JudgingGraph
 import json
 import utils.unet as unet
@@ -41,8 +41,8 @@ def test_upload():
 
 @app.route('/config-graph')
 def config_graph():
-    return render_template('graph_config.html')
-
+    # return render_template('graph_config.html')
+    return send_file('static/html/graph_config2.html')
 
 @app.route('/upload', methods=['POST'])
 def upload():

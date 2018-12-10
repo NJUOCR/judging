@@ -7,6 +7,7 @@
 
 
 .horizontal-list{
+    display: flex;
     list-style: none;
     padding: 0;
     margin: .2em auto;
@@ -81,7 +82,7 @@
 
 .box-arrow-text {
     color: var(--l1-fg-color);
-    font-size: 1.4em;
+    font-size: 1.2em;
     white-space: nowrap;
     position: relative;
     z-index: 1;
@@ -102,7 +103,7 @@
 
 .second-level-text{
     background-color: #0070C0;
-    font-size: 1.2em;
+    font-size: 1.1em;
     margin: 0 2px;
     padding: 0.2em 0.5em;
     white-space: nowrap;
@@ -115,4 +116,8 @@
     margin: 0 2px;
     padding: 0.3em 0.3em;
     
+}
+
+.second-level-container>.horizontal-list>li{
+    min-width: 2em;
 }
