@@ -10,8 +10,8 @@
         z-index: 10;
     }
     100% {
-        top: -.5rem;
-        box-shadow: .5rem .5rem 1rem rgba(0, 0, 0, .8);
+        top: -1rem;
+        box-shadow: .1rem .5rem 1rem rgba(0, 0, 0, .8);
         font-size: 120%;
         z-index: 10;
     }
@@ -38,7 +38,7 @@
     position: relative;
     overflow-x: auto;
     text-align: center;
-    padding-top: 1rem;
+    padding-top: 2rem;
 }
 
 /*.graph-mask{*/
@@ -58,8 +58,8 @@
 .first-level-container {
     position: relative;
     margin: 0 5px;
-    display: inline-block;
     align-items: flex-start;
+    height: fit-content;
 }
 
 .box-arrow {

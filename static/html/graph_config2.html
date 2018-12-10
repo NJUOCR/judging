@@ -324,15 +324,14 @@
                         }
                         break;
                     case 0:
-                        this.selection = e['selection'] || [];
+                        this.selection = e['selection'] || [-1, -1, -1];
                         console.log(this.selection);
                 }
-                this.selection = e['selection'];
             },
 
             isSelected: function (...idxTree) {
                 // `...`称为rest parameters, 传入方法的所有参数将被转为数组存入`idxTree`
-                if (idxTree.length === 0)   return false;
+                if (idxTree.length === 0 || this.selection.map(_ => _ === -1).reduce((x1, x2) => x1 && x2))   return false;
                 for(let i=0;i<idxTree.length;i++){
                     if(idxTree[i] !== this.selection[i])
                         return false
