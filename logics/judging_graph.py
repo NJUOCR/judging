@@ -81,13 +81,43 @@ class JudgingGraph:
     @property
     def definition(self) -> dict:
         return self._definition
-    
+
     @staticmethod
     def translate_definition(to: str, d: dict) -> dict:
         assert to in ('en', 'zh')
         d_copy = d.copy()
-        # todo [杨关] 完成翻译逻辑
-        return d_copy
+        # todo ...
+        result_dict = {}
+        # print(d)
+        for i in d_copy:
+            # print(i)
+            if isinstance(d_copy[i], str):
+                result_dict[JudgingGraph.get_eng(i)] = d_copy[i]
+            else:
+                temp_list = []
+                for j in d_copy[i]:
+                    temp_dict = JudgingGraph.translate_definition(to, j)
+                    temp_list.append(temp_dict)
+                # print(temp_list)
+                result_dict[JudgingGraph.get_eng(i)] = temp_list
+        # print(result_dict)
+        return result_dict
+
+    @staticmethod
+    def get_eng(name: str):
+        if name == "名称":
+            return "name"
+        elif name == "证据链条":
+            return "firstLevelItems"
+        elif name == "查证事项":
+            return "secondLevelItems"
+        elif name == "概要":
+            return "outlines"
+        elif name == "内容":
+            return "content"
+        elif name == "印证证据":
+            return "thirdLevelItems"
+        return name
 
 
 if __name__ == "__main__":
