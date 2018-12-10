@@ -22,6 +22,8 @@ def get_graph():
     graph = JudgingGraph.from_db('默认')
     # 转化成英文
     response_json = JudgingGraph.translate_definition('en', graph.definition)
+    response_json.pop("_id")
+    print(response_json)
     # 返回
     return Response(json.dumps(response_json, ensure_ascii=False), content_type='application/json')
 
