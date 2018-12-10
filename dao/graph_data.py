@@ -6,7 +6,7 @@ class GraphData(object):
     _instance = None
     _instance_lock = Lock()
 
-    host = 'nju-vm'
+    host = '101.132.40.25'
     port = 27017
 
     def __init__(self):

@@ -14,7 +14,7 @@
 }
 .horizontal-list>li{
     display: inline-block;
-    margin: 0 2px;
+    /*margin: 0 2px;*/
     flex-grow: 1;
 }
 
@@ -95,13 +95,24 @@
 }
 .second-level-container{
     display: inline-block;
-    background-color: #0070C0;
     color: whitesmoke;
     width: 100%;
+    margin: 0 2px;
 }
 
 .second-level-text{
+    background-color: #0070C0;
     font-size: 1.2em;
+    margin: 0 2px;
     padding: 0.2em 0.5em;
     white-space: nowrap;
+}
+
+/* 第三层元素 */
+
+.third-level-text{
+    background-color: #00B050;
+    margin: 0 2px;
+    padding: 0.3em 0.3em;
+    
 }
