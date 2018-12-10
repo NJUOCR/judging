@@ -17,10 +17,15 @@
 
 </div>
 
+<div id="detail">
+
+</div>
+
 <script>
     let graph = new Vue({
         el: '#graph-container',
         data: {
+            selection: [],
             structure: {
                 name: "默认",
                 firstLevelItems: [
@@ -263,8 +268,9 @@
         },
         
         methods: {
-            getWidthForThirdLevel: function (secondLevelIdx, thirdLevelIdx) {
-
+            select: function (firstIdx, secondIdx, thirdIdx) {
+                // 将参数列表转为数组
+                this.selection = Array.apply(this, arguments)
             }
         },
         
@@ -288,6 +294,13 @@
             }
         }
     });
+
+    let detail = new Vue({
+        el: '#detail',
+        data: {
+
+        }
+    })
 </script>
 </body>
 </html>

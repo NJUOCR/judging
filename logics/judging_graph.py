@@ -76,13 +76,13 @@ class JudgingGraph:
 
     @property
     def definition(self) -> dict:
-        return self.definition
+        return self._definition
     
     @staticmethod
     def translate_definition(to: str, d: dict) -> dict:
         assert to in ('en', 'zh')
         d_copy = d.copy()
-        # todo ...
+        # todo [杨关] 完成翻译逻辑
         return d_copy
 
 
