@@ -14,13 +14,10 @@
     padding: .3em .2em;
 }
 
-
-.header-text>.glyphicon {
+.header-text .glyphicon {
     font-size: 50%;
     height: fit-content;
     margin-left: 1em;
-    cursor: pointer;
-
 }
 
 .header-container {
@@ -28,16 +25,33 @@
     align-items: flex-end;
 }
 
+.header-container .glyphicon {
+    cursor: pointer;
+
+}
+
 .header-text {
     flex-grow: 1;
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
+    justify-content: space-between;
 }
 
-.hover {
+.selecting .hover {
     box-shadow: 0 .2em .5em grey;
     top: -.2em;
+    opacity: 1;
+}
+
+.selecting .floor {
+    box-shadow: none;
+    top: 0;
+    opacity: 1;
+}
+
+.selecting .hide-control {
+    visibility: hidden;
 }
 
 .selecting ol {

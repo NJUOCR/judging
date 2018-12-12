@@ -1,3 +1,42 @@
-.selecting{
-    font-size: 2em;
+#selecting{
+}
+
+#detail hr {
+    margin-top: 5px;
+    border-top: 1px solid #f5ebdb;
+}
+
+/* 1st level */
+#first-level-section {
+    background-color: #ffe3b5;
+    padding: 2em 2em .5em 2em;
+}
+
+#first-level-section .selecting{
+    font-size: 1.6em;
+    min-width: 18em;
+}
+
+/* 2nd level */
+#second-level-section {
+    background-color: #e5ebfb;
+    padding: 2em 2em .5em 2em;
+}
+
+#second-level-section .selecting {
+
+    font-size: 1.4em;
+    min-width: 18em;
+}
+
+/* 3rd level */
+#third-level-section {
+    background-color: #deffdb;
+    padding: 2em 2em .5em 2em;
+}
+
+#third-level-section .selecting{
+
+    font-size: 1.2em;
+    min-width: 18em;
 }

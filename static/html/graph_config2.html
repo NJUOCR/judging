@@ -8,15 +8,16 @@
     <link rel="stylesheet" href="/static/css/selectable-header.css">
     <link rel="stylesheet" href="/static/css/graph-detail.css">
     <script src="/static/lib/vue.js"></script>
-    <script src="/static/js/selectable-header.js"></script>
+    <script src="/static/js/vue-components/selectable-header.js"></script>
 </head>
 <body>
 <div id="graph-container" class="graph-container" @click="select(0, 0)">
     <!--<div class="graph-mask"></div>-->
     <div v-for="(first, firstLevelIdx) in structure.firstLevelItems"
          class="first-level-container" @click="select(1, firstLevelIdx);">
-        <div class="box-arrow graph-item-selectable" :class="[ isSelected(firstLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected' ]">
-            <div class="box-arrow-text">{{ first.name }}</div>
+        <div class="box-arrow graph-item-selectable"
+             :class="[ isSelected(firstLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected' ]">
+            <div class="box-arrow-text non-selectable">{{ first.name }}</div>
             <div class="box-arrow-bg">
                 <div class="box-arrow-bg-top"></div>
                 <div class="box-arrow-bg-bottom"></div>
@@ -27,17 +28,18 @@
                 <div class='second-level-container' @click="select(2, secondLevelIdx);">
                     <div class="second-level-text graph-item-selectable"
                          :class="[ isSelected(firstLevelIdx, secondLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected']">
-                        <div>{{ second.name.substring(0, (1 + second.name.length)/2^0) }}</div>
-                        <div>{{ second.name.substring((1 + second.name.length)/2^0) }}</div>
+                        <div class="non-selectable">{{ second.name.substring(0, parseInt(1 + second.name.length)/2) }}</div>
+                        <div class="non-selectable">{{ second.name.substring(parseInt(1 + second.name.length)/2) }}</div>
                     </div>
                     <ul class="horizontal-list">
                         <li v-for="(third, thirdLevelIdx) in second.thirdLevelItems"
                             :style="{width: parseInt(100 * third.name.length /
                                     second.thirdLevelItems.map(i => i.name.length).reduce((x1, x2) => x1+x2)) + '%'}">
                             <div class="third-level-container" @click="select(3, thirdLevelIdx)">
-                                <div class="third-level-text graph-item-selectable"
+                                <div ondblclick="window.location = '#third-level-section'"
+                                     class="third-level-text graph-item-selectable"
                                      :class="[isSelected(firstLevelIdx, secondLevelIdx, thirdLevelIdx) ? 'graph-item-selected':'graph-item-unselected' ]">
-                                    {{ third.name }}
+                                    <span class="non-selectable"> {{ third.name }}</span>
                                 </div>
                             </div>
                         </li>
@@ -48,15 +50,49 @@
     </div>
 </div>
 
-<div id="detail">
-    <selectable-header v-on:change-candidate="changeCandidate"
-                       name="first-level-header"
-                       :candidates="firstNameList()"
-                       :selected="firstLevelSelected()">
+<article id="detail">
+    <section id="first-level-section">
+        <selectable-header v-on:change-candidate="changeCandidate"
+                           v-on:step="step"
+                           name="first-level-header"
+                           :candidates="firstLevelHeader.list()"
+                           :selected="firstLevelHeader.selectedIdx()"
+                           :plain="firstLevelHeader.plain">
 
-    </selectable-header>
-    <p>slkdjflasdjflsakdjf</p>
-</div>
+        </selectable-header>
+        <hr/>
+    </section>
+
+    <section id="second-level-section">
+        <selectable-header @change-candidate="changeCandidate" @step="step"
+                           name="second-level-header"
+                           :candidates="secondLevelHeader.list()"
+                           :selected="secondLevelHeader.selectedIdx()"
+                           :plain="secondLevelHeader.plain"></selectable-header>
+        <hr/>
+    </section>
+
+    <section id="third-level-section">
+        <selectable-header @change-candidate="changeCandidate" @step="step"
+                           name="third-level-header"
+                           :candidates="thirdLevelHeader.list()"
+                           :selected="thirdLevelHeader.selectedIdx()"
+                           :plain="thirdLevelHeader.plain"></selectable-header>
+        <hr/>
+        <div>
+            <!-- todo @杨关 媒体文件上传，**不使用**fileinput.js-->
+            <!--
+                # 规则
+                在某一次上传时，只可以上传：
+                一个视频文件，或
+                一个音频文件，或
+                多个图片文件
+
+                > 暂时使用原生的input元素，由我来处理样式
+            -->
+        </div>
+    </section>
+</article>
 
 <script>
 
@@ -340,9 +376,9 @@
 
             isSelected: function (...idxTree) {
                 // `...`称为rest parameters, 传入方法的所有参数将被转为数组存入`idxTree`
-                if (idxTree.length === 0 || this.selection.map(_ => _ === -1).reduce((x1, x2) => x1 && x2))   return false;
-                for(let i=0;i<idxTree.length;i++){
-                    if(idxTree[i] !== this.selection[i])
+                if (idxTree.length === 0 || this.selection.map(_ => _ === -1).reduce((x1, x2) => x1 && x2)) return false;
+                for (let i = 0; i < idxTree.length; i++) {
+                    if (idxTree[i] !== this.selection[i])
                         return false
                 }
                 return true;
@@ -352,18 +388,18 @@
 
         created: function () {
             const url = "http://localhost:5000/get-graph";
-            fetch(url).then(function(response){
-                if(response.status!==200){
-                    console.log("存在一个问题，状态码为："+response.status);
+            fetch(url).then(function (response) {
+                if (response.status !== 200) {
+                    console.log("存在一个问题，状态码为：" + response.status);
                     return;
                 }
                 //检查响应文本
-                response.json().then(function(data){
+                response.json().then(function (data) {
                     console.log(data);
                     this.structure = data
                 });
-            }).catch(function(err){
-                console.log("Fetch错误:"+err);
+            }).catch(function (err) {
+                console.log("Fetch错误:" + err);
             })
             // todo @所有人 从axios迁移到fetch
             //  axios并不是vue内置的库，它是一个第三方库；
@@ -376,29 +412,95 @@
     let detail = new Vue({
         el: '#detail',
         data: {
-            firstNameList: function () {
-                if (graph.structure.firstLevelItems)
-                    return graph.structure.firstLevelItems.map(i => i['name']);
-                else
-                    return [];
+            firstLevelHeader: {
+                list: function () {
+                    if (graph.structure.firstLevelItems)
+                        return graph.structure.firstLevelItems.map(i => i['name']);
+                    else
+                        return [];
+                },
+
+                selectedIdx: function () {
+                    return graph.selection[0];
+
+                },
+
+                plain: false
+            },
+            secondLevelHeader: {
+                list: function () {
+                    let firstIdx = graph.selection[0];
+                    if (graph.structure.firstLevelItems
+                        && graph.structure.firstLevelItems[firstIdx]
+                        && graph.structure.firstLevelItems[firstIdx].secondLevelItems) {
+                        return graph.structure.firstLevelItems[firstIdx].secondLevelItems.map(i => i['name']);
+                    } else {
+                        return [];
+                    }
+                },
+
+                selectedIdx: function () {
+                    return graph.selection[1]
+                },
+
+                plain: false
             },
 
-            firstLevelSelected: function () {
-                return graph.selection[0]
-            },
+            thirdLevelHeader: {
+                list: function () {
+                    let firstIdx = graph.selection[0];
+                    let secondIdx = graph.selection[1];
+                    if (graph.structure.firstLevelItems
+                        && graph.structure.firstLevelItems[firstIdx]
+                        && graph.structure.firstLevelItems[firstIdx].secondLevelItems
+                        && graph.structure.firstLevelItems[firstIdx].secondLevelItems[secondIdx]
+                        && graph.structure.firstLevelItems[firstIdx].secondLevelItems[secondIdx].thirdLevelItems) {
+                        return graph.structure.firstLevelItems[firstIdx].secondLevelItems[secondIdx].thirdLevelItems.map(i => i['name']);
+                    } else {
+                        return [];
+                    }
+                },
 
-            candidatesVisible: false
+                selectedIdx: function () {
+                    return graph.selection[2]
+                },
+
+                plain: false
+            }
+
         },
 
         methods: {
-            showList: function () {
-                this.candidatesVisible = !this.candidatesVisible;
+            changeCandidate: function (idx, componentName) {
+                if (componentName === 'first-level-header') {
+                    graph.selection = [idx, -1, -1]
+                } else if (componentName === 'second-level-header') {
+                    graph.selection = [graph.selection[0], idx, -1]
+                } else if (componentName === 'third-level-header') {
+                    graph.selection = [graph.selection[0], graph.selection[1], idx];
+                }
             },
 
-            changeCandidate: function (idx, componentName) {
-                console.log(idx, componentName);
-                if (componentName === 'first-level-header'){
-                    graph.selection = [idx, -1, -1]
+            step: function (direction, componentName) {
+                let levelHeader = null;
+                if (componentName === 'first-level-header') {
+                    levelHeader = this.firstLevelHeader;
+                } else if (componentName === 'second-level-header') {
+                    levelHeader = this.secondLevelHeader;
+                } else if (componentName === 'third-level-header') {
+                    levelHeader = this.thirdLevelHeader;
+                }
+
+                if (levelHeader && levelHeader.selectedIdx() !== -1) {
+                    let test = levelHeader.selectedIdx();
+                    let length = levelHeader.list().length;
+
+                    if (direction === 'left') test--;
+                    else if (direction === 'right') test++;
+
+                    if (test >= 0 && test < length) {
+                        this.changeCandidate(test, componentName);
+                    }
                 }
             }
         }

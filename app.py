@@ -67,5 +67,29 @@ def upload():
         return jsonify(error='method should be post')
 
 
+@app.route('/favicon.ico')
+def send_icon():
+    return send_file('./favicon.ico')
+
+
+@app.route('/media-upload')
+def media_upload():
+    """
+    todo @熊 为媒体资源的上传提供后台接口
+    前端会检查上传文件的类型，在某一次上传中，数据可以是：
+    - 一个视频文件
+    - 或一个音频文件
+    - 或多个图片文件
+
+    ** 注意将文件名中的空格替换成`_` **，*linux不允许文件名包含空格*
+
+    文件存储位置：
+    根目录为`static/resources/media`
+    子目录根据前端传来的一个列表 `['{案号}', '{证据链节点名称}', '{查证事项节点名称}', '视听材料', '{材料名称}']`
+
+    > 目前先不更新数据库
+    :return:
+    """
+
 if __name__ == '__main__':
     app.run(debug=True)
