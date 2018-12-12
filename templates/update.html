@@ -83,6 +83,18 @@ background-color: gold;
             justify-content: center;
         }
 
+        .loader .text {
+            line-height: 2em;
+            font-size: 0.5em;
+            text-shadow: 0 0 2px #ddd;
+        }
+
+        .saving { color: gold; display: inline-block; text-indent: 0px;}
+        .ok { color: gold; display: none; text-indent: 0px;}
+
+        .saving1 { color: gold; display: none; text-indent: 0px;}
+        .ok1 { color: gold; display: inline-block; text-indent: 0px;}
+
         .loader .face {
             position: absolute;
             border-radius: 50%;
@@ -223,16 +235,22 @@ background-color: gold;
             -->
         </label>
     </div>
+    <label id="saving"></label>
+    <label id="ok"></label>
 </div>
 
+<!--
 <div class="loader">
     <div class="face">
         <div class="circle1"></div>
     </div>
+    <label class="text saving">saving</label>
+    <label class="text ok">ok</label>
 </div>
+-->
 
-<button onclick="change()"></button>
-<button onclick="ret()"></button>
+<button onclick="change()">save</button>
+<button onclick="ret()">ok</button>
 
 <script type="application/javascript">
     function change() {
@@ -241,10 +259,16 @@ background-color: gold;
         document.querySelector("#level3").className = "circle1"
         document.querySelector("#level4circle").className = "updatingCiecle"
         document.querySelector("#level4line").className = "updatingline"
+        document.querySelector("#saving").className = "text saving"
+        document.querySelector("#ok").className = "text ok"
+        document.querySelector("#saving").innerHTML = "saving"
+        document.querySelector("#ok").innerHTML = "ok"
     }
     function ret() {
-        document.querySelector("#level2").className="faceChange"
-        setTimeout(optimal, 2200)
+        //document.querySelector("#level2").className="faceChange"
+        document.querySelector("#saving").className = "text saving1"
+        document.querySelector("#ok").className = "text ok1"
+        setTimeout(optimal, 1000)
     }
     function optimal() {
         document.querySelector("#level1").className = "toggle-button-wrapper"
@@ -252,6 +276,10 @@ background-color: gold;
         document.querySelector("#level3").className = "button-label"
         document.querySelector("#level4circle").className = "circle"
         document.querySelector("#level4line").className = "line"
+        document.querySelector("#saving").className = ""
+        document.querySelector("#ok").className = ""
+        document.querySelector("#saving").innerHTML = ""
+        document.querySelector("#ok").innerHTML = ""
     }
 </script>
 
