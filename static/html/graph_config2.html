@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/graph-components.css">
+    <link rel="stylesheet" href="/static/css/selectable-header.css">
+    <link rel="stylesheet" href="/static/css/graph-detail.css">
     <script src="/static/lib/vue.js"></script>
+    <script src="/static/js/selectable-header.js"></script>
 </head>
 <body>
 <div id="graph-container" class="graph-container" @click="select(0, 0)">
@@ -45,7 +49,13 @@
 </div>
 
 <div id="detail">
+    <selectable-header v-on:change-candidate="changeCandidate"
+                       name="first-level-header"
+                       :candidates="firstNameList()"
+                       :selected="firstLevelSelected()">
 
+    </selectable-header>
+    <p>slkdjflasdjflsakdjf</p>
 </div>
 
 <script>
@@ -365,7 +375,33 @@
 
     let detail = new Vue({
         el: '#detail',
-        data: {}
+        data: {
+            firstNameList: function () {
+                if (graph.structure.firstLevelItems)
+                    return graph.structure.firstLevelItems.map(i => i['name']);
+                else
+                    return [];
+            },
+
+            firstLevelSelected: function () {
+                return graph.selection[0]
+            },
+
+            candidatesVisible: false
+        },
+
+        methods: {
+            showList: function () {
+                this.candidatesVisible = !this.candidatesVisible;
+            },
+
+            changeCandidate: function (idx, componentName) {
+                console.log(idx, componentName);
+                if (componentName === 'first-level-header'){
+                    graph.selection = [idx, -1, -1]
+                }
+            }
+        }
     })
 </script>
 </body>

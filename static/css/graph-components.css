@@ -112,7 +112,7 @@
 
     border-left: 1px solid var(--l1-bd-color);
     border-right: 1px solid var(--l1-bd-color);
-    border-bottom: 1px solid var(--l1-bd-color);
+    border-top: 1px solid var(--l1-bd-color);
 }
 
 .box-arrow .box-arrow-bg-bottom {
