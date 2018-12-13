@@ -16,9 +16,12 @@
     .up-file{
         height: 40px;
         width: 240px;
+        display: flex;
+        flex-wrap: wrap;
     }
     .up-file .input-file {
         padding: 4px 10px;
+        line-height: 1;
         height: 100%;
         width: 60%;
         text-align: center;
@@ -36,8 +39,9 @@
     }
     .up-file .up-button{
         padding: 4px 10px;
+        line-height: 1;
         height: 100%;
-        width: 30%;
+        width: 40%;
         background: #44bbff;
         color: #FFFFFF;
         position: relative;
@@ -46,9 +50,11 @@
         overflow: hidden;
         display: inline-block;
     }
+    .up-file .up-label{
+        font-size: 2px;
+    }
     .input-file input {
         position: absolute;
-        font-size: 100px;
         right: 0;
         top: 0;
         opacity: 0;
@@ -149,14 +155,43 @@
                 <div class="input-file">
                     <input id="uploadMedia" type="file" name="filename" multiple="multiple" onchange="validate()"/>选择文件<br>
                 </div>
-                <button id="uploadButton" class="up-button">上传</button>
-                <label id="validateLabel"></label>
+                <button id="uploadButton" class="up-button" onclick="upfile()">上传</button>
+                <label id="validateLabel" class="up-label"></label>
             </div>
         </div>
     </section>
 </article>
 
 <script>
+
+    function upfile() {
+        const url = "http://localhost:5000/get-graph";
+        var formdata = new Formdata();
+        var files = document.getElementById('#uploadMedia').files;
+        for(var i = 0 ; i<files.length;i++){
+            var temp = files[i];
+            var filename = temp.name;
+            formData.append(filename, temp);
+        }
+        fetch(url, {
+            method: "post",
+            headers: {
+                "category": ""
+            },
+            body: formdata
+        }).then(function (response) {
+            if (response.status !== 200) {
+                console.log("上传失败，状态码为：" + response.status);
+                return;
+            }
+            //检查响应文本
+            response.json().then(function (data) {
+                console.log(data);
+            });
+        }).catch(function (err) {
+            console.log("Fetch错误:" + err);
+        });
+    }
 
     function validate() {
         var files = document.getElementById("uploadMedia").files;
@@ -191,12 +226,7 @@
             //alert(tempStr);
         }
         if((pic&&!ved&&!aud&&!other)||(!pic&&ved&&!aud&&!other)||(!pic&&!ved&&aud&&!other)){
-            if(files.length===1){
-                document.getElementById("validateLabel").innerHTML = "";
-            }else {
-                document.getElementById("validateLabel").innerHTML = filename;
-            }
-
+            document.getElementById("validateLabel").innerHTML = filename;
             document.getElementById("uploadButton").style = "display:block";
         }else {
             document.getElementById("validateLabel").innerHTML = "上传错误，请重新上传";
