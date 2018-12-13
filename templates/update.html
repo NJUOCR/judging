@@ -3,211 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>UpdateComponent</title>
-    <style type="text/css">
-        #toggle-button{ display: none; }
-        .button-label{
-            position: relative;
-            display: inline-block;
-            width: 45px;
-            height: 30px;
-            background-color: transparent;
-            box-shadow: #ccc 0px 0px 0px 0px;
-            border-radius: 50%;
-            overflow: hidden;
-        }
-        .circle{
-            position: absolute;
-            top: 25%;
-            left: 0;
-            width: 13px;
-            height: 13px;
-            border-radius: 50%;
-            background-color: gold;
-            box-shadow: 0 0 0em,
-            0 0 4em,
-            0 0 6em,
-            0 0 8em,
-            0 0 10em,
-            0 0 0 0.5em rgba(255, 255, 0, 0.1);
-            /*
-border-color: currentColor transparent transparent currentColor;
-border-width: 0.2em 0.2em 0em 0em;
---deg: -45deg;
-animation-direction: normal;
-background-color: gold;
-*/
-        }
-        .line{
-            position: absolute;
-            top: 42%;
-            left: 10%;
-            right: 10%;
-            width: 80%;
-            height: 5px;
-            border-radius: 20%;
-            background-color: #ccc;
-        }
-        /*
-        .button-label .text {
-            line-height: 30px;
-            font-size: 18px;
-            text-shadow: 0 0 2px #ddd;
-        }
-        on 和 off
-        .on { color: #fff; display: none; text-indent: 10px;}
-        .off { color: #fff; display: inline-block; text-indent: 34px;}
-        */
-        .button-label .circle{
-            left: 0;
-            transition: all 0.8s;
-        }
-        #toggle-button:checked + label.button-label .circle{
-            left: 30px;
-        }
-        /*
-        #toggle-button:checked + label.button-label .on{ display: inline-block; }
-        #toggle-button:checked + label.button-label .off{ display: none; }
-        #toggle-button:checked + label.button-label{
-            background-color: #51ccee;
-        }
-        */
-    </style>
-    <style type="text/css">
-        .loader {
-            width: 3em;
-            height: 3em;
-            font-size: 10px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loader .face {
-            position: absolute;
-            border-radius: 50%;
-            border-style: solid;
-            animation: animate 2s linear infinite;
-        }
-
-        .loader .face:nth-child(1) {
-            width: 100%;
-            height: 100%;
-            color: gold;
-            border-color: transparent transparent currentColor currentColor;
-            border-width: 0.2em 0em 0em 0.2em;
-            --deg: -120deg;
-            animation-direction: normal;
-        }
-
-        /*
-        .loader .face:nth-child(2) {
-            width: 70%;
-            height: 70%;
-            color: lime;
-            border-color: currentColor currentColor transparent transparent;
-            border-width: 0.2em 0em 0em 0.2em;
-            --deg: -135deg;
-            animation-direction: reverse;
-        }
-        */
-
-        .loader .face .circle1 {
-            position: absolute;
-            width: 50%;
-            height: 0.1em;
-            top: 50%;
-            left: 50%;
-            background-color: transparent;
-            transform: rotate(var(--deg));
-            transform-origin: left;
-        }
-
-        .loader .face .circle1::before {
-            position: absolute;
-            top: -0.5em;
-            right: -0.5em;
-            content: '';
-            width: 1em;
-            height: 1em;
-            background-color: currentColor;
-            border-radius: 50%;
-            box-shadow: 0 0 2em,
-            0 0 4em,
-            0 0 6em,
-            0 0 8em,
-            0 0 10em,
-            0 0 0 0.5em rgba(255, 255, 0, 0.1);
-        }
-
-
-
-        @keyframes animate {
-            0% {
-                transform: rotate(-60deg);
-            }
-            100% {
-                transform: rotate(300deg);
-            }
-        }
-
-        /* ---------------------------------------------------------------------- */
-
-        .loader .faceChange {
-            position: absolute;
-            border-radius: 50%;
-            border-style: solid;
-            animation: animate1 2s linear infinite;
-            animation-iteration-count: 1;
-        }
-
-        .loader .faceChange:nth-child(1) {
-            width: 100%;
-            height: 100%;
-            color: gold;
-            border-color: transparent transparent currentColor currentColor;
-            border-width: 0.2em 0em 0em 0.2em;
-            --deg: -120deg;
-            animation-direction: normal;
-        }
-
-        .loader .faceChange .circle1 {
-            position: absolute;
-            width: 50%;
-            height: 0.1em;
-            top: 50%;
-            left: 50%;
-            background-color: transparent;
-            transform: rotate(var(--deg));
-            transform-origin: left;
-        }
-
-        .loader .faceChange .circle1::before {
-            position: absolute;
-            top: -0.5em;
-            right: -0.5em;
-            content: '';
-            width: 1em;
-            height: 1em;
-            background-color: currentColor;
-            border-radius: 50%;
-            box-shadow: 0 0 2em,
-            0 0 4em,
-            0 0 6em,
-            0 0 8em,
-            0 0 10em,
-            0 0 0 0.5em rgba(255, 255, 0, 0.1);
-        }
-
-        @keyframes animate1 {
-            to {
-                transform: rotate(1turn);
-            }
-        }
-
-
-
-    </style>
+    <link href="../static/css/autoUpdateCheckBox.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
@@ -223,16 +19,22 @@ background-color: gold;
             -->
         </label>
     </div>
+    <label id="saving"></label>
+    <label id="ok"></label>
 </div>
 
+<!--
 <div class="loader">
     <div class="face">
         <div class="circle1"></div>
     </div>
+    <label class="text saving">saving</label>
+    <label class="text ok">ok</label>
 </div>
+-->
 
-<button onclick="change()"></button>
-<button onclick="ret()"></button>
+<button onclick="change()">save</button>
+<button onclick="ret()">ok</button>
 
 <script type="application/javascript">
     function change() {
@@ -241,10 +43,16 @@ background-color: gold;
         document.querySelector("#level3").className = "circle1"
         document.querySelector("#level4circle").className = "updatingCiecle"
         document.querySelector("#level4line").className = "updatingline"
+        document.querySelector("#saving").className = "text saving"
+        document.querySelector("#ok").className = "text ok"
+        document.querySelector("#saving").innerHTML = "saving"
+        document.querySelector("#ok").innerHTML = "ok"
     }
     function ret() {
-        document.querySelector("#level2").className="faceChange"
-        setTimeout(optimal, 2200)
+        //document.querySelector("#level2").className="faceChange"
+        document.querySelector("#saving").className = "text saving1"
+        document.querySelector("#ok").className = "text ok1"
+        setTimeout(optimal, 1000)
     }
     function optimal() {
         document.querySelector("#level1").className = "toggle-button-wrapper"
@@ -252,6 +60,10 @@ background-color: gold;
         document.querySelector("#level3").className = "button-label"
         document.querySelector("#level4circle").className = "circle"
         document.querySelector("#level4line").className = "line"
+        document.querySelector("#saving").className = ""
+        document.querySelector("#ok").className = ""
+        document.querySelector("#saving").innerHTML = ""
+        document.querySelector("#ok").innerHTML = ""
     }
 </script>
 

@@ -90,11 +90,89 @@
 
                 > 暂时使用原生的input元素，由我来处理样式
             -->
+
+            <form action="/media-upload" method="post" name="f_upload" enctype="multipart/form-data">
+                <input id="category" type="text" name="subdir" /><br>
+                <input id="uploadMedia" type="file" name="filename" multiple="multiple" onchange="validate()"/><br>
+                <input id="uploadButton" type="submit" value="上传" />
+                <label id="validateLabel"></label>
+            </form>
         </div>
     </section>
 </article>
 
 <script>
+
+    function validate() {
+        var files = document.getElementById("uploadMedia").files;
+        var pic = false;
+        var ved = false;
+        var aud = false;
+        var other = false
+        var filename = ""
+        for(var i = 0; i<files.length;i++){
+            var tempStr = files[i].name;
+            if(picture(tempStr.split(".")[1])){
+                pic = true;
+                filename = filename + tempStr + "  |  "
+            }else if(vedio(tempStr.split(".")[1])){
+                if(files.length===1){
+                    ved = true;
+                    filename = filename + tempStr + "  |  "
+                }else {
+                    break;
+                }
+            }else if(audio(tempStr.split(".")[1])){
+                if(files.length===1){
+                    aud = true;
+                    filename = filename + tempStr + "  |  "
+                }else {
+                    break;
+                }
+            }else {
+                other = true;
+                break;
+            }
+            //alert(tempStr);
+        }
+        if((pic&&!ved&&!aud&&!other)||(!pic&&ved&&!aud&&!other)||(!pic&&!ved&&aud&&!other)){
+            if(files.length===1){
+                document.getElementById("validateLabel").innerHTML = "";
+            }else {
+                document.getElementById("validateLabel").innerHTML = filename;
+            }
+
+            document.getElementById("uploadButton").style = "display:block";
+        }else {
+            document.getElementById("validateLabel").innerHTML = "上传错误，请重新上传";
+            document.getElementById("uploadButton").style = "display:none";
+        }
+
+    }
+
+    function picture(str){
+        var s = str.toString().toLocaleLowerCase()
+        if (s === "jpg"||s === "png" || s === "bmp" || s === "svg"){
+            return true
+        }
+    }
+
+    function vedio(str){
+        var s = str.toString().toLocaleLowerCase()
+        if(s === "mpeg" || s ==="avi" || s === "mov" || s === "asf" || s === "rmvb" ||
+        s === "mpg" || s === "mp4"){
+            return true
+        }
+    }
+
+    function audio(str){
+        var s = str.toString().toLocaleLowerCase()
+        if(s === "mp3" || s === "midi" || s === "wma"){
+            return true
+        }
+    }
+
+
 
     let graph = new Vue({
         el: '#graph-container',
