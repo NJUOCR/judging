@@ -2,8 +2,8 @@ function change() {
     document.querySelector("#level1").className = "loader";
     document.querySelector("#level2").className = "face";
     document.querySelector("#level3").className = "circle1";
-    document.querySelector("#level4circle").className = "updatingCiecle";
-    document.querySelector("#level4line").className = "updatingline";
+    document.querySelector("#level4circle").className = "";
+    document.querySelector("#level4line").className = "";
     document.querySelector("#saving").className = "text saving";
     document.querySelector("#ok").className = "text ok";
     document.querySelector("#saving").innerHTML = "saving";
