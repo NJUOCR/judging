@@ -165,19 +165,17 @@
 <script>
 
     function upfile() {
-        const url = "http://localhost:5000/get-graph";
-        var formdata = new Formdata();
-        var files = document.getElementById('#uploadMedia').files;
-        for(var i = 0 ; i<files.length;i++){
-            var temp = files[i];
-            var filename = temp.name;
-            formData.append(filename, temp);
+        const url = "http://localhost:5000/media-upload";
+        let formdata = new FormData();
+        let files = document.getElementById('uploadMedia').files;
+        for(let i = 0 ; i<files.length;i++){
+            let temp = files[i];
+            let filename = temp.name;
+            formdata.append(filename, temp);
         }
+        formdata.append("category", "[12,34,56,78,89]");
         fetch(url, {
             method: "post",
-            headers: {
-                "category": ""
-            },
             body: formdata
         }).then(function (response) {
             if (response.status !== 200) {
@@ -194,14 +192,14 @@
     }
 
     function validate() {
-        var files = document.getElementById("uploadMedia").files;
-        var pic = false;
-        var ved = false;
-        var aud = false;
-        var other = false
-        var filename = ""
-        for(var i = 0; i<files.length;i++){
-            var tempStr = files[i].name;
+        let files = document.getElementById("uploadMedia").files;
+        let pic = false;
+        let ved = false;
+        let aud = false;
+        let other = false
+        let filename = ""
+        for(let i = 0; i<files.length;i++){
+            let tempStr = files[i].name;
             if(picture(tempStr.split(".")[1])){
                 pic = true;
                 filename = filename + tempStr + "  |  "
@@ -236,14 +234,14 @@
     }
 
     function picture(str){
-        var s = str.toString().toLocaleLowerCase()
+        let s = str.toString().toLocaleLowerCase()
         if (s === "jpg"||s === "png" || s === "bmp" || s === "svg"){
             return true
         }
     }
 
     function vedio(str){
-        var s = str.toString().toLocaleLowerCase()
+        let s = str.toString().toLocaleLowerCase()
         if(s === "mpeg" || s ==="avi" || s === "mov" || s === "asf" || s === "rmvb" ||
         s === "mpg" || s === "mp4"){
             return true
@@ -251,7 +249,7 @@
     }
 
     function audio(str){
-        var s = str.toString().toLocaleLowerCase()
+        let s = str.toString().toLocaleLowerCase()
         if(s === "mp3" || s === "midi" || s === "wma"){
             return true
         }
