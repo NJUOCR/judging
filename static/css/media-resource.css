@@ -1,0 +1,49 @@
+@keyframes media-stand-up {
+    0% {
+        box-shadow: 0 2px 2px gray;
+        top: 0;
+    }
+    100% {
+        box-shadow: 0 .5em 1em gray;
+        top: -.5em;
+    }
+}
+
+.media-container {
+    position: relative;
+    background-color: whitesmoke;
+    padding: .5em;
+    display: inline-block;
+    height: 100%;
+    margin: 0 1px;
+    box-shadow: 0 2px 2px gray;
+
+    /* icon width&margin + left&right padding*/
+    width: 7em;
+}
+
+.media-container:hover {
+    animation: media-stand-up .2s ease-out forwards;
+}
+
+.media-container .media-icon {
+    font-size: 2em;
+    margin: .5em 1em .5em 1em;
+}
+
+.media-container .media-name {
+    font-size: .5em;
+    text-align: center;
+    border-top: #dcd2d2 solid 1px;
+    padding-top: .5em;
+}
+
+.media-container .media-remove {
+    font-size: .4em;
+    font-weight: lighter;
+    color: gray;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+}
