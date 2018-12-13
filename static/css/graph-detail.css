@@ -40,3 +40,10 @@
     font-size: 1.2em;
     min-width: 18em;
 }
+
+/* media */
+.media-source-list ul{
+    display: flex;
+    list-style: none;
+    padding: 0;
+}

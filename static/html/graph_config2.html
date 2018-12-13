@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="/static/css/graph-components.css">
     <link rel="stylesheet" href="/static/css/selectable-header.css">
     <link rel="stylesheet" href="/static/css/graph-detail.css">
+    <link rel="stylesheet" href="/static/css/media-resource.css">
     <script src="/static/lib/vue.js"></script>
     <script src="/static/js/vue-components/selectable-header.js"></script>
+    <script src="/static/js/vue-components/media-resource.js"></script>
 </head>
 <style type="text/css">
     .up-file{
@@ -123,6 +125,14 @@
                            :selected="thirdLevelHeader.selectedIdx()"
                            :plain="thirdLevelHeader.plain"></selectable-header>
         <hr/>
+        <div class="media-source-list">
+            <!-- resource list -->
+            <ul>
+                <li><media-resource type="audio" name="音频1" description="这里是音频的描述"></media-resource></li>
+                <li><media-resource type="video" name="video-视频123456" description="这里是音频的描述"></media-resource></li>
+                <li><media-resource type="image" name="image-这是一张名字很长的图片啦啦啦" description="这里是音频的描述"></media-resource></li>
+            </ul>
+        </div>
         <div>
             <!-- todo @杨关 媒体文件上传，**不使用**fileinput.js-->
             <!--
