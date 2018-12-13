@@ -91,7 +91,8 @@
                 > 暂时使用原生的input元素，由我来处理样式
             -->
 
-            <form action="UploadOneServlet" method="post" name="f_upload" enctype="multipart/form-data">
+            <form action="/media-upload" method="post" name="f_upload" enctype="multipart/form-data">
+                <input id="category" type="text" name="subdir" /><br>
                 <input id="uploadMedia" type="file" name="filename" multiple="multiple" onchange="validate()"/><br>
                 <input id="uploadButton" type="submit" value="上传" />
                 <label id="validateLabel"></label>
