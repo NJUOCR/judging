@@ -3,6 +3,7 @@ from logics.judging_graph import JudgingGraph
 import json
 import utils.unet as unet
 import os
+import shutil
 
 app = Flask(__name__)
 
@@ -46,6 +47,7 @@ def config_graph():
     # return render_template('graph_config.html')
     return send_file('static/html/graph_config2.html')
 
+
 @app.route('/upload', methods=['POST'])
 def upload():
     if request.method == 'POST':
@@ -55,7 +57,7 @@ def upload():
             filename = unet.secure_filename(file.filename)
             raw_path = os.path.join('./static/graph_configs', filename)
             file.save(raw_path)
-            dic = JudgingGraph.from_file("static/graph_configs/"+filename)
+            dic = JudgingGraph.from_file("static/graph_configs/" + filename)
             if dic.validate():
                 dic.save()
                 return jsonify("上传成功")
@@ -72,7 +74,7 @@ def send_icon():
     return send_file('./favicon.ico')
 
 
-@app.route('/media-upload')
+@app.route('/media-upload', methods=['POST'])
 def media_upload():
     """
     todo @熊 为媒体资源的上传提供后台接口
@@ -90,6 +92,90 @@ def media_upload():
     > 目前先不更新数据库
     :return:
     """
+    print("accepted")
+    video_list = ['avi', 'asf', 'asx', 'rm', 'rmvb', 'mpg', 'mpeg', 'mpe', '3gp', 'mov', 'mp4', 'm4v', 'dat', 'mkv',
+                  'flv', 'vob']
+    audio_list = ['mp3', 'aac', 'wav', 'wma', 'cda', 'flac', 'm4a', 'mid', 'mka', 'mp2', 'mpa', 'mpc', 'ape', 'ofr',
+                  'ogg', 'ra', 'wv', 'tta', 'ac3', 'dts']
+    image_list = ['jpg', 'bmp', 'eps', 'gif', 'mif', 'miff', 'png', 'tif', 'tiff', 'svg', 'wmf', 'jpe', 'jpeg', 'dib',
+                  'ico', 'tga', 'cut', 'pic']
+
+    if request.method == 'POST':
+        # file = request.files['filename']
+        sign = 0
+        error_list = []
+        files = request.files.getlist("filename")
+        if len(files) == 0:
+            return jsonify(error='no file is uploaded')
+        elif len(files) == 1:
+            tmp = files[0]
+            filename = unet.secure_filename(tmp.filename)
+            names = filename.split(".")
+            post = names[len(names)-1]
+            if post in video_list or post in audio_list:
+                sign = 1
+            elif post in image_list:
+                sign = 2
+            else:
+                return jsonify(error=filename+'\' type can\'t be recognized')
+        else:
+            for file in files:
+                filename = unet.secure_filename(file.filename)
+                names = filename.split(".")
+                post = names[len(names) - 1]
+                if post not in image_list:
+                    error_list.append(filename)
+                    files.remove(file)
+            sign = 2
+
+        print(sign)
+        print("here!")
+        root = os.path.join("static", "resources", "media")
+        subdir = request.headers.values(['category'])
+        subdir = subdir.replace('[', '').replace(']', '').replace(" ", "_")
+        print(subdir)
+        dir_list = subdir.split(',')
+
+        # multi files, use 'request.files.getlist(name)'
+        if files:
+            if sign == 1:
+                filename = unet.secure_filename(files[0].filename)
+                raw_path = os.path.join(os.getcwd(), root, dir_list[0], dir_list[1], dir_list[2], '视听材料')
+                if os.path.exists(raw_path) is False:
+                    os.makedirs(raw_path)
+                    print(raw_path)
+                files[0].save(os.path.join(raw_path, filename))
+            elif sign == 2:
+                raw_path = os.path.join(os.getcwd(), root, dir_list[0], dir_list[1], dir_list[2], '视听材料', dir_list[4])
+                if os.path.exists(raw_path) is False:
+                    os.makedirs(raw_path)
+                for file in files:
+                    filename = unet.secure_filename(file.filename)
+                    file.save(os.path.join(raw_path, filename))
+            # filename = unet.secure_filename(file.filename)
+            # raw_path = os.path.join(os.getcwd(), root, dir_list[0], dir_list[1], dir_list[2], '视听材料')
+            # raw_path.replace(" ", "")
+            # print(raw_path)
+            # if os.path.exists(raw_path) is False:
+            #     os.makedirs(raw_path)
+            #     print(raw_path)
+            # if sign == 2:
+            #     for tmp in file:
+            #         file.save(os.path.join(raw_path, filename))
+            # elif sign == 1:
+            #     file.save(os)
+            # file.save(os.path.join(raw_path, filename))
+            if len(error_list) != 0:
+                error_files = ''
+                for file in error_list:
+                    error_files = error_files + ',' + unet.secure_filename(file.filename)
+                return jsonify(error=error_files+'\' type can\'t be recognized')
+            return "True"
+        else:
+            return jsonify(error='no file is uploaded')
+    else:
+        return jsonify(error='method should be post')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
