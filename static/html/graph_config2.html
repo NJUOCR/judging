@@ -10,6 +10,50 @@
     <script src="/static/lib/vue.js"></script>
     <script src="/static/js/vue-components/selectable-header.js"></script>
 </head>
+<style type="text/css">
+    .up-file{
+        height: 40px;
+        width: 240px;
+    }
+    .up-file .input-file {
+        padding: 4px 10px;
+        height: 100%;
+        width: 60%;
+        text-align: center;
+        line-height: 30px;
+        position: relative;
+        cursor: pointer;
+        background: #44bbff;
+        color: #FFFFFF;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        display: inline-block;
+        *display: inline;
+        *zoom: 1;
+    }
+    .up-file .up-button{
+        padding: 4px 10px;
+        height: 100%;
+        width: 30%;
+        background: #44bbff;
+        color: #FFFFFF;
+        position: relative;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        display: inline-block;
+    }
+    .input-file input {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        cursor: pointer;
+    }
+</style>
 <body>
 <div id="graph-container" class="graph-container" @click="select(0, 0)">
     <!--<div class="graph-mask"></div>-->
@@ -91,13 +135,13 @@
                 > 暂时使用原生的input元素，由我来处理样式
             -->
 
-            <form action="/media-upload" method="post" name="f_upload" enctype="multipart/form-data">
-                <input id="category" type="text" name="subdir" /><br>
-                <input id="uploadMedia" type="file" name="filename" multiple="multiple" onchange="validate()"/><br>
-                <input id="uploadButton" type="submit" value="上传" />
+            <div class="up-file">
+                <div class="input-file">
+                    <input id="uploadMedia" type="file" name="filename" multiple="multiple" onchange="validate()"/>选择文件<br>
+                </div>
+                <button id="uploadButton" class="up-button">上传</button>
                 <label id="validateLabel"></label>
-            </form>
-            \
+            </div>
         </div>
     </section>
 </article>
