@@ -49,7 +49,7 @@
         display: inline-block;
     }
     .up-file .up-label{
-
+        font-size: 2px;
     }
     .input-file input {
         position: absolute;
@@ -216,12 +216,7 @@
             //alert(tempStr);
         }
         if((pic&&!ved&&!aud&&!other)||(!pic&&ved&&!aud&&!other)||(!pic&&!ved&&aud&&!other)){
-            if(files.length===1){
-                document.getElementById("validateLabel").innerHTML = "";
-            }else {
-                document.getElementById("validateLabel").innerHTML = filename;
-            }
-
+            document.getElementById("validateLabel").innerHTML = filename;
             document.getElementById("uploadButton").style = "display:block";
         }else {
             document.getElementById("validateLabel").innerHTML = "上传错误，请重新上传";
