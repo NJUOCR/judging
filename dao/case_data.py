@@ -20,3 +20,14 @@ class CaseData:
         d = CaseData.table.find_one({'_id': case_id})
         return CaseData(d, case_id) if d is not None else None
 
+    @property
+    def data(self) -> dict:
+        return self.d
+
+    def update(self, d: dict):
+        if '_id' in d and d['_id'] != self.case_id:
+            print('案号不一致')
+            return False
+
+        CaseData.table.save(d)
+        return True

@@ -1,15 +1,17 @@
 import os
-from pymongo import MongoClient
 
 
 class MediaData:
     media_storage_root = os.path.join('static', 'resources', 'media')
 
-    host = '101.132.40.25'
-    port = 27017
+    @staticmethod
+    def full_path(sub_path: str) -> str:
+        return os.path.join(MediaData.media_storage_root, sub_path)
 
-    def __init__(self):
-        self.table = MongoClient(MediaData.host, port=MediaData.port).get_database('judging').get_collection('case')
+    @staticmethod
+    def save(request_file, sub_path: str):
+        request_file.save(MediaData.full_path(sub_path))
 
-    def save(self, file, path):
-        pass
+    @staticmethod
+    def media_file_exists(sub_path: str) -> bool:
+        return os.path.exists(MediaData.full_path(sub_path))
