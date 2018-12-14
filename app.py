@@ -111,7 +111,7 @@ def media_upload():
             tmp = files[0]
             filename = unet.secure_filename(tmp.filename)
             names = filename.split(".")
-            post = names[len(names)-1]
+            post = names[-1]
             if post in video_list or post in audio_list:
                 sign = 1
             elif post in image_list:
