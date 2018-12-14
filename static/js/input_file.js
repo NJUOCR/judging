@@ -46,7 +46,7 @@ function validate() {
     let audio = 0b0100;
     let other = 0b1000;
 
-    // todo #tips 如果你还不知道的话，js可以这样声明一个函数
+    // todo #tips js可以这样声明一个函数
     let getMediaTypeBits = (suffix) => {
         suffix = suffix.toLowerCase();
         if (suffix === "jpg" || suffix === "png" || suffix === "bmp" || suffix === "svg") {
