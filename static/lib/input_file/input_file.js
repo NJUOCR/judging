@@ -1,6 +1,6 @@
 
 function upfile() {
-    const url = "http://localhost:5000/media-upload";
+    const url = "/media-upload";
     let formdata = new FormData();
     let files = document.getElementById('uploadMedia').files;
     let filenames = []
@@ -16,6 +16,7 @@ function upfile() {
         method: "post",
         body: formdata
     }).then(function (response) {
+        console.log(response)
         if (response.status !== 200) {
             console.log("上传失败，状态码为：" + response.status);
             return;
@@ -41,7 +42,7 @@ function validate() {
         if(picture(tempStr.split(".")[1])){
             pic = true;
             filename = filename + tempStr + "  |  "
-        }else if(vedio(tempStr.split(".")[1])){
+        }else if(video(tempStr.split(".")[1])){
             if(files.length===1){
                 ved = true;
                 filename = filename + tempStr + "  |  "
@@ -78,7 +79,7 @@ function picture(str){
     }
 }
 
-function vedio(str){
+function video(str){
     let s = str.toString().toLocaleLowerCase()
     if(s === "mpeg" || s ==="avi" || s === "mov" || s === "asf" || s === "rmvb" ||
         s === "mpg" || s === "mp4"){
