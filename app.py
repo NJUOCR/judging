@@ -85,7 +85,6 @@ def send_icon():
 @app.route('/media-upload', methods=['POST'])
 def media_upload():
     """
-    todo @熊 为媒体资源的上传提供后台接口
     前端会检查上传文件的类型，在某一次上传中，数据可以是：
     - 一个视频文件
     - 或一个音频文件
@@ -95,7 +94,7 @@ def media_upload():
 
     文件存储位置：
     根目录为`static/resources/media`
-    子目录根据前端传来的一个列表 `['{案号}', '{证据链节点名称}', '{查证事项节点名称}', '视听材料', '{材料名称}']`
+    子目录根据前端传来的一个列表 `['{案号}', '{证据链节点名称}', '{查证事项节点名称}', '视听材料', '{媒体名称}']`
 
     > 目前先不更新数据库
     :return:
@@ -107,13 +106,13 @@ def media_upload():
     if len(file_bundle) == 0:
         return jsonify(error='No file is uploaded.')
 
-    case_id = category[0]
-    tree = category[1:]
-    media_name = category[-1]
+    case_id = category[0]       # 案号
+    tree = category[1:]         # 媒体资源存储的子目录
+    media_name = category[-1]   # 媒体资源的名称，不是文件名，而是前端编辑的媒体名称。注意它是存储路径中最后一个子目录
     case = JudgingCase(case_id)
-    assert case is not None
-    case.insert_media(tree, media_name, description, file_bundle)
-    return jsonify(result='ok')
+    assert case is not None, '不能获取案件实例，这可能是由于 数据库中没有对应案件的记录且无法根据图名初始化一个新的案件记录'
+    result = case.insert_media(tree, media_name, description, file_bundle)
+    return jsonify(msg='ok' if result else 'duplicate media name found')
 
 
 if __name__ == '__main__':

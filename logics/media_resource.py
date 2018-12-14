@@ -13,6 +13,13 @@ class MediaResource:
                   'ico', 'tga', 'cut', 'pic']
 
     def __init__(self, name: str, sub_dir: str, description: str, file_bundles: List[Tuple[str, FileStorage]]):
+        """
+        **注意**：禁止直接调用构造器，使用`instance()`方法获取实例
+        :param name:
+        :param sub_dir:
+        :param description:
+        :param file_bundles: [(文件名, 文件存储对象), ...]
+        """
         self.name = name
         self.sub_dir = sub_dir  # 以子路径作为id，因为名称和描述都可以被编辑修改
         self.description = description
