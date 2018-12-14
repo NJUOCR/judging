@@ -1,0 +1,47 @@
+.up-file{
+    height: 40px;
+    width: 240px;
+    display: flex;
+    flex-wrap: wrap;
+}
+.up-file .input-file {
+    padding: 4px 10px;
+    line-height: 1;
+    height: 100%;
+    width: 60%;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    background: #44bbff;
+    color: #FFFFFF;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+.up-file .up-button{
+    padding: 4px 10px;
+    line-height: 1;
+    height: 100%;
+    width: 40%;
+    background: #44bbff;
+    color: #FFFFFF;
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    display: inline-block;
+}
+.up-file .up-label{
+    font-size: 2px;
+}
+.input-file input {
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    cursor: pointer;
+}

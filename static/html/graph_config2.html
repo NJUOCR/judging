@@ -8,60 +8,12 @@
     <link rel="stylesheet" href="/static/css/selectable-header.css">
     <link rel="stylesheet" href="/static/css/graph-detail.css">
     <link rel="stylesheet" href="/static/css/media-resource.css">
+    <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
     <script src="/static/lib/vue.js"></script>
     <script src="/static/js/vue-components/selectable-header.js"></script>
     <script src="/static/js/vue-components/media-resource.js"></script>
+    <script src="/static/lib/input_file/input_file.js"></script>
 </head>
-<style type="text/css">
-    .up-file{
-        height: 40px;
-        width: 240px;
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .up-file .input-file {
-        padding: 4px 10px;
-        line-height: 1;
-        height: 100%;
-        width: 60%;
-        text-align: center;
-        line-height: 30px;
-        position: relative;
-        cursor: pointer;
-        background: #44bbff;
-        color: #FFFFFF;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        overflow: hidden;
-        display: inline-block;
-        *display: inline;
-        *zoom: 1;
-    }
-    .up-file .up-button{
-        padding: 4px 10px;
-        line-height: 1;
-        height: 100%;
-        width: 40%;
-        background: #44bbff;
-        color: #FFFFFF;
-        position: relative;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        overflow: hidden;
-        display: inline-block;
-    }
-    .up-file .up-label{
-        font-size: 2px;
-    }
-    .input-file input {
-        position: absolute;
-        right: 0;
-        top: 0;
-        opacity: 0;
-        filter: alpha(opacity=0);
-        cursor: pointer;
-    }
-</style>
 <body>
 <div id="graph-container" class="graph-container" @click="select(0, 0)">
     <!--<div class="graph-mask"></div>-->
@@ -163,103 +115,6 @@
 </article>
 
 <script>
-
-    function upfile() {
-        const url = "http://localhost:5000/media-upload";
-        let formdata = new FormData();
-        let files = document.getElementById('uploadMedia').files;
-        let filenames = []
-        for(let i = 0 ; i<files.length;i++){
-            let temp = files[i];
-            let filename = temp.name;
-            formdata.append(filename, temp);
-            filenames.push(filename);
-        }
-        formdata.append("category", "[12,34,56,78,89]");
-        formdata.append("filenames", filenames);
-        fetch(url, {
-            method: "post",
-            body: formdata
-        }).then(function (response) {
-            if (response.status !== 200) {
-                console.log("上传失败，状态码为：" + response.status);
-                return;
-            }
-            //检查响应文本
-            response.json().then(function (data) {
-                console.log(data);
-            });
-        }).catch(function (err) {
-            console.log("Fetch错误:" + err);
-        });
-    }
-
-    function validate() {
-        let files = document.getElementById("uploadMedia").files;
-        let pic = false;
-        let ved = false;
-        let aud = false;
-        let other = false
-        let filename = ""
-        for(let i = 0; i<files.length;i++){
-            let tempStr = files[i].name;
-            if(picture(tempStr.split(".")[1])){
-                pic = true;
-                filename = filename + tempStr + "  |  "
-            }else if(vedio(tempStr.split(".")[1])){
-                if(files.length===1){
-                    ved = true;
-                    filename = filename + tempStr + "  |  "
-                }else {
-                    break;
-                }
-            }else if(audio(tempStr.split(".")[1])){
-                if(files.length===1){
-                    aud = true;
-                    filename = filename + tempStr + "  |  "
-                }else {
-                    break;
-                }
-            }else {
-                other = true;
-                break;
-            }
-            //alert(tempStr);
-        }
-        if((pic&&!ved&&!aud&&!other)||(!pic&&ved&&!aud&&!other)||(!pic&&!ved&&aud&&!other)){
-            document.getElementById("validateLabel").innerHTML = filename;
-            document.getElementById("uploadButton").style = "display:block";
-        }else {
-            document.getElementById("validateLabel").innerHTML = "上传错误，请重新上传";
-            document.getElementById("uploadButton").style = "display:none";
-        }
-
-    }
-
-    function picture(str){
-        let s = str.toString().toLocaleLowerCase()
-        if (s === "jpg"||s === "png" || s === "bmp" || s === "svg"){
-            return true
-        }
-    }
-
-    function vedio(str){
-        let s = str.toString().toLocaleLowerCase()
-        if(s === "mpeg" || s ==="avi" || s === "mov" || s === "asf" || s === "rmvb" ||
-        s === "mpg" || s === "mp4"){
-            return true
-        }
-    }
-
-    function audio(str){
-        let s = str.toString().toLocaleLowerCase()
-        if(s === "mp3" || s === "midi" || s === "wma"){
-            return true
-        }
-    }
-
-
-
     let graph = new Vue({
         el: '#graph-container',
         data: {

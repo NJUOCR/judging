@@ -111,7 +111,7 @@ def media_upload():
         elif len(files) == 1:
             filename = files[0]
             names = filename.split(".")
-            post = names[len(names)-1]
+            post = names[-1]
             if post in video_list or post in audio_list:
                 sign = 1
             elif post in image_list:
