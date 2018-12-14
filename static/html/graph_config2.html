@@ -168,12 +168,15 @@
         const url = "http://localhost:5000/media-upload";
         let formdata = new FormData();
         let files = document.getElementById('uploadMedia').files;
+        let filenames = []
         for(let i = 0 ; i<files.length;i++){
             let temp = files[i];
             let filename = temp.name;
             formdata.append(filename, temp);
+            filenames.push(filename);
         }
         formdata.append("category", "[12,34,56,78,89]");
+        formdata.append("filenames", filenames);
         fetch(url, {
             method: "post",
             body: formdata
