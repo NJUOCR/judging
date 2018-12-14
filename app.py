@@ -104,12 +104,12 @@ def media_upload():
         # file = request.files['filename']
         sign = 0
         error_list = []
-        files = request.files.getlist("filename")
+        files = request.form["filenames"].split(",")
+        print(files)
         if len(files) == 0:
             return jsonify(error='no file is uploaded')
         elif len(files) == 1:
-            tmp = files[0]
-            filename = unet.secure_filename(tmp.filename)
+            filename = files[0]
             names = filename.split(".")
             post = names[-1]
             if post in video_list or post in audio_list:
@@ -120,7 +120,8 @@ def media_upload():
                 return jsonify(error=filename+'\' type can\'t be recognized')
         else:
             for file in files:
-                filename = unet.secure_filename(file.filename)
+                filename = file
+                print(filename)
                 names = filename.split(".")
                 post = names[len(names) - 1]
                 if post not in image_list:
@@ -131,7 +132,7 @@ def media_upload():
         print(sign)
         print("here!")
         root = os.path.join("static", "resources", "media")
-        subdir = request.headers.values(['category'])
+        subdir = request.values["category"]
         subdir = subdir.replace('[', '').replace(']', '').replace(" ", "_")
         print(subdir)
         dir_list = subdir.split(',')
@@ -139,18 +140,19 @@ def media_upload():
         # multi files, use 'request.files.getlist(name)'
         if files:
             if sign == 1:
-                filename = unet.secure_filename(files[0].filename)
+                filename = files[0]
+                file = request.files[filename]
                 raw_path = os.path.join(os.getcwd(), root, dir_list[0], dir_list[1], dir_list[2], '视听材料')
                 if os.path.exists(raw_path) is False:
                     os.makedirs(raw_path)
                     print(raw_path)
-                files[0].save(os.path.join(raw_path, filename))
+                file.save(os.path.join(raw_path, filename))
             elif sign == 2:
                 raw_path = os.path.join(os.getcwd(), root, dir_list[0], dir_list[1], dir_list[2], '视听材料', dir_list[4])
                 if os.path.exists(raw_path) is False:
                     os.makedirs(raw_path)
-                for file in files:
-                    filename = unet.secure_filename(file.filename)
+                for filename in files:
+                    file = request.files[filename]
                     file.save(os.path.join(raw_path, filename))
             # filename = unet.secure_filename(file.filename)
             # raw_path = os.path.join(os.getcwd(), root, dir_list[0], dir_list[1], dir_list[2], '视听材料')
@@ -166,14 +168,20 @@ def media_upload():
             #     file.save(os)
             # file.save(os.path.join(raw_path, filename))
             if len(error_list) != 0:
-                error_files = ''
+                error_files = ""
                 for file in error_list:
-                    error_files = error_files + ',' + unet.secure_filename(file.filename)
-                return jsonify(error=error_files+'\' type can\'t be recognized')
-            return "True"
+                    error_files = error_files + file + ','
+                error_files.rstrip(',')
+                print("typeerror")
+                return jsonify(error=error_files+'\'s type can\'t be recognized')
+            print("sth error")
+
+            return jsonify("true")
         else:
+            print("no file is uploaded")
             return jsonify(error='no file is uploaded')
     else:
+        print("method should be post")
         return jsonify(error='method should be post')
 
 
