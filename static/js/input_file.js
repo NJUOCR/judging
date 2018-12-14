@@ -41,6 +41,8 @@ function upFile(category, description) {
 
 function validate() {
     let files = document.getElementById("uploadMedia").files;
+
+    // 二进制
     let image = 0b0001;
     let video = 0b0010;
     let audio = 0b0100;
