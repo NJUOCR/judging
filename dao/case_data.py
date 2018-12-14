@@ -20,4 +20,3 @@ class CaseData:
         d = CaseData.table.find_one({'_id': case_id})
         return CaseData(d, case_id) if d is not None else None
 
-    
