@@ -16,6 +16,7 @@ function upfile() {
         method: "post",
         body: formdata
     }).then(function (response) {
+        console.log(response)
         if (response.status !== 200) {
             console.log("上传失败，状态码为：" + response.status);
             return;
