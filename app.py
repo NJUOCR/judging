@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, Response, send_file
+from flask import Flask, request, jsonify, render_template, Response, send_file, make_response
 from logics.judging_graph import JudgingGraph
 import json
 import utils.unet as unet
@@ -101,7 +101,6 @@ def media_upload():
                   'ico', 'tga', 'cut', 'pic']
 
     if request.method == 'POST':
-        # file = request.files['filename']
         sign = 0
         error_list = []
         files = request.form["filenames"].split(",")
@@ -154,34 +153,20 @@ def media_upload():
                 for filename in files:
                     file = request.files[filename]
                     file.save(os.path.join(raw_path, filename))
-            # filename = unet.secure_filename(file.filename)
-            # raw_path = os.path.join(os.getcwd(), root, dir_list[0], dir_list[1], dir_list[2], '视听材料')
-            # raw_path.replace(" ", "")
-            # print(raw_path)
-            # if os.path.exists(raw_path) is False:
-            #     os.makedirs(raw_path)
-            #     print(raw_path)
-            # if sign == 2:
-            #     for tmp in file:
-            #         file.save(os.path.join(raw_path, filename))
-            # elif sign == 1:
-            #     file.save(os)
-            # file.save(os.path.join(raw_path, filename))
             if len(error_list) != 0:
                 error_files = ""
                 for file in error_list:
                     error_files = error_files + file + ','
                 error_files.rstrip(',')
-                print("typeerror")
                 return jsonify(error=error_files+'\'s type can\'t be recognized')
-            print("sth error")
-
-            return jsonify("true")
+            # while appear cors problem
+            # response_text = jsonify("true")
+            # rst = make_response(response_text)
+            # rst.headers['Access-Control-Allow-Origin'] = '*'
+            return jsonify('true')
         else:
-            print("no file is uploaded")
             return jsonify(error='no file is uploaded')
     else:
-        print("method should be post")
         return jsonify(error='method should be post')
 
 
