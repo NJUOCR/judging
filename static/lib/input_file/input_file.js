@@ -10,8 +10,11 @@ function upfile() {
         formdata.append(filename, temp);
         filenames.push(filename);
     }
-    formdata.append("category", "[12,34,56,78,89]");
-    formdata.append("filenames", filenames);
+    formdata.append("category", "测试案号123/查找被害人，确认死者身份/死亡时间/视听材料/图片集1");
+    formdata.append("description", "这是关于媒体1文件的描述，这个描述可以很长");
+
+    // todo #解释 文件名可以在后端得到
+    // formdata.append("filenames", filenames);
     fetch(url, {
         method: "post",
         body: formdata
@@ -35,8 +38,8 @@ function validate() {
     let pic = false;
     let ved = false;
     let aud = false;
-    let other = false
-    let filename = ""
+    let other = false;
+    let filename = "";
     for(let i = 0; i<files.length;i++){
         let tempStr = files[i].name;
         if(picture(tempStr.split(".")[1])){

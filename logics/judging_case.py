@@ -1,9 +1,9 @@
 import os
-from typing import Iterable
-
+from typing import Iterable, List, Tuple
+from werkzeug.datastructures import FileStorage
 from dao.case_data import CaseData
-from logics.judging_graph import translate_key
 from logics.media_resource import MediaResource
+from logics.translation import translate_json, translate_key
 
 
 class JudgingCase:
@@ -15,22 +15,23 @@ class JudgingCase:
     def exists(case_id: str) -> bool:
         return CaseData.fetch_case(case_id) is not None
 
-    def insert_media(self, tree: Iterable, name: str, description: str, file):
+    def get_data(self, lang: str = 'zh'):
+        assert lang in ('en', 'zh')
+        return self.data_obj.d if lang == 'zh' else translate_json(self.data_obj.d, to='en')
+
+    def insert_media(self, tree: Iterable, name: str, description: str, file_bundles: List[Tuple[str, FileStorage]]):
         """
 
         :param tree: 前端传来的数组
         :param name: 媒体文件名称
         :param description: 媒体文件描述
-        :param file: 媒体文件
+        :param file_bundles: 媒体文件列表，元素为元组 (文件名, 存储对象)
         :return:
         """
-        sub_path = os.path.join(*tree)
-        mr = MediaResource(name, sub_path, description, file)
-        block = mr.save()
-        ptr: dict = self.data_obj.data
-        hierachy = ('证据链条', '查证事项', '印证证据')
+        ptr: dict = self.get_data()
+        hierarchy = ('证据链条', '查证事项', '印证证据')
         tree_nodes = JudgingCase.translate_tree(tree, to='zh')
-        for node, level in zip(tree_nodes, hierachy):
+        for node, level in zip(tree_nodes, hierarchy):
             items = ptr[level]
             for idx, item in enumerate(items):
                 if item['名称'] == node:
@@ -40,8 +41,28 @@ class JudgingCase:
                 # 找不到指定路径
                 print(tree_nodes, 'not found')
 
+        """  ptr 现在应该指向
+        {
+            名称: "视听材料",
+            内容: []
+        }
+        """
 
+        contents: list = ptr['内容']
+        sub_path = os.path.join(*tree)
+        mr = MediaResource(name, sub_path, description, file_bundles)
+        block = mr.save()
 
+        """ block 示例
+        { 
+            '名称': ...,
+            '描述': ...,
+            '路径': ...,
+            '类型': ...,
+        }        
+        """
+        contents.append(block)
+        self.data_obj.update()
 
     @staticmethod
     def translate_tree(tree: Iterable, to: str) -> Iterable:

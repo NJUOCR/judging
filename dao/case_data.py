@@ -24,10 +24,19 @@ class CaseData:
     def data(self) -> dict:
         return self.d
 
-    def update(self, d: dict):
-        if '_id' in d and d['_id'] != self.case_id:
+    def update(self, d: dict = None):
+        """
+
+        :param d: use a new document to override the old
+        :return: True if have tried to update, else False
+        """
+        if d is None:
+            CaseData.table.save(self.d)
+            return True
+        elif '_id' in d and d['_id'] != self.case_id:
             print('案号不一致')
             return False
-
-        CaseData.table.save(d)
-        return True
+        else:
+            CaseData.table.save(d)
+            self.d = CaseData.table.find_one({'_id': self.case_id})
+            return True

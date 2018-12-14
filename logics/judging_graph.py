@@ -1,28 +1,6 @@
 import json
-
+from logics.translation import translate_json
 from dao.graph_data import GraphData
-
-
-def translate_key(name: str, to: str):
-    assert to in ('en', 'zh')
-    d = {
-        "_id": "_id",
-        "名称": "name",
-        "证据链条": "firstLevelItems",
-        "查证事项": "secondLevelItems",
-        "概要": "outlines",
-        "内容": "content",
-        "印证证据": "thirdLevelItems",
-        "文件路径": 'path',
-        "描述": 'description'
-    }
-    if to == "en":
-        return d[name]
-    else:
-        for k, v in d.items():
-            if v == name:
-                return k
-    return name
 
 
 class JudgingGraph:
@@ -100,30 +78,13 @@ class JudgingGraph:
             return False
         return True
 
-    @property
-    def definition(self) -> dict:
-        return self._definition
+    def get_definition(self, lang='zh') -> dict:
+        assert lang in ('zh', 'en')
+        return self._definition if lang == 'zh' else JudgingGraph.translate_definition(self._definition, 'en')
 
     @staticmethod
-    def translate_definition(to: str, d: dict) -> dict:
-        assert to in ('en', 'zh')
-        d_copy = d.copy()
-        # todo ...
-        result_dict = {}
-        # print(d)
-        for i in d_copy:
-            # print(i)
-            if isinstance(d_copy[i], str):
-                result_dict[translate_key(i, to)] = d_copy[i]
-            else:
-                temp_list = []
-                for j in d_copy[i]:
-                    temp_dict = JudgingGraph.translate_definition(to, j)
-                    temp_list.append(temp_dict)
-                # print(temp_list)
-                result_dict[translate_key(i, to)] = temp_list
-        # print(result_dict)
-        return result_dict
+    def translate_definition(d: dict, to: str) -> dict:
+        return translate_json(d, to)
 
 
 if __name__ == "__main__":

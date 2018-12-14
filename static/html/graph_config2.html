@@ -89,6 +89,7 @@
                 <li><media-resource type="audio" name="音频1" description="这里是音频的描述"></media-resource></li>
                 <li><media-resource type="video" name="video-视频123456" description="这里是音频的描述"></media-resource></li>
                 <li><media-resource type="image" name="image-这是一张名字很长的图片啦啦啦" description="这里是音频的描述"></media-resource></li>
+                <li v-for="media in "></li>
             </ul>
         </div>
         <div>
@@ -406,10 +407,11 @@
 
 
         created: function () {
-            const url = "http://localhost:5000/get-graph";
+            const url = "/get-case?case_id=测试案号123";
             fetch(url).then(function (response) {
                 if (response.status !== 200) {
-                    console.log("存在一个问题，状态码为：" + response.status);
+                    // todo #提示 使用 console.[error|warn]来区别输出级别，console.table来显示数组
+                    console.error("存在一个问题，状态码为：" + response.status);
                     return;
                 }
                 //检查响应文本
@@ -418,7 +420,7 @@
                     this.structure = data
                 });
             }).catch(function (err) {
-                console.log("Fetch错误:" + err);
+                console.error("Fetch错误:" + err);
             })
             // todo @所有人 从axios迁移到fetch
             //  axios并不是vue内置的库，它是一个第三方库；
