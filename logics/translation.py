@@ -23,9 +23,15 @@ def translate_key(name: str, to: str):
         return name
 
 
-def translate_json(j: dict, to: str):
+def translate_json(obj: dict or list, to: str):
     assert to in ('en', 'zh')
-    cp = {}
-    for k, v in j.items():
-        cp[translate_key(k, to)] = translate_json(v, to) if isinstance(v, dict) else v
-    return cp
+
+    if isinstance(obj, dict):
+        cp = {}
+        for k, v in obj.items():
+            cp[translate_key(k, to)] = translate_json(v, to)
+        return cp
+    elif isinstance(obj, list):
+        return list(map(lambda _j: translate_json(_j, to), obj))
+    else:
+        return obj
