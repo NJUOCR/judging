@@ -12,7 +12,7 @@
     <script src="/static/lib/vue.js"></script>
     <script src="/static/js/vue-components/selectable-header.js"></script>
     <script src="/static/js/vue-components/media-resource.js"></script>
-    <script src="/js/input_file.js"></script>
+    <script src="/static/js/input_file.js"></script>
 </head>
 <body>
 <div id="graph-container" class="graph-container" @click="select(0, 0)">
@@ -32,8 +32,10 @@
                 <div class='second-level-container' @click="select(2, secondLevelIdx);">
                     <div class="second-level-text graph-item-selectable"
                          :class="[ isSelected(firstLevelIdx, secondLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected']">
-                        <div class="non-selectable">{{ second.name.substring(0, parseInt(1 + second.name.length)/2) }}</div>
-                        <div class="non-selectable">{{ second.name.substring(parseInt(1 + second.name.length)/2) }}</div>
+                        <div class="non-selectable">{{ second.name.substring(0, parseInt(1 + second.name.length)/2) }}
+                        </div>
+                        <div class="non-selectable">{{ second.name.substring(parseInt(1 + second.name.length)/2) }}
+                        </div>
                     </div>
                     <ul class="horizontal-list">
                         <li v-for="(third, thirdLevelIdx) in second.thirdLevelItems"
@@ -54,7 +56,8 @@
     </div>
 </div>
 
-<article id="detail">
+<!-- todo #HTML5语义化标签 https://developer.mozilla.org/zh-CN/docs/Web/Guide/HTML/HTML5/HTML5_element_list -->
+<main id="detail">
     <section id="first-level-section">
         <selectable-header v-on:change-candidate="changeCandidate"
                            v-on:step="step"
@@ -65,6 +68,28 @@
 
         </selectable-header>
         <hr/>
+        <div class="level-content">
+            <div>
+                1
+                2
+                2
+                3
+                4
+                4
+                5
+                65
+                35
+                4
+                34
+                32
+                4534
+                35
+
+                354
+                354
+            </div>
+        </div>
+
     </section>
 
     <section id="second-level-section">
@@ -86,10 +111,19 @@
         <div class="media-source-list">
             <!-- resource list -->
             <ul>
-                <li><media-resource type="audio" name="音频1" description="这里是音频的描述"></media-resource></li>
-                <li><media-resource type="video" name="video-视频123456" description="这里是音频的描述"></media-resource></li>
-                <li><media-resource type="image" name="image-这是一张名字很长的图片啦啦啦" description="这里是音频的描述"></media-resource></li>
-                <li v-for="media in "></li>
+                <li>
+                    <media-resource type="audio" name="音频1" description="这里是音频的描述"></media-resource>
+                </li>
+                <li>
+                    <media-resource type="video" name="video-视频123456" description="这里是音频的描述"></media-resource>
+                </li>
+                <li>
+                    <media-resource type="image" name="image-这是一张名字很长的图片啦啦啦" description="这里是音频的描述"></media-resource>
+                </li>
+                <li v-for="media in (getMediaList() || [])">
+                    <media-resource :type="media.type" :name="media.name" :description="media.description"></media-resource>
+
+                </li>
             </ul>
         </div>
         <div>
@@ -106,259 +140,22 @@
             <div class="up-file">
                 <div class="input-file">
                     <!-- fixme @杨关 html中的id和class都使用短横线连接， html是不区分大小写的-->
-                    <input id="uploadMedia" type="file" name="filename" multiple="multiple" onchange="validate()"/>选择文件<br>
+                    <input id="uploadMedia" type="file" name="filename" multiple="multiple"
+                           onchange="validate()"/>选择文件<br>
                 </div>
                 <button id="uploadButton" class="up-button" onclick="upFile()" disabled>上传</button>
                 <label id="validateLabel" class="up-label"></label>
             </div>
         </div>
     </section>
-</article>
+</main>
 
 <script>
     let graph = new Vue({
         el: '#graph-container',
         data: {
             selection: [-1, -1, -1],
-            structure: {
-                name: "默认",
-                firstLevelItems: [
-                    {
-                        name: "人口失踪报案",
-                        secondLevelItems: [
-                            {
-                                name: "人口失踪情况",
-                                outlines: [
-                                    {
-                                        name: "报案人",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "失踪人身份",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "失踪时间",
-                                        content: ""
-                                    }
-                                ],
-                                thirdLevelItems: [
-                                    {
-                                        name: "证人证言",
-                                        content: []
-                                    },
-                                    {
-                                        name: "书证",
-                                        content: []
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-
-                    {
-                        name: "查找被害人，确认死者身份",
-                        secondLevelItems: [
-                            {
-                                name: "死者身份信息及主要社会关系",
-                                outlines: [
-                                    {
-                                        name: "身份信息",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "社会关系",
-                                        content: ""
-                                    }
-                                ],
-                                thirdLevelItems: [
-                                    {
-                                        name: "证人证言",
-                                        content: []
-                                    },
-                                    {
-                                        name: "被害人陈述",
-                                        content: []
-                                    },
-                                    {
-                                        name: "书证",
-                                        content: []
-                                    },
-                                    {
-                                        name: "鉴定意见",
-                                        content: []
-                                    }
-                                ]
-                            },
-                            {
-                                name: "死亡时间",
-                                outlines: [
-                                    {
-                                        name: "死亡时间",
-                                        content: ""
-                                    }
-                                ],
-                                thirdLevelItems: [
-                                    {
-                                        name: "证人证言",
-                                        content: []
-                                    },
-                                    {
-                                        name: "视听材料",
-                                        content: []
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-
-                    {
-                        name: "锁定犯罪嫌疑人及到案经过",
-                        secondLevelItems: [
-                            {
-                                name: "犯罪嫌疑人是如何被锁定与到案的",
-                                outlines: [
-                                    {
-                                        name: "犯罪嫌疑人的锁定过程",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "犯罪嫌疑人的到案过程",
-                                        content: ""
-                                    }
-                                ],
-                                thirdLevelItems: [
-                                    {
-                                        name: "书证",
-                                        content: []
-                                    },
-                                    {
-                                        name: "证人证言",
-                                        content: []
-                                    },
-                                    {
-                                        name: "视听材料",
-                                        content: []
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-
-                    {
-                        name: "查证犯罪事实",
-                        secondLevelItems: []
-                    },
-
-                    {
-                        name: "证据充分性及排他性说明",
-                        secondLevelItems: [
-                            {
-                                name: "证明事项及相关证据缺失情况及原因",
-                                outlines: [
-                                    {
-                                        name: "缺失情况及原因",
-                                        content: []
-                                    }
-                                ]
-                            },
-                            {
-                                name: "证据内容之间的冲突情况及原因",
-                                outlines: [
-                                    {
-                                        name: "冲突情况及原因",
-                                        content: []
-                                    }
-                                ]
-                            },
-                            {
-                                name: "是否存在遗漏共犯或替人顶罪的情况",
-                                outlines: [
-                                    {
-                                        name: "遗漏共犯的情况",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "替人顶罪的情况",
-                                        content: ""
-                                    }
-                                ]
-                            },
-                            {
-                                name: "其他关于证据链条完整性",
-                                outlines: [
-                                    {
-                                        name: "其他",
-                                        content: []
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-
-                    {
-                        name: "罪前罪后表现及其他量刑情节",
-                        secondLevelItems: [
-                            {
-                                name: "法定情节",
-                                outlines: [
-                                    {
-                                        name: "累犯",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "立功",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "坦白",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "自首",
-                                        content: ""
-                                    }
-                                ]
-                            },
-                            {
-                                name: "酌定情节",
-                                outlines: [
-                                    {
-                                        name: "犯罪前科",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "退赃",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "退赔",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "取得谅解",
-                                        content: ""
-                                    },
-                                    {
-                                        name: "被害人过错",
-                                        content: ""
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-
-                    {
-                        name: "涉嫌罪名",
-                        secondLevelItems: [
-                            {
-                                name: "罪名",
-                                outlines: []
-                            }
-                        ]
-                    }
-                ]
-            }
+            structure: {}
         },
 
         methods: {
@@ -408,19 +205,34 @@
 
         created: function () {
             const url = "/get-case?case_id=测试案号123";
-            fetch(url).then(function (response) {
+
+            // fetch(url).then(function (response) {
+            //     if (response.status !== 200) {
+            //         // todo #提示 使用 console.[error|warn]来区别输出级别，console.table来显示数组
+            //         console.error("存在一个问题，状态码为：" + response.status);
+            //         return;
+            //     }
+            //     //检查响应文本
+            //     response.json().then(function (data) {
+            //         console.log(data);
+            //         todo @杨关 js中的`this`指向的对象比较奇怪，指的是调用方法的那个对象，即`response.json()`而不是graph
+            //         this.structure = data
+            //     });
+            // }).catch(function (err) {
+            //     console.error("Fetch错误:" + err);
+            // })
+
+            // todo @杨关 使用lambda表达式代替`function`可以避免`this`瞎指
+            fetch(url).then((response) => {
                 if (response.status !== 200) {
-                    // todo #提示 使用 console.[error|warn]来区别输出级别，console.table来显示数组
                     console.error("存在一个问题，状态码为：" + response.status);
-                    return;
+                    return null;
                 }
-                //检查响应文本
-                response.json().then(function (data) {
+
+                response.json().then((data) => {
                     console.log(data);
-                    this.structure = data
-                });
-            }).catch(function (err) {
-                console.error("Fetch错误:" + err);
+                    this.structure = data;
+                })
             })
         },
     });
@@ -482,6 +294,24 @@
                 },
 
                 plain: false
+            },
+
+            getMediaList: function () {
+                // 相当于复制了graph.selection
+                const treeIdx = graph.selection;
+
+                // 如果第三级没有被选中，则‘视听材料’肯定没有被选中，‘视听材料’属于第三级
+                if (treeIdx.filter( _ => _ < 0).length > 0) return false;
+                // 检查当前选择的第三级，是否为视听材料
+                let l3 = graph.structure.
+                    firstLevelItems[treeIdx[0]].
+                    secondLevelItems[treeIdx[1]].
+                    thirdLevelItems[treeIdx[2]];
+                if (l3.name === '视听材料'){
+                    return l3.contents;
+                }else{
+                    return false;
+                }
             }
 
         },
@@ -518,7 +348,9 @@
                         this.changeCandidate(test, componentName);
                     }
                 }
-            }
+            },
+            
+
         }
     })
 </script>

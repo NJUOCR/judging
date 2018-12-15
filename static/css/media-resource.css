@@ -9,6 +9,17 @@
     }
 }
 
+@keyframes media-sit-down {
+    0% {
+        box-shadow: 0 .5em 1em gray;
+        top: -.5em;
+    }
+    100% {
+        box-shadow: 0 2px 2px gray;
+        top: 0;
+    }
+}
+
 .media-container {
     position: relative;
     background-color: whitesmoke;
@@ -16,7 +27,7 @@
     display: inline-block;
     height: 100%;
     margin: 0 1px;
-    box-shadow: 0 2px 2px gray;
+    animation: media-sit-down .15s ease-in forwards;
 
     /* icon width&margin + left&right padding*/
     width: 7em;

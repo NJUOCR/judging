@@ -4,9 +4,10 @@ DICTIONARY = {
     "证据链条": "firstLevelItems",
     "查证事项": "secondLevelItems",
     "概要": "outlines",
-    "内容": "content",
+    "内容": "contents",
     "印证证据": "thirdLevelItems",
-    "文件路径": 'path',
+    "类型": "type",
+    "路径": 'path',
     "描述": 'description'
 }
 
