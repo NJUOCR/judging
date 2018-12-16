@@ -63,13 +63,15 @@ function validate() {
     };
 
     // 将files转为数组
-    let typeBit = Array.apply(this, files)
-        .map(fileObj => getMediaTypeBits(fileObj.name.split('.').pop()))
-        .reduce((suffix1, suffix2) => suffix1 | suffix2);
-    // map 将文件数组转为后缀名的二进制表示数组
-    // reduce 的结果是一个数，如果数组中全是图片，则为1；如果既有图片又有视频则为3.
-    // 我们已经规定，如果有多个文件，则它们必须全部是图片类型，所以可以认为任何数组内都是同一类型文件（其他类型文件只能上传一个）
-    // 显然typeBit必须是2的整数幂，判断它是否为2的整数幂
+    let typeBit = new Array(...files).
+        map(fileObj => getMediaTypeBits(fileObj.name.split('.').pop())).
+        reduce((suffix1, suffix2) => suffix1 | suffix2);
+    /*
+     * map 将文件数组转为后缀名的二进制表示数组
+     * reduce 的结果是一个数，如果数组中全是图片，则为1；如果既有图片又有视频则为3.
+     * 我们已经规定，如果有多个文件，则它们必须全部是图片类型，所以可以认为任何数组内都是同一类型文件（其他类型文件只能上传一个）
+     * 显然typeBit必须是2的整数幂，判断它是否为2的整数幂
+     */
     let isSingleType = (typeBit & typeBit - 1) === 0;
 
     // todo @杨关 验证不通过则在按钮上加`disabled`属性，通过则去掉
