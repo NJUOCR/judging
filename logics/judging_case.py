@@ -1,6 +1,9 @@
+import os
 from typing import Iterable, List, Tuple
 from werkzeug.datastructures import FileStorage
+
 from dao.case_data import CaseData
+from dao.media_data import MediaData
 from logics.media_resource import MediaResource
 from logics.translation import translate_json, translate_key
 
@@ -27,6 +30,28 @@ class JudgingCase:
         :param name: 媒体文件名称
         :return:
         """
+        ptr: dict = self.get_data()
+        hierarchy = ('证据链条', '查证事项', '印证证据')
+        tree_nodes = JudgingCase.translate_tree(tree, to='zh')
+        for node, level in zip(tree_nodes, hierarchy):
+            items = ptr[level]
+            for idx, item in enumerate(items):
+                if item['名称'] == node:
+                    ptr = items[idx]
+                    break
+            else:
+                # 找不到指定路径
+                print(tree_nodes, 'not found')
+
+        contents: list = ptr['内容']
+        for idx, item in enumerate(map(lambda content: content['名称'], contents)):
+            if name == item:
+                del contents[idx]
+                sub_path = '/'.join(*tree)
+                MediaData.remove_media(os.path.join(sub_path, name))
+                return True
+        print(name, "not found in", tree_nodes)
+        return False
 
     def insert_media(self, tree: Iterable, name: str, description: str, file_bundles: List[Tuple[str, FileStorage]]):
         """
