@@ -47,3 +47,23 @@
     list-style: none;
     padding: 0;
 }
+
+/* level-content */
+@keyframes pull-out {
+    0% {
+        max-height: 0;
+    }
+
+    100% {
+        max-height: 10em;
+    }
+}
+.level-content{
+    max-height: 0;
+    overflow-y: auto;
+    background-color: #00B050;
+}
+
+.level-content-out{
+    animation: pull-out 5s ease-out forwards;
+}
