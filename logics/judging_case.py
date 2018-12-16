@@ -47,6 +47,7 @@ class JudgingCase:
         for idx, item in enumerate(map(lambda content: content['名称'], contents)):
             if name == item:
                 del contents[idx]
+                self.data_obj.update()
                 sub_path = '/'.join(*tree)
                 MediaData.remove_media(os.path.join(sub_path, name))
                 return True
