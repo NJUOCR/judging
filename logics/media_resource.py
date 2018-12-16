@@ -30,7 +30,8 @@ class MediaResource:
         if len(file_bundles) == 0:
             return None
         elif len(file_bundles) == 1:
-            file_type, _ = file_bundles[0]
+            file_name, _ = file_bundles[0]
+            file_type = file_name.split('.')[-1]
             if file_type in MediaResource.video_list:
                 return VideoResource(name, sub_path, description, file_bundles)
             elif file_type in MediaResource.audio_list:
@@ -49,8 +50,9 @@ class MediaResource:
         return {
             '名称': self.name,
             '描述': self.description,
-            '路径': self.sub_dir,
-            '类型': self.get_file_type()
+            '路径': MediaData.full_path(sub_dir=self.sub_dir),
+            '类型': self.get_file_type(),
+            'urls': ['/'+'/'.join([MediaData.full_path(self.sub_dir), origin_name]) for origin_name, _ in self.file_bundles]
         }
 
     @abstractmethod

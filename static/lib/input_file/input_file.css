@@ -1,41 +1,58 @@
-.up-file{
-    width: 240px;
+.up-file {
     display: flex;
     flex-wrap: wrap;
+    font-size: 1.2em;
+    border: solid lightgrey 1px;
+    border-radius: 5px;
+    width: 100%;
 }
-.up-file .input-file {
-    padding: 1em;
+
+@keyframes dig-in {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: .3;
+    }
+}
+
+.up-file .up-button[disabled] {
+    cursor: not-allowed;
+    animation: dig-in ease-in .5s forwards;
+}
+
+.up-file-control {
+    padding: .5em 1em;
     line-height: 1;
     height: 100%;
-    width: 60%;
     text-align: center;
+    display: inline-block;
+    overflow: hidden;
     position: relative;
+}
+
+.up-file-control:hover{
+    font-weight: bold;
+}
+
+.up-file .input-file {
+    width: 13em;
     cursor: pointer;
-    background: #44bbff;
-    color: #FFFFFF;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: hidden;
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
+    color: grey;
+    flex-grow: 1;
 }
-.up-file .up-button{
-    padding: 1em;
-    line-height: 1;
-    height: 100%;
-    width: 40%;
-    background: #44bbff;
-    color: #FFFFFF;
-    position: relative;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: hidden;
-    display: inline-block;
+
+.up-file .up-button {
+    border: none;
+    background: #14c163;
+    color: whitesmoke;
 }
-.up-file .up-label{
+
+.up-file .up-label {
     font-size: 2px;
 }
+
 .input-file input {
     position: absolute;
     right: 0;

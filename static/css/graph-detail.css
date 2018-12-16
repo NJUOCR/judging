@@ -6,9 +6,17 @@
     border-top: 1px solid #f5ebdb;
 }
 
+#detail>section{
+    /*max-height: 1vh;*/
+}
+
+section video{
+    width: 100%;
+}
+
 /* 1st level */
 #first-level-section {
-    background-color: #ffe3b5;
+    /*background-color: #ffe3b5;*/
     padding: 2em 2em .5em 2em;
 }
 
@@ -19,7 +27,7 @@
 
 /* 2nd level */
 #second-level-section {
-    background-color: #e5ebfb;
+    /*background-color: #e5ebfb;*/
     padding: 2em 2em .5em 2em;
 }
 
@@ -31,7 +39,7 @@
 
 /* 3rd level */
 #third-level-section {
-    background-color: #deffdb;
+    /*background-color: #deffdb;*/
     padding: 2em 2em .5em 2em;
 }
 
@@ -66,4 +74,8 @@
 
 .level-content-out{
     animation: pull-out 5s ease-out forwards;
+}
+
+#file-up-container{
+    padding: 0;
 }

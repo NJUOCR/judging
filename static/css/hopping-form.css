@@ -1,0 +1,42 @@
+.hopping-form label{
+    text-align: right;
+    white-space: nowrap;
+    height: 100%;
+}
+
+.hopping-form input, .hopping-form textarea, .hopping-form pre{
+        font-size: 1.2em;
+    border: solid lightgrey 1px;
+    border-radius: 5px;
+}
+
+.hopping-form input[disabled] {
+    border: none;
+    background-color: transparent;
+}
+
+.hopping-form textarea {
+    resize: none;
+    height: 10em;
+}
+
+@keyframes hop {
+    0% {
+        border-bottom: lightgrey solid 1px;
+        box-shadow: 0 0 0 grey;
+    }
+
+    100% {
+        border-bottom: transparent solid 1px;
+        box-shadow: 0 .5em .5em grey;
+    }
+}
+
+.hopping-form .hopping-entry{
+    margin: .3em 0;
+}
+
+.hopping-form input,.hopping-form textarea:focus{
+    /*animation: hop .1s ease-in forwards;*/
+    outline: none;
+}

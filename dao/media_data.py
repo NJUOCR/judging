@@ -5,17 +5,17 @@ from werkzeug.datastructures import FileStorage
 
 
 class MediaData:
-    media_storage_root = os.path.join('static', 'resources', 'media')
+    media_storage_root = '/'.join(['static', 'resources', 'media'])
 
     @staticmethod
     def full_path(sub_dir: str) -> str:
-        return os.path.join(MediaData.media_storage_root, sub_dir)
+        return '/'.join([MediaData.media_storage_root, sub_dir])
 
     @staticmethod
     def save(file_bundles: List[Tuple[str, FileStorage]], sub_dir: str):
         os.makedirs(MediaData.full_path(sub_dir), exist_ok=True)
         for filename, file in file_bundles:
-            file.save(os.path.join(MediaData.full_path(sub_dir), filename))
+            file.save('/'.join([MediaData.full_path(sub_dir), filename]))
 
     @staticmethod
     def media_exists(sub_dir: str) -> bool:

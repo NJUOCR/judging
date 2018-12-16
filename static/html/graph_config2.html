@@ -8,11 +8,12 @@
     <link rel="stylesheet" href="/static/css/selectable-header.css">
     <link rel="stylesheet" href="/static/css/graph-detail.css">
     <link rel="stylesheet" href="/static/css/media-resource.css">
+    <link rel="stylesheet" href="/static/css/hopping-form.css">
     <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
-    <script src="/static/lib/vue.js"></script>
+    <script src="/static/lib/vue/vue.js"></script>
     <script src="/static/js/vue-components/selectable-header.js"></script>
     <script src="/static/js/vue-components/media-resource.js"></script>
-    <script src="/static/js/input_file.js"></script>
+    <script src="/static/js/vue-components/file-uploader.js"></script>
 </head>
 <body>
 <div id="graph-container" class="graph-container" @click="select(0, 0)">
@@ -62,9 +63,9 @@
         <selectable-header v-on:change-candidate="changeCandidate"
                            v-on:step="step"
                            name="first-level-header"
-                           :candidates="firstLevelHeader.list()"
-                           :selected="firstLevelHeader.selectedIdx()"
-                           :plain="firstLevelHeader.plain">
+                           :candidates="firstLevel.listNames()"
+                           :selected="firstLevel.selectedIdx()"
+                           :plain="firstLevel.plain">
 
         </selectable-header>
         <hr/>
@@ -95,56 +96,79 @@
     <section id="second-level-section">
         <selectable-header @change-candidate="changeCandidate" @step="step"
                            name="second-level-header"
-                           :candidates="secondLevelHeader.list()"
-                           :selected="secondLevelHeader.selectedIdx()"
-                           :plain="secondLevelHeader.plain"></selectable-header>
+                           :candidates="secondLevel.listNames()"
+                           :selected="secondLevel.selectedIdx()"
+                           :plain="secondLevel.plain"></selectable-header>
         <hr/>
     </section>
 
     <section id="third-level-section">
         <selectable-header @change-candidate="changeCandidate" @step="step"
                            name="third-level-header"
-                           :candidates="thirdLevelHeader.list()"
-                           :selected="thirdLevelHeader.selectedIdx()"
-                           :plain="thirdLevelHeader.plain"></selectable-header>
+                           :candidates="thirdLevel.listNames()"
+                           :selected="thirdLevel.selectedIdx()"
+                           :plain="thirdLevel.plain"></selectable-header>
         <hr/>
-        <div class="media-source-list">
-            <!-- resource list -->
-            <ul>
-                <li>
-                    <media-resource type="audio" name="音频1" description="这里是音频的描述"></media-resource>
-                </li>
-                <li>
-                    <media-resource type="video" name="video-视频123456" description="这里是音频的描述"></media-resource>
-                </li>
-                <li>
-                    <media-resource type="image" name="image-这是一张名字很长的图片啦啦啦" description="这里是音频的描述"></media-resource>
-                </li>
-                <li v-for="media in (getMediaList() || [])">
-                    <media-resource :type="media.type" :name="media.name" :description="media.description"></media-resource>
+        <div class="row">
+            <!-- 左看 -->
+            <div class="col-md-6">
+                <video v-if="previewMedia()['type'] !== false" :src="previewMedia()['urls'][0]" controls></video>
+            </div>
 
-                </li>
-            </ul>
-        </div>
-        <div>
-            <!--
-                # 规则
-                在某一次上传时，只可以上传：
-                一个视频文件，或
-                一个音频文件，或
-                多个图片文件
+            <!-- 右写 -->
+            <div class="col-md-6">
+                <div class="media-source-list">
+                    <!-- resource list -->
+                    <ul>
+                        <li @click="createMedia()">
+                            <media-resource class="media-create" type="create" name="新文件"
+                                            description=""></media-resource>
+                        </li>
+                        <li role="separator" style="width: 2em;"></li>
+                        <li v-for="(media, i) in (thirdLevel.mediaList() || [])" @click="chooseMedia(i)">
+                            <media-resource :type="media.type" :name="media.name"
+                                            :description="media.description"
+                            ></media-resource>
 
-                > 暂时使用原生的input元素，由我来处理样式
-            -->
-
-            <div class="up-file">
-                <div class="input-file">
-                    <!-- fixme @杨关 html中的id和class都使用短横线连接， html是不区分大小写的-->
-                    <input id="uploadMedia" type="file" name="filename" multiple="multiple"
-                           onchange="validate()"/>选择文件<br>
+                        </li>
+                    </ul>
                 </div>
-                <button id="uploadButton" class="up-button" onclick="upFile()" disabled>上传</button>
-                <label id="validateLabel" class="up-label"></label>
+                <div class="hopping-form">
+                    <!--
+                    <div class="row hopping-entry">
+                        <label for="input-type" class="col-md-2">资源类型</label>
+                        <input id="input-type" class="col-md-10" :disabled="detailMedia().type === 'create'" v-model="detailMedia().type">
+                    </div>
+                    -->
+                    <div class="row hopping-entry">
+                        <label for="input-name" class="col-md-2">资源名称</label>
+                        <input id="input-name" class="col-md-10" v-model="detailMedia().name">
+                    </div>
+                    <div class="row hopping-entry">
+                        <label for="input-description" class="col-md-2">资源描述</label>
+                        <textarea id="input-description" class="col-md-10"
+                                  v-model="detailMedia().description"></textarea>
+                    </div>
+                    <div class="row hopping-entry" v-if="thirdLevel.mediaPointer===-1">
+                        <label for="file-up-container" class="col-md-2">选择文件</label>
+                        <div id="file-up-container" class="col-md-10">
+                            <!--
+                                # 规则
+                                在某一次上传时，只可以上传：
+                                一个视频文件，或
+                                一个音频文件，或
+                                多个图片文件
+                            -->
+
+                            <file-uploader :forbid-upload="thirdLevel.forbidUpload"
+                                           :input-text="thirdLevel.inputText"
+                                           @validate="validateMedia"
+                                           @upload="uploadMedia">
+                            </file-uploader>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </section>
@@ -199,11 +223,9 @@
                         return false
                 }
                 return true;
-            }
-        },
+            },
 
-
-        created: function () {
+            updateData: function () {
             const url = "/get-case?case_id=测试案号123";
 
             // fetch(url).then(function (response) {
@@ -235,13 +257,19 @@
                 })
             })
         },
+        },
+
+
+        created: function () {
+            this.updateData();
+        }
     });
 
     let detail = new Vue({
         el: '#detail',
         data: {
-            firstLevelHeader: {
-                list: function () {
+            firstLevel: {
+                listNames: function () {
                     if (graph.structure.firstLevelItems)
                         return graph.structure.firstLevelItems.map(i => i['name']);
                     else
@@ -255,8 +283,8 @@
 
                 plain: false
             },
-            secondLevelHeader: {
-                list: function () {
+            secondLevel: {
+                listNames: function () {
                     let firstIdx = graph.selection[0];
                     if (graph.structure.firstLevelItems
                         && graph.structure.firstLevelItems[firstIdx]
@@ -274,8 +302,8 @@
                 plain: false
             },
 
-            thirdLevelHeader: {
-                list: function () {
+            thirdLevel: {
+                listNames: function () {
                     let firstIdx = graph.selection[0];
                     let secondIdx = graph.selection[1];
                     if (graph.structure.firstLevelItems
@@ -293,26 +321,35 @@
                     return graph.selection[2]
                 },
 
-                plain: false
+                plain: false,
+
+                forbidUpload: true,
+                inputText: '一组图片 或 一个其他类型文件',
+                editable: true,
+                mediaList: function () {
+                    // 相当于复制了graph.selection
+                    const treeIdx = graph.selection;
+
+                    // 如果第三级没有被选中，则‘视听材料’肯定没有被选中，‘视听材料’属于第三级
+                    if (treeIdx.filter(_ => _ < 0).length > 0) return false;
+                    // 检查当前选择的第三级，是否为视听材料
+                    let l3 = graph.structure.firstLevelItems[treeIdx[0]].secondLevelItems[treeIdx[1]].thirdLevelItems[treeIdx[2]];
+                    if (l3.name === '视听材料') {
+                        return l3.contents;
+                    } else {
+                        return false;
+                    }
+                },
+
+                mediaPointer: null, // or -1, 0, 1, 2, ...
+
+                newMedia: {
+                    name: '',
+                    description: '',
+                    type: 'create'
+                }
             },
 
-            getMediaList: function () {
-                // 相当于复制了graph.selection
-                const treeIdx = graph.selection;
-
-                // 如果第三级没有被选中，则‘视听材料’肯定没有被选中，‘视听材料’属于第三级
-                if (treeIdx.filter( _ => _ < 0).length > 0) return false;
-                // 检查当前选择的第三级，是否为视听材料
-                let l3 = graph.structure.
-                    firstLevelItems[treeIdx[0]].
-                    secondLevelItems[treeIdx[1]].
-                    thirdLevelItems[treeIdx[2]];
-                if (l3.name === '视听材料'){
-                    return l3.contents;
-                }else{
-                    return false;
-                }
-            }
 
         },
 
@@ -325,21 +362,22 @@
                 } else if (componentName === 'third-level-header') {
                     graph.selection = [graph.selection[0], graph.selection[1], idx];
                 }
+                this.thirdLevel.mediaPointer = null;
             },
 
             step: function (direction, componentName) {
-                let levelHeader = null;
+                let level = null;
                 if (componentName === 'first-level-header') {
-                    levelHeader = this.firstLevelHeader;
+                    level = this.firstLevel;
                 } else if (componentName === 'second-level-header') {
-                    levelHeader = this.secondLevelHeader;
+                    level = this.secondLevel;
                 } else if (componentName === 'third-level-header') {
-                    levelHeader = this.thirdLevelHeader;
+                    level = this.thirdLevel;
                 }
 
-                if (levelHeader && levelHeader.selectedIdx() !== -1) {
-                    let test = levelHeader.selectedIdx();
-                    let length = levelHeader.list().length;
+                if (level && level.selectedIdx() !== -1) {
+                    let test = level.selectedIdx();
+                    let length = level.listNames().length;
 
                     if (direction === 'left') test--;
                     else if (direction === 'right') test++;
@@ -349,10 +387,146 @@
                     }
                 }
             },
-            
 
+            validateMedia: function (files) {
+                // 二进制
+                let image = 0b0001;
+                let video = 0b0010;
+                let audio = 0b0100;
+                let other = 0b1000;
+
+                let getMediaTypeBits = (suffix) => {
+                    suffix = suffix.toLowerCase();
+                    if (suffix === "jpg" || suffix === "png" || suffix === "bmp" || suffix === "svg") {
+                        return image;
+                    } else if (suffix === "mpeg" || suffix === "avi" || suffix === "mov" || suffix === "asf" || suffix === "rmvb" || suffix === "mpg" || suffix === "mp4") {
+                        return video;
+                    } else if (suffix === "mp3" || suffix === "midi" || suffix === "wma") {
+                        return audio;
+                    } else {
+                        return other;
+                    }
+                };
+
+                // 将files转为数组
+                let typeBit = new Array(...files).map(fileObj => getMediaTypeBits(fileObj.name.split('.').pop())).reduce((suffix1, suffix2) => suffix1 | suffix2);
+                /*
+                 * map 将文件数组转为后缀名的二进制表示数组
+                 * reduce 的结果是一个数，如果数组中全是图片，则为1；如果既有图片又有视频则为3.
+                 * 我们已经规定，如果有多个文件，则它们必须全部是图片类型，所以可以认为任何数组内都是同一类型文件（其他类型文件只能上传一个）
+                 * 显然typeBit必须是2的整数幂，判断它是否为2的整数幂
+                 */
+                let isSingleType = (typeBit & typeBit - 1) === 0;
+
+                if (!isSingleType || (files.length > 1 && typeBit !== image)) {
+                    let msg = '除了图片，每次只能上传一个文件';
+                    console.error(msg);
+                    this.thirdLevel.forbidUpload = true;
+                    this.thirdLevel.inputText = '规则验证失败，重新选择';
+                } else if (files.length === 0) {
+                    let msg = '请选择文件';
+                    console.error(msg);
+                    this.thirdLevel.forbidUpload = true;
+                    this.thirdLevel.inputText = '选择文件';
+                    return msg;
+                } else {
+                    console.log('validation passed');
+                    this.thirdLevel.forbidUpload = false;
+                    this.thirdLevel.inputText = files.length === 1 ? files[0].name : `选择了${files.length}个文件`;
+                    return true;
+                }
+            },
+
+            uploadMedia: function (files) {
+                const url = "/media-upload";
+                let formData = new FormData();
+
+                files.forEach((temp) => {
+                    let filename = temp.name;
+                    formData.append(filename, temp);
+                });
+
+                const filenameForbidden = /[\\\/*:?'"<>]/;
+
+                let category = [
+                    "测试案号123",
+                    this.firstLevel.listNames()[this.firstLevel.selectedIdx()],
+                    this.secondLevel.listNames()[this.secondLevel.selectedIdx()],
+                    this.thirdLevel.listNames()[this.thirdLevel.selectedIdx()],
+                    this.thirdLevel.newMedia.name
+                ];
+                // formData.append("category", "测试案号123/查找被害人，确认死者身份/死亡时间/视听材料/图片集1");
+                // formData.append("description", "这是关于媒体1文件的描述，这个描述可以很长");
+
+                // 如果媒体名称为空，则使用传入的第一个文件名
+                if (category[4] === '') category[4] = files[0].name;
+                formData.append("category", category.map(dir => dir.replace(filenameForbidden, '_')).join('/'));
+                formData.append('description', this.thirdLevel.newMedia.description);
+
+
+                fetch(url, {
+                    method: "post",
+                    body: formData
+                }).then((response) => {
+                    if (response.status !== 200) {
+                        console.log("上传失败，状态码为：" + response.status);
+                        return;
+                    }
+                    //检查响应文本
+                    response.json().then((data) => {
+                        this.thirdLevel.forbidUpload = true;
+                        this.thirdLevel.inputText = '一组图片 或 一个其他类型文件';
+                        graph.updateData();
+                        console.log(data);
+                    });
+                }).catch(function (err) {
+                    console.error("Fetch错误:" + err);
+                });
+            },
+
+            chooseMedia: function (idx) {
+                this.thirdLevel.mediaPointer = idx;
+                console.dir(this.thirdLevel.mediaList()[idx])
+            },
+
+            createMedia: function () {
+                console.log('creating');
+                this.thirdLevel.mediaPointer = -1;
+            },
+
+            detailMedia: function () {
+                const ptr = this.thirdLevel.mediaPointer;
+                if (ptr === null) {
+                    return {
+                        name: '',
+                        description: '',
+                        type: ''
+                    }
+                } else if (ptr === -1) {
+                    // console.log('point to new');
+                    return this.thirdLevel.newMedia;
+                } else {
+                    // console.log(`point to ${ptr}`);
+                    return this.thirdLevel.mediaList()[ptr]
+                }
+            },
+
+            previewMedia: function () {
+                const ptr = this.thirdLevel.mediaPointer;
+                if (ptr !== null && ptr !== -1){
+                    let media = this.thirdLevel.mediaList()[ptr];
+                    return {
+                        urls: media.urls,
+                        type: media.type
+                    }
+                }else{
+                    return {urls: '', type: false}
+                }
+            }
         }
     })
 </script>
+
+
 </body>
 </html>

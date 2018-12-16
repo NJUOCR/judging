@@ -62,10 +62,12 @@
     font-size: 70%;
     box-shadow: 0 .2em .5em grey;
     position: absolute;
+    z-index: 100;
+    background-color: whitesmoke;
 }
 
 .selecting ol li {
-    margin-top: 2px;
+    margin-top: 1px;
     position: relative;
     text-align: center;
     background-color: white;
@@ -109,5 +111,5 @@
 }
 
 .hide-candidates {
-    opacity: 0;
+    visibility: collapse;
 }

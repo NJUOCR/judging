@@ -20,6 +20,18 @@
     }
 }
 
+.media-create{
+    background-color: transparent;
+    color: #9a9898;
+    border: lightgrey dashed;
+    cursor: pointer;
+    margin-right: 2em;
+}
+
+.media-container.media-create:hover{
+    font-weight: bold;
+}
+
 .media-container {
     position: relative;
     background-color: whitesmoke;

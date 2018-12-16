@@ -25,7 +25,6 @@ function upFile(category, description) {
         method: "post",
         body: formData
     }).then(function (response) {
-        // todo @杨关 上传成功后将按钮恢复为disabled, 加上这个属性会让按钮无法点击
         if (response.status !== 200) {
             console.log("上传失败，状态码为：" + response.status);
             return;
@@ -39,7 +38,7 @@ function upFile(category, description) {
     });
 }
 
-function validate() {
+function validate(uploadBtn) {
     let files = document.getElementById("uploadMedia").files;
 
     // 二进制
@@ -63,9 +62,7 @@ function validate() {
     };
 
     // 将files转为数组
-    let typeBit = new Array(...files).
-        map(fileObj => getMediaTypeBits(fileObj.name.split('.').pop())).
-        reduce((suffix1, suffix2) => suffix1 | suffix2);
+    let typeBit = new Array(...files).map(fileObj => getMediaTypeBits(fileObj.name.split('.').pop())).reduce((suffix1, suffix2) => suffix1 | suffix2);
     /*
      * map 将文件数组转为后缀名的二进制表示数组
      * reduce 的结果是一个数，如果数组中全是图片，则为1；如果既有图片又有视频则为3.
@@ -75,16 +72,19 @@ function validate() {
     let isSingleType = (typeBit & typeBit - 1) === 0;
 
     // todo @杨关 验证不通过则在按钮上加`disabled`属性，通过则去掉
-    if(!isSingleType || (files.length>1 && typeBit !== image)){
+    if (!isSingleType || (files.length > 1 && typeBit !== image)) {
         let msg = '除了图片，每次只能上传一个文件';
         console.error(msg);
+        uploadBtn.disabled = true;
         return msg;
-    }else if(files.length === 0){
+    } else if (files.length === 0) {
         let msg = '请选择文件';
         console.error(msg);
+        uploadBtn.disabled = true;
         return msg;
-    }else{
+    } else {
         console.log('validation passed');
+        uploadBtn.disabled = false;
         return true;
     }
     /* 我已经在上方重构了以下的逻辑，使代码
@@ -159,3 +159,57 @@ function validate() {
 //         return false
 //     }
 // }
+let uploader = new Vue({
+    el: '#file-up-container',
+    data: {
+        forbidUpload: true,
+    },
+    method: {
+        validate: function (files) {
+            // 二进制
+            let image = 0b0001;
+            let video = 0b0010;
+            let audio = 0b0100;
+            let other = 0b1000;
+
+            let getMediaTypeBits = (suffix) => {
+                suffix = suffix.toLowerCase();
+                if (suffix === "jpg" || suffix === "png" || suffix === "bmp" || suffix === "svg") {
+                    return image;
+                } else if (suffix === "mpeg" || suffix === "avi" || suffix === "mov" || suffix === "asf" || suffix === "rmvb" || suffix === "mpg" || suffix === "mp4") {
+                    return video;
+                } else if (suffix === "mp3" || suffix === "midi" || suffix === "wma") {
+                    return audio;
+                } else {
+                    return other;
+                }
+            };
+
+            // 将files转为数组
+            let typeBit = new Array(...files).map(fileObj => getMediaTypeBits(fileObj.name.split('.').pop())).reduce((suffix1, suffix2) => suffix1 | suffix2);
+            /*
+             * map 将文件数组转为后缀名的二进制表示数组
+             * reduce 的结果是一个数，如果数组中全是图片，则为1；如果既有图片又有视频则为3.
+             * 我们已经规定，如果有多个文件，则它们必须全部是图片类型，所以可以认为任何数组内都是同一类型文件（其他类型文件只能上传一个）
+             * 显然typeBit必须是2的整数幂，判断它是否为2的整数幂
+             */
+            let isSingleType = (typeBit & typeBit - 1) === 0;
+
+            if (!isSingleType || (files.length > 1 && typeBit !== image)) {
+                let msg = '除了图片，每次只能上传一个文件';
+                console.error(msg);
+                this.forbidUpload = true;
+            } else if (files.length === 0) {
+                let msg = '请选择文件';
+                console.error(msg);
+                this.forbidUpload = true;
+                return msg;
+            } else {
+                console.log('validation passed');
+                this.forbidUpload = false;
+                return true;
+            }
+        },
+
+    }
+});

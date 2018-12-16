@@ -1,7 +1,8 @@
 let mediaIcons = {
     audio: '',
     video: '',
-    image: ''
+    image: '',
+    create: ''
 };
 
 Vue.component('media-resource', {
@@ -20,6 +21,7 @@ Vue.component('media-resource', {
                 case 'audio': return 'glyphicon glyphicon-headphones';
                 case 'video': return 'glyphicon glyphicon-facetime-video';
                 case 'image': return 'glyphicon glyphicon-picture';
+                case 'create': return 'glyphicon glyphicon-plus';
                 default: return 'glyphicon glyphicon-file'
             }
         }
