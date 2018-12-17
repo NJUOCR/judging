@@ -68,26 +68,40 @@
                            :plain="firstLevel.plain">
 
         </selectable-header>
-        <hr/>
-        <div class="level-content">
+        <div class="level-content" :class="[firstLevel.plain || firstLevel.selectedIdx !== -1? 'level-content-out':'level-content-in']">
             <div>
                 1
+                <br/>
                 2
+                <br/>
                 2
                 3
+                <br/>
                 4
                 4
+                <br/>
                 5
+                <br/>
                 65
+                <br/>
                 35
+                <br/>
                 4
+                <br/>
                 34
+                <br/>
                 32
+                <br/>
                 4534
+                <br/>
                 35
+                <br/>
 
+                <br/>
                 354
+                <br/>
                 354
+                <br/>
             </div>
         </div>
 

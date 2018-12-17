@@ -63,17 +63,28 @@ section video{
     }
 
     100% {
-        max-height: 10em;
+        max-height: 100vh;
+    }
+}
+@keyframes push-in {
+    0% {
+        max-height: 100vh;
+    }
+
+    100% {
+        max-height: 0;
     }
 }
 .level-content{
-    max-height: 0;
+    border-top: solid 1px lightgrey;
     overflow-y: auto;
     background-color: #00B050;
 }
-
+.level-content-in{
+    animation: push-in .5s ease-in .2s forwards;
+}
 .level-content-out{
-    animation: pull-out 5s ease-out forwards;
+    animation: pull-out .5s ease-out forwards;
 }
 
 #file-up-container{

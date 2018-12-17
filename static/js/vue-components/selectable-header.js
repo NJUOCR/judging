@@ -37,7 +37,7 @@ Vue.component('selectable-header', {
     <div class="header-container">
         <div class="glyphicon glyphicon-menu-left header-component" 
             :class="[plain? 'hide-control':'hover']" @click="step('left', name)"></div>
-        <div class="header-component header-text" :class="[plain? '':'hover']"> 
+        <div class="header-component header-text" :class="[plain? 'floor':'hover']"> 
             <span onclick="headerFocus(this);list(this);" onblur="unlist(this)" tabindex="10" class="glyphicon glyphicon-triangle-bottom header-control" :class="[plain? 'hide-control':'']"></span>
             <span>
                 {{ selected >= 0 ? candidates[selected] : '' }}
