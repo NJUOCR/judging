@@ -4,18 +4,36 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="../static/lib/vue/vue.js" type="application/javascript"></script>
+    <link rel="stylesheet" href="../static/lib/slide_picture/carousel.css"/>
+    <link rel="stylesheet" href="../static/lib/bootstrap/css/bootstrap.css"/>
+
 </head>
 <body>
     <div id="carousel-first-level" class="carousel-ground" >
-        <div id="carousel-second-level" class="carousel-image">
-            <div class="image-item" :key="active" id="image-item">
-                <a :href="carousel-first-level[active].url" :title="carousel-first-level[active].title">
-                    <img :src="carousel-first-level[active].image" alt="">
-                </a>
+        <transition name="carousel-animates"
+                    enter-class="carousel-animate-enter"
+                    leave-class="carousel-animate-leave"
+                    :leave-active-class="leaveToClass">
+            <div id="carousel-second-level" class="carousel-image">
+                <div class="image-item" :key="active" id="image-item">
+                    <a :href="carousel[active].url" :title="carousel[active].title">
+                        <img :src="carousel[active].image" alt="">
+                    </a>
+                </div>
             </div>
+        </transition>
+        <div class="carousel-indicator">
+            <a v-for="(item,index) in carousel" :key="index" v-if="active==index" class="item active">{{ index+"/"+getLen()}}</a>
         </div>
-        <a id="left-slide" class="left-slide" @click="leftslide"></a>
-        <a id="right-slide" class="right-slide" @click="rightslide"></a>
+
+
+        <a @click="move(-1)" class="left carousel-control1">
+            <i class="icon1 glyphicon glyphicon-menu-left"></i>
+        </a>
+
+        <a @click="move(1)" class="right carousel-control1">
+            <i class="icon1 glyphicon glyphicon-menu-right"></i>
+        </a>
     </div>
 
 <script type="application/javascript">
@@ -30,18 +48,11 @@
     let carousel = new Vue({
         el:'#carousel-first-level',
         data:{
-            active:-1,//当前轮播图位置
+            active:0,//当前轮播图位置
             carousel:carousels,//轮播内容
-            times:null,//定时器
-            isCarousel:false,//是否鼠标移入暂停轮播
             leaveToClass:"",//轮播图片离开时的动画，不同方向，动画不同
-            interval:3000//每张图片的间隔空隙
         },
         methods:{
-            carouselAnimate:function () {//轮播动画
-                if(!this.isCarousel){this.move(1);}//如果没有鼠标移入暂停轮播，则轮播下一张图
-                setTimeout(this.carouselAnimate.bind(this),this.interval)
-            },
             move:function (direction,index) {//direction为轮播方向，正数为右，负数为左。index为当前轮播图
                 var num=this.active;
                 num=index!==undefined?index:num+direction;
@@ -52,6 +63,9 @@
                 this.active=num;
 
                 this.leaveToClass=direction>0?"carousel-animate-leave-to-left":"carousel-animate-leave-to-right";
+            },
+            getLen:function () {
+                return this.carousel.length;
             }
         },
         created:function () {//创建实例之后获取
@@ -67,7 +81,7 @@
             }else if(this.carousel.length<1){
                 console.warn("轮播图少于一张，无法轮播")
             }else {
-                console.log(images)
+                //console.log(images)
                 //this.carouselAnimate();//开始轮播
             }
         },
