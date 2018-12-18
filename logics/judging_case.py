@@ -104,8 +104,8 @@ class JudgingCase:
         """
 
         contents: list = ptr['内容']
-        if name in map(lambda content: content['名称'], contents):
-            return False
+        # if name in map(lambda content: content['名称'], contents):
+        #     return False
         sub_path = '/'.join(tree)
         mr = MediaResource.instance(name, sub_path, description, file_bundles)
         block = mr.save()

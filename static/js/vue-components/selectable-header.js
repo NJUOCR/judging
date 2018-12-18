@@ -47,13 +47,14 @@ Vue.component('selectable-header', {
             :class="[plain? 'hide-control':'hover']" @click="step('right', name)"></div>
     </div>
     <ol class="hide-candidates" >
-        <li @click="candidateClick(idx, name)" class="candidate" v-for="(candidate, idx) in candidates"> {{ candidate }} </li>
+        <li @mousedown="candidateClick(idx, name)" class="candidate" v-for="(candidate, idx) in candidates"> {{ candidate }} </li>
     </ol>
 </div>
     `,
 
     methods: {
         candidateClick: function (idx, name) {
+            console.log('can click');
             this.$emit('change-candidate', idx, name);
         },
 
