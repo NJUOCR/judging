@@ -1,0 +1,39 @@
+.tab-text-editor>header>ul{
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    margin: 0 -2px;
+}
+
+.tab-text-editor>header>ul>li{
+    margin: 0 2px 5px 2px;
+    padding: 0;
+    flex-grow: 1;
+    box-shadow: 0 3px 5px gray;
+    text-align: center;
+
+    border-top-left-radius: .5em;
+    border-top-right-radius: .5em;
+}
+
+.tab-text-editor>div{
+    width: 100%;
+}
+
+.tab-text-editor textarea{
+    resize: none;
+    min-height: 10em;
+    height: 100%;
+    width: 100%;
+
+    background-color: #f5f3f3;
+    margin: 0;
+    padding: 0;
+    /*border: rgba(0,0,0,.7) solid 1px;*/
+}
+
+.tab-text-editor>header>ul>.selected-tab{
+    margin: 0 1px;
+    box-shadow: none;
+}

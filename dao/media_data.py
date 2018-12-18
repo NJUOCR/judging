@@ -13,7 +13,8 @@ class MediaData:
 
     @staticmethod
     def save(file_bundles: List[Tuple[str, FileStorage]], sub_dir: str):
-        os.makedirs(MediaData.full_path(sub_dir), exist_ok=True)
+        dirs = MediaData.full_path(sub_dir)
+        os.makedirs(dirs, exist_ok=True)
         for filename, file in file_bundles:
             file.save('/'.join([MediaData.full_path(sub_dir), filename]))
 

@@ -1,7 +1,7 @@
 .up-file {
     display: flex;
-    flex-wrap: wrap;
-    font-size: 1.2em;
+    /*flex-wrap: wrap;*/
+    /*font-size: 1.2em;*/
     border: solid lightgrey 1px;
     border-radius: 5px;
     width: 100%;
@@ -37,7 +37,7 @@
 }
 
 .up-file .input-file {
-    width: 13em;
+    /*width: 13em;*/
     cursor: pointer;
     color: grey;
     flex-grow: 1;

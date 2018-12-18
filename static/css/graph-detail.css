@@ -6,13 +6,6 @@
     border-top: 1px solid #f5ebdb;
 }
 
-#detail>section{
-    /*max-height: 1vh;*/
-}
-
-section video{
-    width: 100%;
-}
 
 /* 1st level */
 #first-level-section {
@@ -25,10 +18,17 @@ section video{
     min-width: 18em;
 }
 
+/* edit area*/
+#editor{
+    display: flex;
+    width: 100vw;
+}
+
 /* 2nd level */
 #second-level-section {
-    /*background-color: #e5ebfb;*/
+    background-color: #e5ebfb;
     padding: 2em 2em .5em 2em;
+    width: 30%;
 }
 
 #second-level-section .selecting {
@@ -39,8 +39,9 @@ section video{
 
 /* 3rd level */
 #third-level-section {
-    /*background-color: #deffdb;*/
+    background-color: #deffdb;
     padding: 2em 2em .5em 2em;
+    width: 70%;
 }
 
 #third-level-section .selecting{
@@ -49,9 +50,77 @@ section video{
     min-width: 18em;
 }
 
+#third-level-detail {
+    display: flex;
+
+}
+
+#third-level-detail>#media-editor{
+    flex-grow: 1;
+    min-width: 28em;
+    min-height: 15em;
+}
+
+.hopping-form{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.hopping-form>#media-description{
+    flex-grow: 1;
+}
+
+#media-separator{
+    background-color: whitesmoke;
+    box-shadow: 0 0.5em 0.5em grey;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #404040;
+    margin: 0 1em;
+}
+#media-separator:hover{
+    cursor: pointer;
+}
+
+section video{
+    width: 100%;
+}
+
+@keyframes show-media-previewer {
+    0% {
+        width: 0;
+    }
+
+    100%{
+        width: 100%
+    }
+}
+@keyframes hide-media-previewer {
+    0% {
+        width: 100%;
+    }
+    100%{
+        width: 0;
+    }
+}
+#media-previewer.show-media{
+    animation: show-media-previewer 1s ease-in forwards;
+}
+#media-previewer.hide-media{
+    animation: hide-media-previewer 1s ease-out forwards;
+
+}
+
+#media-previewer::after{
+
+}
+
 /* media */
 .media-source-list ul{
     display: flex;
+    flex-wrap: wrap;
     list-style: none;
     padding: 0;
 }
@@ -78,7 +147,6 @@ section video{
 .level-content{
     border-top: solid 1px lightgrey;
     overflow-y: auto;
-    background-color: #00B050;
 }
 .level-content-in{
     animation: push-in .5s ease-in .2s forwards;

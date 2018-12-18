@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="/static/css/media-resource.css">
     <link rel="stylesheet" href="/static/css/hopping-form.css">
     <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
+    <link rel="stylesheet" href="/static/css/tab-text-editor.css">
     <script src="/static/lib/vue/vue.js"></script>
+    <script src="/static/js/vue-components/tab-text-editor.js"></script>
     <script src="/static/js/vue-components/selectable-header.js"></script>
     <script src="/static/js/vue-components/media-resource.js"></script>
     <script src="/static/js/vue-components/file-uploader.js"></script>
@@ -68,7 +70,8 @@
                            :plain="firstLevel.plain">
 
         </selectable-header>
-        <div class="level-content" :class="[firstLevel.plain || firstLevel.selectedIdx !== -1? 'level-content-out':'level-content-in']">
+        <div class="level-content"
+             :class="[firstLevel.plain || firstLevel.selectedIdx !== -1? 'level-content-out':'level-content-in']">
             <div>
                 1
                 <br/>
@@ -81,111 +84,102 @@
                 4
                 <br/>
                 5
-                <br/>
-                65
-                <br/>
-                35
-                <br/>
-                4
-                <br/>
-                34
-                <br/>
-                32
-                <br/>
-                4534
-                <br/>
-                35
-                <br/>
 
-                <br/>
-                354
-                <br/>
-                354
-                <br/>
             </div>
         </div>
 
     </section>
 
-    <section id="second-level-section">
-        <selectable-header @change-candidate="changeCandidate" @step="step"
-                           name="second-level-header"
-                           :candidates="secondLevel.listNames()"
-                           :selected="secondLevel.selectedIdx()"
-                           :plain="secondLevel.plain"></selectable-header>
-        <hr/>
-    </section>
+    <div id="editor">
+        <section class="" id="second-level-section">
+            <selectable-header @change-candidate="changeCandidate" @step="step"
+                               name="second-level-header"
+                               :candidates="secondLevel.listNames()"
+                               :selected="secondLevel.selectedIdx()"
+                               :plain="secondLevel.plain"></selectable-header>
+            <hr/>
+            <tab-text-editor :tabs="secondLevel.tabs" :contents="secondLevel.contents" :pointer="secondLevel.pointer"
+                             @change-tab="changeTab"></tab-text-editor>
 
-    <section id="third-level-section">
-        <selectable-header @change-candidate="changeCandidate" @step="step"
-                           name="third-level-header"
-                           :candidates="thirdLevel.listNames()"
-                           :selected="thirdLevel.selectedIdx()"
-                           :plain="thirdLevel.plain"></selectable-header>
-        <hr/>
-        <div class="row">
-            <!-- 左看 -->
-            <div class="col-md-6">
-                <video v-if="previewMedia()['type'] !== false" :src="previewMedia()['urls'][0]" controls></video>
+        </section>
+        <section class="" id="third-level-section">
+            <selectable-header @change-candidate="changeCandidate" @step="step"
+                               name="third-level-header"
+                               :candidates="thirdLevel.listNames()"
+                               :selected="thirdLevel.selectedIdx()"
+                               :plain="thirdLevel.plain"></selectable-header>
+            <hr/>
+            <div class="media-source-list">
+                <!-- resource list -->
+                <ul>
+                    <li @click="createMedia()">
+                        <media-resource class="media-create" type="create" name="新文件"
+                                        description=""></media-resource>
+                    </li>
+                    <li role="separator" style="width: 2em;"></li>
+                    <li v-for="(media, i) in (thirdLevel.mediaList() || [])" @click="chooseMedia(i)">
+                        <media-resource :type="media.type" :name="media.name"
+                                        :description="media.description"
+                        ></media-resource>
+
+                    </li>
+                </ul>
             </div>
-
-            <!-- 右写 -->
-            <div class="col-md-6">
-                <div class="media-source-list">
-                    <!-- resource list -->
-                    <ul>
-                        <li @click="createMedia()">
-                            <media-resource class="media-create" type="create" name="新文件"
-                                            description=""></media-resource>
-                        </li>
-                        <li role="separator" style="width: 2em;"></li>
-                        <li v-for="(media, i) in (thirdLevel.mediaList() || [])" @click="chooseMedia(i)">
-                            <media-resource :type="media.type" :name="media.name"
-                                            :description="media.description"
-                            ></media-resource>
-
-                        </li>
-                    </ul>
+            <div id="third-level-detail">
+                <!-- 左看 -->
+                <div id="media-previewer"
+                     :class="[thirdLevel.previewMedia && parseInt(thirdLevel.mediaPointer)>=0? 'show-media' : 'hide-media']">
+                    <video v-if="previewMedia()['type'] !== false" :src="previewMedia()['urls'][0]" controls></video>
                 </div>
-                <div class="hopping-form">
-                    <!--
-                    <div class="row hopping-entry">
-                        <label for="input-type" class="col-md-2">资源类型</label>
-                        <input id="input-type" class="col-md-10" :disabled="detailMedia().type === 'create'" v-model="detailMedia().type">
-                    </div>
-                    -->
-                    <div class="row hopping-entry">
-                        <label for="input-name" class="col-md-2">资源名称</label>
-                        <input id="input-name" class="col-md-10" v-model="detailMedia().name">
-                    </div>
-                    <div class="row hopping-entry">
-                        <label for="input-description" class="col-md-2">资源描述</label>
-                        <textarea id="input-description" class="col-md-10"
-                                  v-model="detailMedia().description"></textarea>
-                    </div>
-                    <div class="row hopping-entry" v-if="thirdLevel.mediaPointer===-1">
-                        <label for="file-up-container" class="col-md-2">选择文件</label>
-                        <div id="file-up-container" class="col-md-10">
-                            <!--
-                                # 规则
-                                在某一次上传时，只可以上传：
-                                一个视频文件，或
-                                一个音频文件，或
-                                多个图片文件
-                            -->
+                <div id="media-separator" @click="switchMedia">
+                    <div class="glyphicon glyphicon-option-vertical"></div>
+                </div>
 
-                            <file-uploader :forbid-upload="thirdLevel.forbidUpload"
-                                           :input-text="thirdLevel.inputText"
-                                           @validate="validateMedia"
-                                           @upload="uploadMedia">
-                            </file-uploader>
+                <!-- 右写 -->
+                <div id="media-editor" class="">
+
+                    <div class="hopping-form">
+                        <!--
+                        <div class="row hopping-entry">
+                            <label for="input-type" class="col-md-2">资源类型</label>
+                            <input id="input-type" class="col-md-10" :disabled="detailMedia().type === 'create'" v-model="detailMedia().type">
                         </div>
-                    </div>
+                        -->
+                        <div class="hopping-entry">
+                            <label for="input-name">资源名称：</label>
+                            <input id="input-name" v-model="detailMedia().name">
+                        </div>
+                        <div id="media-description" class="hopping-entry">
+                            <label for="input-description">资源描述：</label>
+                            <textarea id="input-description"
+                                      v-model="detailMedia().description"></textarea>
+                        </div>
+                        <div class="hopping-entry" v-if="thirdLevel.mediaPointer===-1">
+                            <label for="file-up-container">选择文件：</label>
+                            <div id="file-up-container" class="hopping-input">
+                                <!--
+                                    # 规则
+                                    在某一次上传时，只可以上传：
+                                    一个视频文件，或
+                                    一个音频文件，或
+                                    多个图片文件
+                                -->
 
+                                <file-uploader :forbid-upload="thirdLevel.forbidUpload"
+                                               :input-text="thirdLevel.inputText"
+                                               @validate="validateMedia"
+                                               @upload="uploadMedia">
+                                </file-uploader>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
+
+
 </main>
 
 <script>
@@ -240,37 +234,37 @@
             },
 
             updateData: function () {
-            const url = "/get-case?case_id=测试案号123";
+                const url = "/get-case?case_id=测试案号123";
 
-            // fetch(url).then(function (response) {
-            //     if (response.status !== 200) {
-            //         // todo #提示 使用 console.[error|warn]来区别输出级别，console.table来显示数组
-            //         console.error("存在一个问题，状态码为：" + response.status);
-            //         return;
-            //     }
-            //     //检查响应文本
-            //     response.json().then(function (data) {
-            //         console.log(data);
-            //         todo @杨关 js中的`this`指向的对象比较奇怪，指的是调用方法的那个对象，即`response.json()`而不是graph
-            //         this.structure = data
-            //     });
-            // }).catch(function (err) {
-            //     console.error("Fetch错误:" + err);
-            // })
+                // fetch(url).then(function (response) {
+                //     if (response.status !== 200) {
+                //         // todo #提示 使用 console.[error|warn]来区别输出级别，console.table来显示数组
+                //         console.error("存在一个问题，状态码为：" + response.status);
+                //         return;
+                //     }
+                //     //检查响应文本
+                //     response.json().then(function (data) {
+                //         console.log(data);
+                //         todo @杨关 js中的`this`指向的对象比较奇怪，指的是调用方法的那个对象，即`response.json()`而不是graph
+                //         this.structure = data
+                //     });
+                // }).catch(function (err) {
+                //     console.error("Fetch错误:" + err);
+                // })
 
-            // todo @杨关 使用lambda表达式代替`function`可以避免`this`瞎指
-            fetch(url).then((response) => {
-                if (response.status !== 200) {
-                    console.error("存在一个问题，状态码为：" + response.status);
-                    return null;
-                }
+                // todo @杨关 使用lambda表达式代替`function`可以避免`this`瞎指
+                fetch(url).then((response) => {
+                    if (response.status !== 200) {
+                        console.error("存在一个问题，状态码为：" + response.status);
+                        return null;
+                    }
 
-                response.json().then((data) => {
-                    console.log(data);
-                    this.structure = data;
+                    response.json().then((data) => {
+                        console.log(data);
+                        this.structure = data;
+                    })
                 })
-            })
-        },
+            },
         },
 
 
@@ -295,25 +289,37 @@
 
                 },
 
-                plain: false
+                plain: true
             },
             secondLevel: {
-                listNames: function () {
+                list: function () {
                     let firstIdx = graph.selection[0];
                     if (graph.structure.firstLevelItems
                         && graph.structure.firstLevelItems[firstIdx]
                         && graph.structure.firstLevelItems[firstIdx].secondLevelItems) {
-                        return graph.structure.firstLevelItems[firstIdx].secondLevelItems.map(i => i['name']);
+                        return graph.structure.firstLevelItems[firstIdx].secondLevelItems;
                     } else {
                         return [];
                     }
+                },
+                listNames: function () {
+                    return this.secondLevel.list().map(i => i['name']);
                 },
 
                 selectedIdx: function () {
                     return graph.selection[1]
                 },
 
-                plain: false
+                outlines: function () {
+                    let secondItem = this.secondLevel.list()[this.secondLevel.selectedIdx()];
+                    if (secondItem && secondItem.outlines) {
+                        return secondItem.outlines()
+                    } else {
+                        return []
+                    }
+                },
+
+                plain: true
             },
 
             thirdLevel: {
@@ -335,11 +341,12 @@
                     return graph.selection[2]
                 },
 
-                plain: false,
+                plain: true,
 
                 forbidUpload: true,
                 inputText: '一组图片 或 一个其他类型文件',
                 editable: true,
+                previewMedia: true,
                 mediaList: function () {
                     // 相当于复制了graph.selection
                     const treeIdx = graph.selection;
@@ -369,6 +376,7 @@
 
         methods: {
             changeCandidate: function (idx, componentName) {
+                console.log(idx + ' ' + componentName);
                 if (componentName === 'first-level-header') {
                     graph.selection = [idx, -1, -1]
                 } else if (componentName === 'second-level-header') {
@@ -527,18 +535,36 @@
 
             previewMedia: function () {
                 const ptr = this.thirdLevel.mediaPointer;
-                if (ptr !== null && ptr !== -1){
+                if (ptr !== null && ptr !== -1) {
                     let media = this.thirdLevel.mediaList()[ptr];
                     return {
                         urls: media.urls,
                         type: media.type
                     }
-                }else{
+                } else {
                     return {urls: '', type: false}
                 }
+            },
+
+            switchMedia: function () {
+                this.thirdLevel.previewMedia = !this.thirdLevel.previewMedia
             }
         }
-    })
+    });
+
+    window.onscroll = function () {
+        let y = window.scrollY;
+        let graphHeight = document.getElementById('graph-container').offsetHeight;
+        if (y > graphHeight / 2) {
+            detail.firstLevel.plain = false;
+            detail.secondLevel.plain = false;
+            detail.thirdLevel.plain = false;
+        } else {
+            detail.firstLevel.plain = true;
+            detail.secondLevel.plain = true;
+            detail.thirdLevel.plain = true;
+        }
+    }
 </script>
 
 
