@@ -98,7 +98,8 @@
                                :selected="secondLevel.selectedIdx()"
                                :plain="secondLevel.plain"></selectable-header>
             <hr/>
-            <tab-text-editor :tabs="secondLevel.tabs" :contents="secondLevel.contents" :pointer="secondLevel.pointer"
+            <tab-text-editor :name-and-contents="secondLevel.outlines()"
+                             :pointer="secondLevel.pointer"
                              @change-tab="changeTab"></tab-text-editor>
 
         </section>
@@ -303,7 +304,7 @@
                     }
                 },
                 listNames: function () {
-                    return this.secondLevel.list().map(i => i['name']);
+                    return this.list().map(i => i['name']);
                 },
 
                 selectedIdx: function () {
@@ -311,14 +312,15 @@
                 },
 
                 outlines: function () {
-                    let secondItem = this.secondLevel.list()[this.secondLevel.selectedIdx()];
+                    let secondItem = this.list()[this.selectedIdx()];
                     if (secondItem && secondItem.outlines) {
-                        return secondItem.outlines()
+                        return secondItem.outlines
                     } else {
+                        this.pointer = -1;
                         return []
                     }
                 },
-
+                pointer: -1,
                 plain: true
             },
 
@@ -548,6 +550,10 @@
 
             switchMedia: function () {
                 this.thirdLevel.previewMedia = !this.thirdLevel.previewMedia
+            },
+
+            changeTab: function (i) {
+                this.secondLevel.pointer = i;
             }
         }
     });
