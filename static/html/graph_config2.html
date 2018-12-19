@@ -314,6 +314,7 @@
                 outlines: function () {
                     let secondItem = this.list()[this.selectedIdx()];
                     if (secondItem && secondItem.outlines) {
+                        if(this.pointer >= secondItem.outlines.length)  this.pointer = 0;
                         return secondItem.outlines
                     } else {
                         this.pointer = -1;
