@@ -91,7 +91,7 @@
     </section>
 
     <div id="editor">
-        <section class="" id="second-level-section">
+        <section :class="[secondLevel.hide?'hide-l2':'show-l2']" id="second-level-section">
             <selectable-header @change-candidate="changeCandidate" @step="step"
                                name="second-level-header"
                                :candidates="secondLevel.listNames()"
@@ -103,6 +103,10 @@
                              @change-tab="changeTab"></tab-text-editor>
 
         </section>
+        <div id="section-separator" @click="switchSecondLevel">
+            <span v-if="!secondLevel.hide" class="glyphicon glyphicon-option-vertical"></span>
+            <span v-if="secondLevel.hide" v-for="char in secondLevel.listNames()[secondLevel.selectedIdx()]"> {{char}}</span>
+        </div>
         <section class="" id="third-level-section">
             <selectable-header @change-candidate="changeCandidate" @step="step"
                                name="third-level-header"
@@ -322,7 +326,8 @@
                     }
                 },
                 pointer: -1,
-                plain: true
+                plain: true,
+                hide: false
             },
 
             thirdLevel: {
@@ -551,6 +556,10 @@
 
             switchMedia: function () {
                 this.thirdLevel.previewMedia = !this.thirdLevel.previewMedia
+            },
+
+            switchSecondLevel: function(){
+                this.secondLevel.hide = !this.secondLevel.hide;
             },
 
             changeTab: function (i) {

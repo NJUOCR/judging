@@ -25,10 +25,37 @@
 }
 
 /* 2nd level */
+@keyframes show-second-level {
+    0% {
+        width: 0;
+    }
+    100%{
+        width: 30%;
+    }
+}
+
+@keyframes hide-second-level {
+    0% {
+        width: 30%;
+    }
+    100% {
+        width: 0;
+    }
+}
+.show-l2{
+    animation: show-second-level 1s ease-in forwards;
+}
+.hide-l2{
+    animation: hide-second-level 1s ease-out forwards;
+}
 #second-level-section {
     background-color: #e5ebfb;
-    padding: 2em 2em .5em 2em;
-    width: 30%;
+    overflow-x: hidden;
+    padding: 2em 0;
+    width: 0;
+}
+#second-level-section>*{
+    margin: 0 2em;
 }
 
 #second-level-section .selecting {
@@ -36,12 +63,22 @@
     font-size: 1.4em;
     min-width: 18em;
 }
+#section-separator{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#section-separator>span{
+    /*writing-mode: tb;*/
+    /*display: ;*/
+}
 
 /* 3rd level */
 #third-level-section {
     background-color: #deffdb;
     padding: 2em 2em .5em 2em;
     width: 70%;
+    flex-grow: 1;
 }
 
 #third-level-section .selecting{
