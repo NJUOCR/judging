@@ -225,7 +225,7 @@
                         break;
                     case 0:
                         this.selection = e['selection'] || [-1, -1, -1];
-                        console.log(this.selection);
+                        // console.log(this.selection);
                 }
             },
 
@@ -387,7 +387,7 @@
 
         methods: {
             changeCandidate: function (idx, componentName) {
-                console.log(idx + ' ' + componentName);
+                // console.log(idx + ' ' + componentName);
                 if (componentName === 'first-level-header') {
                     graph.selection = [idx, -1, -1]
                 } else if (componentName === 'second-level-header') {
@@ -519,7 +519,7 @@
 
             chooseMedia: function (idx) {
                 this.thirdLevel.mediaPointer = idx;
-                console.dir(this.thirdLevel.mediaList()[idx])
+                // console.dir(this.thirdLevel.mediaList()[idx])
             },
 
             createMedia: function () {
@@ -581,7 +581,6 @@
                 this.changeTab(-1);
             },
             l3Update: function () {
-                console.log('l3 update')
                 this.thirdLevel.mediaPointer = null;
             }
         },
@@ -591,16 +590,16 @@
             let ds = this.selection;
 
             if(gs[0] !== ds[0]){
-                console.info('update'+' 1,2,3');
+                // console.info('update'+' 1,2,3');
                 this.l1Update();
                 this.l2Update();
                 this.l3Update();
             }else if(gs[1] !== ds[1]){
-                console.info('update'+' 2,3');
+                // console.info('update'+' 2,3');
                 this.l1Update();
                 this.l2Update();
             }else if(gs[2] !== ds[2]){
-                console.info('update'+' 3');
+                // console.info('update'+' 3');
                 this.l3Update();
             }
             this.selection = graph.selection;
