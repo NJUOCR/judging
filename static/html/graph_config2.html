@@ -188,10 +188,11 @@
 </main>
 
 <script>
+    let selection = [-1, -1, -1];
     let graph = new Vue({
         el: '#graph-container',
         data: {
-            selection: [-1, -1, -1],
+            selection: selection,
             structure: {}
         },
 
@@ -281,6 +282,7 @@
     let detail = new Vue({
         el: '#detail',
         data: {
+            selection: Array(...selection),
             firstLevel: {
                 listNames: function () {
                     if (graph.structure.firstLevelItems)
@@ -325,6 +327,7 @@
                         return []
                     }
                 },
+
                 pointer: -1,
                 plain: true,
                 hide: false
@@ -526,7 +529,8 @@
 
             detailMedia: function () {
                 const ptr = this.thirdLevel.mediaPointer;
-                if (ptr === null) {
+                if (ptr === null ||this.thirdLevel.mediaList() === false ||  ptr >= this.thirdLevel.mediaList().length) {
+                    this.thirdLevel.mediaPointer = null;
                     return {
                         name: '',
                         description: '',
@@ -542,9 +546,13 @@
             },
 
             previewMedia: function () {
+                if(this.thirdLevel.mediaList() === false || this.thirdLevel.mediaPointer >= this.thirdLevel.mediaList().length){
+                    this.thirdLevel.mediaPointer = null;
+                }
                 const ptr = this.thirdLevel.mediaPointer;
                 if (ptr !== null && ptr !== -1) {
-                    let media = this.thirdLevel.mediaList()[ptr];
+                    // 当前L3元素指向改变时，ptr可能仍然是旧的值
+                    let media = this.thirdLevel.mediaList()[ptr];// || {urls: [], type: false};
                     return {
                         urls: media.urls,
                         type: media.type
@@ -564,8 +572,40 @@
 
             changeTab: function (i) {
                 this.secondLevel.pointer = i;
+            },
+            
+            l1Update: function () {
+                
+            },
+            l2Update: function () {
+                this.changeTab(-1);
+            },
+            l3Update: function () {
+                console.log('l3 update')
+                this.thirdLevel.mediaPointer = null;
             }
+        },
+
+        beforeUpdate: function () {
+            let gs = graph.selection;
+            let ds = this.selection;
+
+            if(gs[0] !== ds[0]){
+                console.info('update'+' 1,2,3');
+                this.l1Update();
+                this.l2Update();
+                this.l3Update();
+            }else if(gs[1] !== ds[1]){
+                console.info('update'+' 2,3');
+                this.l1Update();
+                this.l2Update();
+            }else if(gs[2] !== ds[2]){
+                console.info('update'+' 3');
+                this.l3Update();
+            }
+            this.selection = graph.selection;
         }
+
     });
 
     window.onscroll = function () {
