@@ -22,7 +22,10 @@
   position: relative;
   overflow: hidden;
   width: 100%;
-  font-size: 0;
+  height: 20em;
+}
+.carousel-image .image{
+  height: 20em;
 }
 .carousel-image > .image-item {
   position: relative;
@@ -37,7 +40,7 @@
 }
 .carousel-indicator {
   position: absolute;
-  bottom: 10px;
+  bottom: 40px;
   right: 10px;
   z-index: 15;
   list-style: none;
