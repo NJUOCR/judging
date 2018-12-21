@@ -613,11 +613,15 @@
             },
 
             ocr: function (staticPath) {
+                console.info(staticPath);
                 fetch('ocr', {
                     method: 'POST',
-                    body: {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
                         staticPath: staticPath
-                    }
+                    })
                 }).then((res) => {
                     console.log('ocr return');
                     res.json().then(j => {
