@@ -55,10 +55,13 @@
 }
 
 .media-container .media-name {
-    font-size: .5em;
+    font-size: .8em;
     text-align: center;
     border-top: #dcd2d2 solid 1px;
     padding-top: .5em;
+    text-overflow: clip;
+    max-height: 3em;
+    overflow: hidden;
 }
 
 .media-container .media-remove {

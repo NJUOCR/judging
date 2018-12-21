@@ -73,35 +73,29 @@
         <div class="level-content"
              :class="[firstLevel.plain || firstLevel.selectedIdx !== -1? 'level-content-out':'level-content-in']">
             <div>
-                1
-                <br/>
-                2
-                <br/>
-                2
-                3
-                <br/>
-                4
-                4
-                <br/>
-                5
-
+                一级标题内容
             </div>
         </div>
 
     </section>
 
     <div id="editor">
-        <section class="" id="second-level-section">
+        <section :class="[secondLevel.hide?'hide-l2':'show-l2']" id="second-level-section">
             <selectable-header @change-candidate="changeCandidate" @step="step"
                                name="second-level-header"
                                :candidates="secondLevel.listNames()"
                                :selected="secondLevel.selectedIdx()"
                                :plain="secondLevel.plain"></selectable-header>
             <hr/>
-            <tab-text-editor :tabs="secondLevel.tabs" :contents="secondLevel.contents" :pointer="secondLevel.pointer"
+            <tab-text-editor :name-and-contents="secondLevel.outlines()"
+                             :pointer="secondLevel.pointer"
                              @change-tab="changeTab"></tab-text-editor>
 
         </section>
+        <div id="section-separator" :class="['separator', {'section-closed': secondLevel.hide}]" @click="switchSecondLevel">
+            <span v-if="!secondLevel.hide" class="glyphicon glyphicon-option-vertical"></span>
+            <span v-if="secondLevel.hide" class="l2-char" v-for="char in secondLevel.listNames()[secondLevel.selectedIdx()]"> {{char}}</span>
+        </div>
         <section class="" id="third-level-section">
             <selectable-header @change-candidate="changeCandidate" @step="step"
                                name="third-level-header"
@@ -129,7 +123,9 @@
                 <!-- 左看 -->
                 <div id="media-previewer"
                      :class="[thirdLevel.previewMedia && parseInt(thirdLevel.mediaPointer)>=0? 'show-media' : 'hide-media']">
-                    <video v-if="previewMedia()['type'] !== false" :src="previewMedia()['urls'][0]" controls></video>
+                    <video v-if="previewMedia()['type'] === 'video'" :src="previewMedia()['urls'][0]" controls></video>
+                    <audio v-if="previewMedia()['type'] === 'audio'" :src="previewMedia()['urls'][0]" controls></audio>
+                    
                 </div>
                 <div id="media-separator" @click="switchMedia">
                     <div class="glyphicon glyphicon-option-vertical"></div>
@@ -172,6 +168,9 @@
                                 </file-uploader>
                             </div>
                         </div>
+                        <div class="hopping-entry" v-if="parseInt(thirdLevel.mediaPointer)>=0">
+                            <button class="wide-btn">删除</button>
+                        </div>
 
                     </div>
                 </div>
@@ -183,10 +182,11 @@
 </main>
 
 <script>
+    let selection = [-1, -1, -1];
     let graph = new Vue({
         el: '#graph-container',
         data: {
-            selection: [-1, -1, -1],
+            selection: selection,
             structure: {}
         },
 
@@ -219,7 +219,7 @@
                         break;
                     case 0:
                         this.selection = e['selection'] || [-1, -1, -1];
-                        console.log(this.selection);
+                        // console.log(this.selection);
                 }
             },
 
@@ -276,6 +276,7 @@
     let detail = new Vue({
         el: '#detail',
         data: {
+            selection: Array(...selection),
             firstLevel: {
                 listNames: function () {
                     if (graph.structure.firstLevelItems)
@@ -303,7 +304,7 @@
                     }
                 },
                 listNames: function () {
-                    return this.secondLevel.list().map(i => i['name']);
+                    return this.list().map(i => i['name']);
                 },
 
                 selectedIdx: function () {
@@ -311,15 +312,19 @@
                 },
 
                 outlines: function () {
-                    let secondItem = this.secondLevel.list()[this.secondLevel.selectedIdx()];
+                    let secondItem = this.list()[this.selectedIdx()];
                     if (secondItem && secondItem.outlines) {
-                        return secondItem.outlines()
+                        if(this.pointer >= secondItem.outlines.length)  this.pointer = 0;
+                        return secondItem.outlines
                     } else {
+                        this.pointer = -1;
                         return []
                     }
                 },
 
-                plain: true
+                pointer: -1,
+                plain: true,
+                hide: false
             },
 
             thirdLevel: {
@@ -353,13 +358,17 @@
 
                     // 如果第三级没有被选中，则‘视听材料’肯定没有被选中，‘视听材料’属于第三级
                     if (treeIdx.filter(_ => _ < 0).length > 0) return false;
-                    // 检查当前选择的第三级，是否为视听材料
-                    let l3 = graph.structure.firstLevelItems[treeIdx[0]].secondLevelItems[treeIdx[1]].thirdLevelItems[treeIdx[2]];
-                    if (l3.name === '视听材料') {
+
+                    let l3 = graph.structure.
+                        firstLevelItems[treeIdx[0]].
+                        secondLevelItems[treeIdx[1]].
+                        thirdLevelItems[treeIdx[2]];
+                    return l3.contents;
+                    /*if (l3.name === '视听材料') {
                         return l3.contents;
-                    } else {
+                    { else {
                         return false;
-                    }
+                    }*/
                 },
 
                 mediaPointer: null, // or -1, 0, 1, 2, ...
@@ -376,7 +385,7 @@
 
         methods: {
             changeCandidate: function (idx, componentName) {
-                console.log(idx + ' ' + componentName);
+                // console.log(idx + ' ' + componentName);
                 if (componentName === 'first-level-header') {
                     graph.selection = [idx, -1, -1]
                 } else if (componentName === 'second-level-header') {
@@ -508,7 +517,7 @@
 
             chooseMedia: function (idx) {
                 this.thirdLevel.mediaPointer = idx;
-                console.dir(this.thirdLevel.mediaList()[idx])
+                // console.dir(this.thirdLevel.mediaList()[idx])
             },
 
             createMedia: function () {
@@ -518,7 +527,8 @@
 
             detailMedia: function () {
                 const ptr = this.thirdLevel.mediaPointer;
-                if (ptr === null) {
+                if (ptr === null ||this.thirdLevel.mediaList() === false ||  ptr >= this.thirdLevel.mediaList().length) {
+                    this.thirdLevel.mediaPointer = null;
                     return {
                         name: '',
                         description: '',
@@ -534,9 +544,13 @@
             },
 
             previewMedia: function () {
+                if(this.thirdLevel.mediaList() === false || this.thirdLevel.mediaPointer >= this.thirdLevel.mediaList().length){
+                    this.thirdLevel.mediaPointer = null;
+                }
                 const ptr = this.thirdLevel.mediaPointer;
                 if (ptr !== null && ptr !== -1) {
-                    let media = this.thirdLevel.mediaList()[ptr];
+                    // 当前L3元素指向改变时，ptr可能仍然是旧的值
+                    let media = this.thirdLevel.mediaList()[ptr];// || {urls: [], type: false};
                     return {
                         urls: media.urls,
                         type: media.type
@@ -548,8 +562,47 @@
 
             switchMedia: function () {
                 this.thirdLevel.previewMedia = !this.thirdLevel.previewMedia
+            },
+
+            switchSecondLevel: function(){
+                this.secondLevel.hide = !this.secondLevel.hide;
+            },
+
+            changeTab: function (i) {
+                this.secondLevel.pointer = i;
+            },
+            
+            l1Update: function () {
+                
+            },
+            l2Update: function () {
+                this.changeTab(-1);
+            },
+            l3Update: function () {
+                this.thirdLevel.mediaPointer = null;
             }
+        },
+
+        beforeUpdate: function () {
+            let gs = graph.selection;
+            let ds = this.selection;
+
+            if(gs[0] !== ds[0]){
+                // console.info('update'+' 1,2,3');
+                this.l1Update();
+                this.l2Update();
+                this.l3Update();
+            }else if(gs[1] !== ds[1]){
+                // console.info('update'+' 2,3');
+                this.l1Update();
+                this.l2Update();
+            }else if(gs[2] !== ds[2]){
+                // console.info('update'+' 3');
+                this.l3Update();
+            }
+            this.selection = graph.selection;
         }
+
     });
 
     window.onscroll = function () {

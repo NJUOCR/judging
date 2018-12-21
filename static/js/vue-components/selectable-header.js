@@ -54,7 +54,6 @@ Vue.component('selectable-header', {
 
     methods: {
         candidateClick: function (idx, name) {
-            console.log('can click');
             this.$emit('change-candidate', idx, name);
         },
 
