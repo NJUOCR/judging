@@ -38,7 +38,7 @@ Vue.component('album', {
         },
         
         ocr: function () {
-            
+            this.$emit('ocr', carouselList[active])
         }
     }
 });

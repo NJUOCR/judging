@@ -1,8 +1,9 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
 from abc import abstractmethod
-
+import os
 import requests
+import json
 
 
 class ServiceInvoker:
@@ -14,6 +15,7 @@ class ServiceInvoker:
     @staticmethod
     def link(url: str, pars: dict, pattern: str = 'get') -> str or False:
         assert pattern in ('get', 'post')
+        print('invoking outer service: %s \n %s' % (url, json.dumps(pars, ensure_ascii=False, indent=2)))
         try:
             return (requests.get(url, pars)).text if pattern == 'get' else requests.post(url, pars).text
         except Exception:
@@ -29,13 +31,15 @@ class ServiceInvoker:
 
 class OCRInvoker(ServiceInvoker):
     url = r'http://192.168.68.38:5678'
+    ocr_resource_root = '/usr/local/src/media'
     # params = {'path': '/usr/local/src/data/doc_imgs/2014东刑初字第0100号_诈骗罪208页.pdf/img-0008.jpg'}
     pattern = 'get'
 
     def __init__(self):
         pass
 
-    def invoke(self, params)->str:
+    def invoke(self, params: dict)->str:
+        params['path'] = os.path.join(OCRInvoker.ocr_resource_root, params['path'])
         return ServiceInvoker.link(self.url, params, pattern='get')
 
 

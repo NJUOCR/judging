@@ -127,10 +127,10 @@ def media_remove():
     return jsonify(msg='ok')
 
 
-@app.route('/ocr')
+@app.route('/ocr', methods=['POST'])
 def ocr():
     service = ServiceInvoker.which('ocr')
-    path = request.args['path']
+    path = request.json['path']
     result = service.invoke({
         'path': path
     })

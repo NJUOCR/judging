@@ -130,7 +130,7 @@
                     <video v-if="previewMedia()['type'] === 'video'" :src="previewMedia()['urls'][0]" controls></video>
                     <audio v-if="previewMedia()['type'] === 'audio'" :src="previewMedia()['urls'][0]" controls></audio>
                     <album v-if="previewMedia()['type'] === 'image'" :carousel-list="thirdLevel.carousel"
-                           :active="thirdLevel.active" @carousel-move="move"
+                           :active="thirdLevel.active" @carousel-move="move" @ocr="ocr"
                            :leave-to-class="thirdLevel.leaveToClass"></album>
                 </div>
                 <div id="media-separator" @click="switchMedia">
@@ -610,6 +610,20 @@
                 } else {
                     return {urls: '', type: false}
                 }
+            },
+
+            ocr: function (staticPath) {
+                fetch('ocr', {
+                    method: 'POST',
+                    body: {
+                        staticPath: staticPath
+                    }
+                }).then((res) => {
+                    console.log('ocr return');
+                    res.json().then(j => {
+                        console.log(j)
+                    })
+                })
             },
 
             switchMedia: function () {
