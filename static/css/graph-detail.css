@@ -160,25 +160,29 @@ section video {
 
 section audio {
     width: 100%;
-    margin: 0 auto;
+    margin: auto 5px 5px 5px;
 }
 
 @keyframes show-media-previewer {
     0% {
         width: 0;
+        background-color: transparent;
     }
 
     100% {
-        width: 100%
+        width: 100%;
+        background-color: darkslategray;
     }
 }
 
 @keyframes hide-media-previewer {
     0% {
         width: 100%;
+        background-color: darkslategray;
     }
     100% {
         width: 0;
+        background-color: transparent;
     }
 }
 
@@ -191,7 +195,7 @@ section audio {
 
 }
 
-#media-previewer{
+#media-previewer {
     display: flex;
     align-items: center;
 }
