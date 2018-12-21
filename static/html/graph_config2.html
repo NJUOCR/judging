@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/static/css/hopping-form.css">
     <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
     <link rel="stylesheet" href="/static/css/tab-text-editor.css">
+    <link rel="stylesheet" href="/static/lib/slide_picture/carousel.css"/>
     <script src="/static/lib/vue/vue.js"></script>
     <script src="/static/js/vue-components/tab-text-editor.js"></script>
     <script src="/static/js/vue-components/selectable-header.js"></script>
@@ -127,7 +128,32 @@
                      :class="[thirdLevel.previewMedia && parseInt(thirdLevel.mediaPointer)>=0? 'show-media' : 'hide-media']">
                     <video v-if="previewMedia()['type'] === 'video'" :src="previewMedia()['urls'][0]" controls></video>
                     <audio v-if="previewMedia()['type'] === 'audio'" :src="previewMedia()['urls'][0]" controls></audio>
+                    <div id="carousel-first-level" class="carousel-ground" v-if="previewMedia()['type'] === 'image'">
+                        <transition name="carousel-animates"
+                                    enter-class="carousel-animate-enter"
+                                    leave-class="carousel-animate-leave"
+                                    :leave-active-class="thirdLevel.leaveToClass">
+                            <div id="carousel-second-level" class="carousel-image">
+                                <div class="image-item" :key="thirdLevel.active" id="image-item">
+                                    <a :href="thirdLevel.carousel[thirdLevel.active]" :title="thirdLevel.carousel[thirdLevel.active]">
+                                        <img :src="thirdLevel.carousel[thirdLevel.active]" alt="" class="image">
+                                    </a>
+                                </div>
+                            </div>
+                        </transition>
+                        <div class="carousel-indicator">
+                            <a v-for="(item,index) in thirdLevel.carousel" :key="index" v-if="thirdLevel.active==index" class="item active">{{ (index + 1)+"/"+getLen()}}</a>
+                        </div>
 
+
+                        <a @click="move(-1)" class="left carousel-control1">
+                            <i class="icon1 glyphicon glyphicon-menu-left"></i>
+                        </a>
+
+                        <a @click="move(1)" class="right carousel-control1">
+                            <i class="icon1 glyphicon glyphicon-menu-right"></i>
+                        </a>
+                    </div>
                 </div>
                 <div id="media-separator" @click="switchMedia">
                     <div class="glyphicon glyphicon-option-vertical"></div>
@@ -221,7 +247,7 @@
                         break;
                     case 0:
                         this.selection = e['selection'] || [-1, -1, -1];
-                    // console.log(this.selection);
+                        // console.log(this.selection);
                 }
             },
 
@@ -376,13 +402,31 @@
                     name: '',
                     description: '',
                     type: 'create'
-                }
+                },
+                active:0,//当前轮播图位置
+                carousel:null,//轮播内容
+                leaveToClass:"",//轮播图片离开时的动画，不同方向，动画不同
             },
 
 
         },
 
         methods: {
+            move:function (direction,index) {//direction为轮播方向，正数为右，负数为左。index为当前轮播图
+                console.log("ssss")
+                let num=this.thirdLevel.active;
+                num=index!==undefined?index:num+direction;
+
+                num=num>=this.thirdLevel.carousel.length?0:
+                    num<0?this.thirdLevel.carousel.length-1:num;
+
+                this.thirdLevel.active=num;
+
+                this.thirdLevel.leaveToClass=direction>0?"carousel-animate-leave-to-left":"carousel-animate-leave-to-right";
+            },
+            getLen:function () {
+                return this.thirdLevel.carousel.length;
+            },
             changeCandidate: function (idx, componentName) {
                 // console.log(idx + ' ' + componentName);
                 if (componentName === 'first-level-header') {
@@ -578,6 +622,16 @@
                 if (ptr !== null && ptr !== -1) {
                     // 当前L3元素指向改变时，ptr可能仍然是旧的值
                     let media = this.thirdLevel.mediaList()[ptr];// || {urls: [], type: false};
+                    if(media.type === 'image'){
+                        this.thirdLevel.carousel = media.urls;
+                        let images = [];
+                        for(let i =0; i< this.thirdLevel.carousel.length;i++) {//预加载图片
+                            images[i] = new Image();
+                            images[i].src = this.thirdLevel.carousel[i];
+                        }
+                        console.log(this.thirdLevel.carousel)
+                        console.log(media.urls)
+                    }
                     return {
                         urls: media.urls,
                         type: media.type

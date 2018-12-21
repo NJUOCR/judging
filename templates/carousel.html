@@ -9,7 +9,7 @@
 
 </head>
 <body>
-    <div id="carousel-first-level" class="carousel-ground" >
+    <div id="carousel-first-level" class="carousel-ground">
         <transition name="carousel-animates"
                     enter-class="carousel-animate-enter"
                     leave-class="carousel-animate-leave"
@@ -23,7 +23,7 @@
             </div>
         </transition>
         <div class="carousel-indicator">
-            <a v-for="(item,index) in carousel" :key="index" v-if="active==index" class="item active">{{ index+"/"+getLen()}}</a>
+            <a v-for="(item,index) in carousel" :key="index" v-if="active==index" class="item active">{{ (index + 1)+"/"+getLen()}}</a>
         </div>
 
 
@@ -38,7 +38,7 @@
 
 <script type="application/javascript">
     let carousels=[//轮播内容
-        {"url":"#","image":"../static/lib/slide_picture/b1.png","title":"xxx"},
+        {"url":"#","image":"../static/lib/slide_picture/xuniji1.png","title":"xxx"},
         {"url":"#","image":"../static/lib/slide_picture/b2.png","title":"xx"},
         {"url":"#","image":"../static/lib/slide_picture/b3.png","title":"x"},
         {"url":"#","image":"../static/lib/slide_picture/b1.png","title":"xxx"},
