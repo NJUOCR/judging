@@ -2,7 +2,7 @@ Vue.component('album', {
     props: ['leaveToClass', 'active', 'carouselList'],
     template: `
     <div id="carousel-first-level" class="carousel-ground">
-        <span @click="ocr" class="glyphicon glyphicon-random"></span>
+        <span @click="ocr(carouselList[active])" class="glyphicon glyphicon-random"></span>
         <transition name="carousel-animates"
                     enter-class="carousel-animate-enter"
                     leave-class="carousel-animate-leave"
@@ -37,8 +37,8 @@ Vue.component('album', {
             this.$emit('carousel-move', offset);
         },
         
-        ocr: function () {
-            this.$emit('ocr', carouselList[active])
+        ocr: function (absPath) {
+            this.$emit('ocr', absPath)
         }
     }
 });
