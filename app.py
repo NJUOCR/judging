@@ -1,11 +1,11 @@
 import json
 import os
+import utils.unet as unet
 from typing import Tuple, List
-
+from service_invoker.service_invoke import ServiceInvoker
 from flask import Flask, request, jsonify, render_template, Response, send_file
 from werkzeug.datastructures import FileStorage
 
-import utils.unet as unet
 from logics.judging_case import JudgingCase
 from logics.judging_graph import JudgingGraph
 
@@ -125,6 +125,17 @@ def media_remove():
     case = JudgingCase(case_id)
     case.remove_media(tree)
     return jsonify(msg='ok')
+
+
+@app.route('/ocr')
+def ocr():
+    service = ServiceInvoker.which('ocr')
+    path = request.args['path']
+    result = service.invoke({
+        'path': path
+    })
+
+    return jsonify(msg='error') if result is False else jsonify(txt=result)
 
 
 if __name__ == '__main__':
