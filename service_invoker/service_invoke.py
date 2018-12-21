@@ -12,9 +12,12 @@ class ServiceInvoker:
         pass
 
     @staticmethod
-    def link(url: str, pars: dict, pattern: str = 'get') -> str:
+    def link(url: str, pars: dict, pattern: str = 'get') -> str or False:
         assert pattern in ('get', 'post')
-        return (requests.get(url, pars)).text if pattern == 'get' else requests.post(url, pars).text
+        try:
+            return (requests.get(url, pars)).text if pattern == 'get' else requests.post(url, pars).text
+        except Exception:
+            return False
 
     @staticmethod
     def which(service_name: str):
