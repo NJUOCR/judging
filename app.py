@@ -1,11 +1,13 @@
+import json
+import os
+from typing import Tuple, List
+
 from flask import Flask, request, jsonify, render_template, Response, send_file
 from werkzeug.datastructures import FileStorage
-from logics.judging_graph import JudgingGraph
-from logics.judging_case import JudgingCase
-from typing import Tuple, List
-import json
+
 import utils.unet as unet
-import os
+from logics.judging_case import JudgingCase
+from logics.judging_graph import JudgingGraph
 
 app = Flask(__name__)
 
@@ -106,13 +108,23 @@ def media_upload():
     if len(file_bundle) == 0:
         return jsonify(error='No file is uploaded.')
 
-    case_id = category[0]       # 案号
-    tree = category[1:]         # 媒体资源存储的子目录
-    media_name = category[-1]   # 媒体资源的名称，不是文件名，而是前端编辑的媒体名称。注意它是存储路径中最后一个子目录
+    case_id = category[0]  # 案号
+    tree = category[1:]  # 媒体资源存储的子目录
+    media_name = category[-1]  # 媒体资源的名称，不是文件名，而是前端编辑的媒体名称。注意它是存储路径中最后一个子目录
     case = JudgingCase(case_id)
     assert case is not None, '不能获取案件实例，这可能是由于 数据库中没有对应案件的记录且无法根据图名初始化一个新的案件记录'
     result = case.insert_media(tree, media_name, description, file_bundle)
     return jsonify(msg='ok' if result else 'duplicate media name found')
+
+
+@app.route('/media-remove', methods=['DELETE'])
+def media_remove():
+    category: list = request.values['category'].split('/')
+    case_id = category[0]
+    tree = category[1:]
+    case = JudgingCase(case_id)
+    case.remove_media(tree)
+    return jsonify(msg='ok')
 
 
 if __name__ == '__main__':
