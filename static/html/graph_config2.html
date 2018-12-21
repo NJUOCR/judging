@@ -73,18 +73,7 @@
         <div class="level-content"
              :class="[firstLevel.plain || firstLevel.selectedIdx !== -1? 'level-content-out':'level-content-in']">
             <div>
-                1
-                <br/>
-                2
-                <br/>
-                2
-                3
-                <br/>
-                4
-                4
-                <br/>
-                5
-
+                一级标题内容
             </div>
         </div>
 
@@ -103,9 +92,9 @@
                              @change-tab="changeTab"></tab-text-editor>
 
         </section>
-        <div id="section-separator" @click="switchSecondLevel">
+        <div id="section-separator" :class="['separator', {'section-closed': secondLevel.hide}]" @click="switchSecondLevel">
             <span v-if="!secondLevel.hide" class="glyphicon glyphicon-option-vertical"></span>
-            <span v-if="secondLevel.hide" v-for="char in secondLevel.listNames()[secondLevel.selectedIdx()]"> {{char}}</span>
+            <span v-if="secondLevel.hide" class="l2-char" v-for="char in secondLevel.listNames()[secondLevel.selectedIdx()]"> {{char}}</span>
         </div>
         <section class="" id="third-level-section">
             <selectable-header @change-candidate="changeCandidate" @step="step"
@@ -134,7 +123,9 @@
                 <!-- 左看 -->
                 <div id="media-previewer"
                      :class="[thirdLevel.previewMedia && parseInt(thirdLevel.mediaPointer)>=0? 'show-media' : 'hide-media']">
-                    <video v-if="previewMedia()['type'] !== false" :src="previewMedia()['urls'][0]" controls></video>
+                    <video v-if="previewMedia()['type'] === 'video'" :src="previewMedia()['urls'][0]" controls></video>
+                    <audio v-if="previewMedia()['type'] === 'audio'" :src="previewMedia()['urls'][0]" controls></audio>
+                    
                 </div>
                 <div id="media-separator" @click="switchMedia">
                     <div class="glyphicon glyphicon-option-vertical"></div>
@@ -176,6 +167,9 @@
                                                @upload="uploadMedia">
                                 </file-uploader>
                             </div>
+                        </div>
+                        <div class="hopping-entry" v-if="parseInt(thirdLevel.mediaPointer)>=0">
+                            <button class="wide-btn">删除</button>
                         </div>
 
                     </div>
@@ -364,13 +358,17 @@
 
                     // 如果第三级没有被选中，则‘视听材料’肯定没有被选中，‘视听材料’属于第三级
                     if (treeIdx.filter(_ => _ < 0).length > 0) return false;
-                    // 检查当前选择的第三级，是否为视听材料
-                    let l3 = graph.structure.firstLevelItems[treeIdx[0]].secondLevelItems[treeIdx[1]].thirdLevelItems[treeIdx[2]];
-                    if (l3.name === '视听材料') {
+
+                    let l3 = graph.structure.
+                        firstLevelItems[treeIdx[0]].
+                        secondLevelItems[treeIdx[1]].
+                        thirdLevelItems[treeIdx[2]];
+                    return l3.contents;
+                    /*if (l3.name === '视听材料') {
                         return l3.contents;
-                    } else {
+                    { else {
                         return false;
-                    }
+                    }*/
                 },
 
                 mediaPointer: null, // or -1, 0, 1, 2, ...

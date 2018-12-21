@@ -16,6 +16,9 @@
     border-top-left-radius: .5em;
     border-top-right-radius: .5em;
 }
+.tab-text-editor>header>ul>li:hover{
+    cursor: pointer;
+}
 
 .tab-text-editor>div{
     width: 100%;
