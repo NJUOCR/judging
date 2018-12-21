@@ -22,7 +22,7 @@ class JudgingCase:
         assert lang in ('en', 'zh')
         return self.data_obj.d if lang == 'zh' else translate_json(self.data_obj.d, to='en')
 
-    def remove_media(self, tree: Iterable, name: str):
+    def remove_media(self, tree: list):
         """
         todo @熊 实现删除媒体资源的功能，参考`insert_media()`
         移除一个媒体资源，包括相关文件和数据库的记录
@@ -30,6 +30,7 @@ class JudgingCase:
         :param name: 媒体文件名称
         :return:
         """
+        name = tree[-1]
         ptr: dict = self.get_data()
         hierarchy = ('证据链条', '查证事项', '印证证据')
         tree_nodes = JudgingCase.translate_tree(tree, to='zh')
@@ -48,8 +49,8 @@ class JudgingCase:
             if name == item:
                 del contents[idx]
                 self.data_obj.update()
-                sub_path = '/'.join(*tree)
-                MediaData.remove_media(os.path.join(sub_path, name))
+                sub_path = '/'.join(tree)
+                MediaData.remove_media('/'.join(sub_path))
                 return True
         print(name, "not found in", tree_nodes)
         return False
@@ -118,6 +119,9 @@ class JudgingCase:
             '类型': ...,
         }        
         """
+        for idx, item in enumerate(map(lambda content: content['名称'], contents)):
+            if name == item:
+                del contents[idx]
         contents.append(block)
         self.data_obj.update()
         return True
