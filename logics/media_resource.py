@@ -43,7 +43,7 @@ class MediaResource:
         else:
             # 如果传入多个文件，则过滤掉不是图片的那些
             return ImageResource(name, sub_path, description, list(
-                filter(lambda bundle: bundle[0] in MediaResource.image_list, file_bundles)
+                filter(lambda bundle: bundle[0].split('.')[-1] in MediaResource.image_list, file_bundles)
             ))
 
     def make_data_structure(self):
