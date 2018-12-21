@@ -158,6 +158,11 @@ section video {
     width: 100%;
 }
 
+section audio {
+    width: 100%;
+    margin: 0 auto;
+}
+
 @keyframes show-media-previewer {
     0% {
         width: 0;
@@ -186,8 +191,9 @@ section video {
 
 }
 
-#media-previewer::after {
-
+#media-previewer{
+    display: flex;
+    align-items: center;
 }
 
 /* media */

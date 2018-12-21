@@ -171,7 +171,7 @@
                             </div>
                         </div>
                         <div class="hopping-entry" v-if="parseInt(thirdLevel.mediaPointer)>=0">
-                            <button class="wide-btn">删除</button>
+                            <button class="wide-btn" @click="removeMedia()">删除</button>
                         </div>
 
                     </div>
@@ -475,14 +475,19 @@
                     this.firstLevel.listNames()[this.firstLevel.selectedIdx()],
                     this.secondLevel.listNames()[this.secondLevel.selectedIdx()],
                     this.thirdLevel.listNames()[this.thirdLevel.selectedIdx()],
-                    this.thirdLevel.mediaList()[this.thirdLevel.mediaPointer]
-                ].map(dir => dir.replace(filenameForbidden, '_').join('/'));
+                    this.thirdLevel.mediaList()[this.thirdLevel.mediaPointer]['name']
+                ];
+
                 fetch(url, {
-                    method: 'DELETE',
+                    method: 'POST',
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({})
+                    body: JSON.stringify({
+                        category: category.
+                                    map(dir => dir.replace(filenameForbidden, '_')).
+                                    join('/')
+                    })
                 }).then((res)=>{
                     if(res.ok){
                         graph.updateData();

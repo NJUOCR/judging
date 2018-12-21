@@ -117,9 +117,9 @@ def media_upload():
     return jsonify(msg='ok' if result else 'duplicate media name found')
 
 
-@app.route('/media-remove', methods=['DELETE'])
+@app.route('/media-remove', methods=['POST'])
 def media_remove():
-    category: list = request.values['category'].split('/')
+    category: list = request.json['category'].split('/')
     case_id = category[0]
     tree = category[1:]
     case = JudgingCase(case_id)
