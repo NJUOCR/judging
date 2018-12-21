@@ -30,7 +30,7 @@ class ServiceInvoker:
 
 
 class OCRInvoker(ServiceInvoker):
-    url = r'http://192.168.68.38:5678'
+    url = r'http://127.0.0.1:5555/'
     ocr_resource_root = '/usr/local/src/media'
     # params = {'path': '/usr/local/src/data/doc_imgs/2014东刑初字第0100号_诈骗罪208页.pdf/img-0008.jpg'}
     pattern = 'get'
@@ -39,7 +39,7 @@ class OCRInvoker(ServiceInvoker):
         pass
 
     def invoke(self, params: dict)->str:
-        params['path'] = os.path.join(OCRInvoker.ocr_resource_root, params['path'])
+        params['path'] = OCRInvoker.ocr_resource_root+params['path']
         return ServiceInvoker.link(self.url, params, pattern='get')
 
 
