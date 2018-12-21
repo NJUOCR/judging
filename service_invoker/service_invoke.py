@@ -30,8 +30,8 @@ class ServiceInvoker:
 
 
 class OCRInvoker(ServiceInvoker):
-    url = r'http://127.0.0.1:5555/'
-    ocr_resource_root = '/usr/local/src/media'
+    url = r'http://172.17.0.5:555/'
+    ocr_resource_root = '/usr/local/src/'
     # params = {'path': '/usr/local/src/data/doc_imgs/2014东刑初字第0100号_诈骗罪208页.pdf/img-0008.jpg'}
     pattern = 'get'
 

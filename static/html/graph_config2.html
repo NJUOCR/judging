@@ -625,7 +625,8 @@
                 }).then((res) => {
                     console.log('ocr return');
                     res.json().then(j => {
-                        console.log(j)
+                        console.log(j);
+                        this.detailMedia().description += j['txt'];
                     })
                 })
             },
