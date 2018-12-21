@@ -8,7 +8,7 @@ import requests
 class ServiceInvoker:
 
     @abstractmethod
-    def invoke(self) -> str:
+    def invoke(self, params) -> str:
         pass
 
     @staticmethod
@@ -16,17 +16,24 @@ class ServiceInvoker:
         assert pattern in ('get', 'post')
         return (requests.get(url, pars)).text if pattern == 'get' else requests.post(url, pars).text
 
+    @staticmethod
+    def which(service_name: str):
+        service_name = service_name.lower()
+        assert service_name in ('ocr', )
+        if service_name == 'ocr':
+            return OCRInvoker()
+
 
 class OCRInvoker(ServiceInvoker):
     url = r'http://192.168.68.38:5678'
-    params = {'path': '/usr/local/src/data/doc_imgs/2014东刑初字第0100号_诈骗罪208页.pdf/img-0008.jpg'}
+    # params = {'path': '/usr/local/src/data/doc_imgs/2014东刑初字第0100号_诈骗罪208页.pdf/img-0008.jpg'}
     pattern = 'get'
 
-    def __init__(self, pars: dict):
-        self.params = pars
+    def __init__(self):
+        pass
 
-    def invoke(self)->str:
-        return ServiceInvoker.link(self.url, self.params, pattern='get')
+    def invoke(self, params)->str:
+        return ServiceInvoker.link(self.url, params, pattern='get')
 
 
 class Context:
