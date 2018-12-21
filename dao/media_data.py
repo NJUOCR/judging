@@ -24,4 +24,4 @@ class MediaData:
 
     @staticmethod
     def remove_media(sub_dir: str):
-        return shutil.rmtree(sub_dir, ignore_errors=True)
+        return shutil.rmtree(MediaData.full_path(sub_dir), ignore_errors=True)
