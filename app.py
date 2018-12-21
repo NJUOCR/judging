@@ -130,7 +130,7 @@ def media_remove():
 @app.route('/ocr', methods=['POST'])
 def ocr():
     service = ServiceInvoker.which('ocr')
-    path = request.json['path']
+    path = request.json['staticPath']
     result = service.invoke({
         'path': path
     })
