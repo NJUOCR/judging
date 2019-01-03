@@ -11,10 +11,17 @@ from logics.judging_graph import JudgingGraph
 
 app = Flask(__name__)
 
+# TODO （删除案由  获取图的列表 ） （新建案件  删除案件  通过案由获得案由的案件列表 ）
+
 
 @app.route('/')
 def hello_world():
     return 'Hello World!'
+
+
+@app.route('/')
+def main_config():
+    return send_file('static/html/main_config.html')
 
 
 @app.route('/get-case')

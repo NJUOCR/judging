@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
+    <script src="/static/lib/vue/vue.js"></script>
+</head>
+<body>
+
+    <!-- 主div -->
+    <div class="main-config">
+        <!-- 左导航栏元素 -->
+        <div calss="left-navigation">
+            <div class="b1">
+                <ul class="main-button" v-if="isClicked" v-for="(item,index) in buttonlist"></ul>
+            </div>
+        </div>
+        <!-- 右显示元素 -->
+        <div></div>
+    </div>
+
+    <script>
+
+    </script>
+
+</body>
+</html>
