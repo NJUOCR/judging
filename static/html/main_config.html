@@ -37,23 +37,23 @@
 @keyframes show-input-file {
     0% {
         height: 0;
-        background-color: transparent;
+        opacity: 0;
     }
 
     100% {
         height: 100%;
-        background-color: darkslategray;
+        opacity: 1;
     }
 }
 
 @keyframes hide-input-file {
     0% {
         height: 100%;
-        background-color: darkslategray;
+        opacity: 1;
     }
     100% {
         height: 0;
-        background-color: transparent;
+        opacity: 0;
     }
 }
 
@@ -82,6 +82,18 @@
 .main-config .bottom-main{
     display: flex;
 }
+.main-config .bottom-main1{
+    display: flex;
+    margin-top: 6.5em;
+}
+.bottom-main1 .left-graph{
+    height: 80vh;
+    width: 50%;
+}
+.bottom-main1 .right-case{
+    height: 80vh;
+    width: 50%;
+}
 .bottom-main .left-graph{
     height: 80vh;
     width: 50%;
@@ -92,16 +104,6 @@
 }
 .graph-input{
     margin-top: 6.5em;
-    /*
-    height: 0px;
-    width: 0px;
-    opacity: 0;
-    */
-}
-.active{
-    height: 10%;
-    width: 100%;
-    margin-top: 6.5em;
 }
 .show-input {
     animation: show-input-file 1s ease-in forwards;
@@ -111,12 +113,6 @@
     animation: hide-input-file 1s ease-out forwards;
 
 }
-/*
-#media-previewer {
-    display: flex;
-    align-items: center;
-}
-*/
 </style>
 <body>
 
@@ -126,11 +122,11 @@
         <div class="top-main">
             <span class="new-graph" v-on:click="changeClicked()">{{ label }}</span>
         </div>
-        <div class="graph-input" v-bind:class="[isClicked ? 'show-input' : 'hide-input']">
+        <div class="graph-input" v-bind:class="[isClicked ? 'show-input' : 'hide-input']" v-show="isFirstClick()">
             <input id="file-Portrait1" type="file" class="file" name="input-img">
         </div>
         <!--   v-if="isClick()" v-bind:class="{ active: isClicked }"  -->
-        <div class="bottom-main">
+        <div :class="[ isFirstClick() ? 'bottom-main' : 'bottom-main1']">
             <div class="left-graph">
                 <!--
                 <ul class="main-button" v-if="isClicked" v-for="(item,index) in buttonlist"></ul>
@@ -149,10 +145,12 @@
             el: "#main",
             data:{
                 isClicked: false,
+                isFirst:false,
                 label: "创建新案由"
             },
             methods:{
                 changeClicked: function (event) {
+                    this.isFirst = true;
                     if(this.isClicked){
                         this.isClicked = false;
                         this.label = "创建新案由";
@@ -161,8 +159,8 @@
                         this.label = "返回";
                     }
                 },
-                isClick: function (event) {
-                    return this.isClicked;
+                isFirstClick: function (event) {
+                    return this.isFirst;
                 }
             },
             created: function () {
