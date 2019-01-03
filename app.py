@@ -11,7 +11,8 @@ from logics.judging_graph import JudgingGraph
 
 app = Flask(__name__)
 
-# TODO （删除案由  获取图的列表 ） （新建案件  删除案件  通过案由获得案由的案件列表 ）
+# TODO （删除案件  通过案由获得案由的案件列表 ）
+
 
 
 @app.route('/')
@@ -26,10 +27,36 @@ def main_config():
 
 @app.route('/get-case')
 def get_case():
+    """
+    获取案件或者新建案件
+    :return:
+    """
     args = request.args
-    case = JudgingCase(case_id=args['case_id'])
+    case = JudgingCase(case_id=args['case_id'], graph_name=args['graph_name']) or JudgingCase(case_id=args['case_id'])
+    if case is None:
+        return jsonify(error='指定案件不存在')
     _ = case.get_data(lang='en')
     return Response(json.dumps(case.get_data(lang='en')), mimetype='application/json')
+
+
+@app.route('/get-cases')
+def get_cases():
+    """
+    根据案由名称获得案件列表
+    :return:
+    """
+    args = request.args
+    graph_name = args['graph-name']
+    return jsonify(JudgingCase.get_cases(graph_name))
+
+
+@app.route('/remove-case')
+def remove_case():
+    """
+    删除案件
+    :return:
+    """
+    return jsonify('删除成功') if JudgingCase.remove_case(request.args['case_id']) else jsonify(error='指定案件不存在')
 
 
 @app.route('/get-graph')
@@ -52,6 +79,7 @@ def get_graph_list():
     获取图的列表，只取图的名字
     :return:
     """
+    return jsonify(JudgingGraph.get_graph_list())
 
 
 @app.route('/test')
@@ -63,6 +91,18 @@ def test_upload():
 def config_graph():
     # return render_template('graph_config.html')
     return send_file('static/html/graph_config2.html')
+
+
+@app.route('/remove-graph', methods=['POST'])
+def remove_graph():
+    """
+    删除案由
+    :return:
+    """
+    args = request.args
+    print('123')
+    graph_name = args['graph-name']
+    return jsonify('删除成功') if JudgingGraph.remove_graph(graph_name) else jsonify(error='指定案由不存在')
 
 
 @app.route('/upload', methods=['POST'])

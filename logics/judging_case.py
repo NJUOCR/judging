@@ -18,6 +18,18 @@ class JudgingCase:
     def exists(case_id: str) -> bool:
         return CaseData.fetch_case(case_id) is not None
 
+    @staticmethod
+    def get_cases(graph_name: str) -> list:
+        return CaseData.fetch_cases(graph_name)
+
+    @staticmethod
+    def remove_case(case_id) -> bool:
+        if JudgingCase.exists(case_id):
+            CaseData.remove(case_id)
+            return True
+        else:
+            return False
+
     def get_data(self, lang: str = 'zh'):
         assert lang in ('en', 'zh')
         return self.data_obj.d if lang == 'zh' else translate_json(self.data_obj.d, to='en')

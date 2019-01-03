@@ -86,6 +86,18 @@ class JudgingGraph:
     def translate_definition(d: dict, to: str) -> dict:
         return translate_json(d, to)
 
+    @staticmethod
+    def get_graph_list():
+        return JudgingGraph._data.get_graph_list()
+
+    @staticmethod
+    def remove_graph(graph_name: str) -> bool:
+        if JudgingGraph._data.exists(graph_name):
+            JudgingGraph._data.remove_graph(graph_name)
+            return True
+        else:
+            return False
+
 
 if __name__ == "__main__":
     a = JudgingGraph.from_file("static/graph_configs/default.json")

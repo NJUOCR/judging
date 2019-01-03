@@ -13,12 +13,26 @@ class CaseData:
     @staticmethod
     def create_case(graph_name: str, case_id: str) -> 'CaseData':
         d = GraphData().fetch(graph_name)
-        return CaseData(d, case_id) if d is not None else None
+        if d is not None:
+            d['_id'] = case_id
+            CaseData.table.save(d)
+            return CaseData(d, case_id)
+        else:
+            return None
+        # return CaseData(d, case_id) if d is not None else None
 
     @staticmethod
     def fetch_case(case_id: str) -> 'CaseData':
         d = CaseData.table.find_one({'_id': case_id})
         return CaseData(d, case_id) if d is not None else None
+
+    @staticmethod
+    def fetch_cases(graph_name: str) -> list:
+        cursors = CaseData.table.find({'名称': graph_name}, {'_id': 1})
+        cases = []
+        for case in cursors:
+            cases.append(case['_id'])
+        return cases
 
     @property
     def data(self) -> dict:
@@ -40,3 +54,7 @@ class CaseData:
             CaseData.table.save(d)
             self.d = CaseData.table.find_one({'_id': self.case_id})
             return True
+
+    @staticmethod
+    def remove(case_id: str):
+        CaseData.table.remove(case_id)

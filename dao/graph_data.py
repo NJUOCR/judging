@@ -42,3 +42,17 @@ class GraphData(object):
 
     def fetch(self, graph_name: str) -> dict:
         return self.table.find_one({'_id': graph_name})
+
+    def get_graph_list(self) -> list:
+        graph_list = []
+        for i in self.table.find({}, {'名称': 1, '_id': 0}):
+            graph_list.append(i['名称'])
+        return graph_list
+
+    def remove_graph(self, graph_name: str):
+        self.table.remove(graph_name)
+
+
+if __name__ == '__main__':
+    graph = GraphData()
+    print(graph.get_graph_list())
