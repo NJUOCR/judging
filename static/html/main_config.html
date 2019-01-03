@@ -1,27 +1,193 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
+    <link href="/static/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/lib/bootstrap/css/fileinput.min.css" rel="stylesheet" type="text/css">
+    <script src="/static/lib/bootstrap/js/jquery.min.js"></script>
+    <script src="/static/lib/bootstrap/js/bootstrap.js"></script>
+    <script src="/static/lib/bootstrap/js/fileinput.min.js"></script>
     <script src="/static/lib/vue/vue.js"></script>
 </head>
+<style>
+@keyframes button-stand-up {
+    0% {
+        box-shadow: 0 0.1em 0.1em gray;
+        top: 0;
+    }
+    100% {
+        box-shadow: 0 0.2em 0.4em gray;
+        top: -0.2em;
+    }
+}
+
+@keyframes button-sit-down {
+    0% {
+        box-shadow: 0 0.2em 0.4em gray;
+        top: -0.2em;
+    }
+    100% {
+        box-shadow: 0 0.1em 0.1em gray;
+        top: 0;
+    }
+}
+
+@keyframes show-input-file {
+    0% {
+        height: 0;
+        background-color: transparent;
+    }
+
+    100% {
+        height: 100%;
+        background-color: darkslategray;
+    }
+}
+
+@keyframes hide-input-file {
+    0% {
+        height: 100%;
+        background-color: darkslategray;
+    }
+    100% {
+        height: 0;
+        background-color: transparent;
+    }
+}
+
+.main-config{
+}
+.main-config .top-main{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.top-main .new-graph{
+    background: #0fd9fb;
+    position: absolute;
+    /* height: 3em; */
+    width: 60%;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 3em;
+    margin-top: 0.3em;
+    cursor: pointer;
+    animation: button-sit-down .15s ease-in forwards;
+}
+.top-main .new-graph:hover{
+    animation: button-stand-up .2s ease-out forwards;
+}
+.main-config .bottom-main{
+    display: flex;
+}
+.bottom-main .left-graph{
+    height: 80vh;
+    width: 50%;
+}
+.bottom-main .right-case{
+    height: 80vh;
+    width: 50%;
+}
+.graph-input{
+    margin-top: 6.5em;
+    /*
+    height: 0px;
+    width: 0px;
+    opacity: 0;
+    */
+}
+.active{
+    height: 10%;
+    width: 100%;
+    margin-top: 6.5em;
+}
+.show-input {
+    animation: show-input-file 1s ease-in forwards;
+}
+
+.hide-input {
+    animation: hide-input-file 1s ease-out forwards;
+
+}
+/*
+#media-previewer {
+    display: flex;
+    align-items: center;
+}
+*/
+</style>
 <body>
 
     <!-- 主div -->
-    <div class="main-config">
-        <!-- 左导航栏元素 -->
-        <div calss="left-navigation">
-            <div class="b1">
+    <div id="main" class="main-config">
+        <!-- 上 新建graph元素 -->
+        <div class="top-main">
+            <span class="new-graph" v-on:click="changeClicked()">{{ label }}</span>
+        </div>
+        <div class="graph-input" v-bind:class="[isClicked ? 'show-input' : 'hide-input']">
+            <input id="file-Portrait1" type="file" class="file" name="input-img">
+        </div>
+        <!--   v-if="isClick()" v-bind:class="{ active: isClicked }"  -->
+        <div class="bottom-main">
+            <div class="left-graph">
+                <!--
                 <ul class="main-button" v-if="isClicked" v-for="(item,index) in buttonlist"></ul>
+                -->
+                1
+            </div>
+            <div class="right-case">
+                2
             </div>
         </div>
-        <!-- 右显示元素 -->
-        <div></div>
     </div>
 
-    <script>
+    <script type="text/javascript">
 
+        let main_top = new Vue({
+            el: "#main",
+            data:{
+                isClicked: false,
+                label: "创建新案由"
+            },
+            methods:{
+                changeClicked: function (event) {
+                    if(this.isClicked){
+                        this.isClicked = false;
+                        this.label = "创建新案由";
+                    }else {
+                        this.isClicked = true;
+                        this.label = "返回";
+                    }
+                },
+                isClick: function (event) {
+                    return this.isClicked;
+                }
+            },
+            created: function () {
+            }
+        });
+
+
+        //初始化fileinput控件（第一次初始化）
+        function initFileInput(ctrlName, uploadUrl) {
+            var control = $('#' + ctrlName);
+            control.fileinput({
+                language: 'zh', //设置语言
+                uploadUrl: uploadUrl, //上传的地址
+                allowedFileExtensions : ['json'],//接收的文件后缀
+                showUpload: false, //是否显示上传按钮
+                showCaption: false,//是否显示标题
+                browseClass: "btn btn-primary", //按钮样式
+                maxFileCount: 1,
+                previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
+                msgFilesTooMany: "选择上传的文件数量超过允许的最大数值！"
+            });
+        }
+
+        //初始化fileinput控件（第一次初始化）
+        initFileInput("file-Portrait1", "/upload");
     </script>
 
 </body>
