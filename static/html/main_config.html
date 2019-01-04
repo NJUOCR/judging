@@ -130,7 +130,69 @@
 
 .hide-input {
     animation: hide-input-file 1s ease-out forwards;
-
+}
+</style>
+<style>
+.left-graph .search-box{
+    display: flex;
+    justify-content: right;
+    margin-left: 2.8em;
+}
+.search-box .search{
+    margin-top: 1em;
+    border-radius: 20px;
+    outline: none;
+    text-indent: 0.5em;
+}
+.left-graph .search-icon{
+    cursor: pointer;
+    margin-top: 1.3em;
+    margin-left: 0.3em;
+}
+.left-graph .search-icon:hover{
+    box-shadow: 0 0.1em 0 0 gray;
+}
+.left-graph .graph-list{
+    width: 95%;
+    height: 100%;
+}
+.graph-list .graph-item{
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.1em;
+    box-shadow: 0 0 0.1em 0.1em #ccc inset;
+    border-radius: 5px;
+    font-size: 1.5em;
+    text-indent: 0.5em;
+}
+.graph-item .item-top{
+    display: flex;
+    justify-content: space-between;
+}
+.graph-item .item-bottom{
+    display: flex;
+    justify-content: space-between;
+}
+.graph-item .item-button-box{
+    padding-right: 0.5em;
+}
+.item-top .item-text{
+    width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.item-button-box .item-button{
+    cursor: pointer;
+    text-decoration: none;
+}
+.item-bottom .case-input{
+    border-radius: 20px;
+    font-size: 0.5em;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    margin-left: 1em;
+    width: 70%;
 }
 </style>
 <body>
@@ -150,7 +212,33 @@
                 <!--
                 <ul class="main-button" v-if="isClicked" v-for="(item,index) in buttonlist"></ul>
                 -->
-                1
+                <div class="search-box">
+                    <input id="search_input" class="search" type="text">
+                    <span class="search-icon glyphicon glyphicon-search"></span>
+                </div>
+                <hr style=" height: 0.1em;border-top: 0.1em dotted rgb(128, 137, 146);
+                border-right: none;border-bottom: none;border-left: none;border-image: initial;" />
+                <div class="graph-list-box">
+                    <ul class="graph-list">
+                        <li class="graph-item" v-for="(item, index) in graphlist">
+                            <div class="item-top">
+                                <span class="item-text">{{ item }}</span>
+                                <div class="item-button-box">
+                                    <a class="item-button glyphicon glyphicon-plus" v-on:click="newCase()"></a>
+                                    <a class="item-button glyphicon glyphicon-minus"></a>
+                                </div>
+                            </div>
+                            <div class="item-bottom" :class="[ isNewCase ? 'show-input' : 'hide-input']">
+                                <input id="case-id-input" class="case-input" type="text" >
+                                <div class="item-button-box">
+                                    <a class="item-button glyphicon glyphicon-ok"></a>
+                                    <a class="item-button glyphicon glyphicon-remove" v-on:click="newCase()"></a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
             <div class="right-case">
                 2
@@ -165,7 +253,11 @@
             data:{
                 isClicked: false,
                 isFirst:false,
-                label: "创建新案由"
+                label: "创建新案由",
+
+                graphlist:["1111", "2222"],
+                isNewCase: false
+
             },
             methods:{
                 changeClicked: function (event) {
@@ -180,6 +272,14 @@
                 },
                 isFirstClick: function (event) {
                     return this.isFirst;
+                },
+                newCase: function (event) {
+                    if(this.isNewCase){
+                        this.isNewCase = false;
+                    }else{
+                        this.isNewCase = true;
+                    }
+
                 }
             },
             created: function () {
