@@ -32,7 +32,10 @@ def get_case():
     :return:
     """
     args = request.args
-    case = JudgingCase(case_id=args['case_id'], graph_name=args['graph_name']) or JudgingCase(case_id=args['case_id'])
+    if 'graph_name' in args.keys():
+        case = JudgingCase(case_id=args['case_id'], graph_name=args['graph_name'])
+    else:
+        case = JudgingCase(case_id=args['case_id'])
     if case is None:
         return jsonify(error='指定案件不存在')
     _ = case.get_data(lang='en')
