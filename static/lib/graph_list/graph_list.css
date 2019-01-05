@@ -1,0 +1,190 @@
+@keyframes button-stand-up {
+    0% {
+        box-shadow: 0 0.1em 0.1em gray;
+        top: 0;
+    }
+    100% {
+        box-shadow: 0 0.2em 0.4em gray;
+        top: -0.2em;
+    }
+}
+
+@keyframes button-sit-down {
+    0% {
+        box-shadow: 0 0.2em 0.4em gray;
+        top: -0.2em;
+    }
+    100% {
+        box-shadow: 0 0.1em 0.1em gray;
+        top: 0;
+    }
+}
+
+@keyframes show-input-file {
+    0% {
+        height: 0;
+        opacity: 0;
+    }
+
+    100% {
+        height: 100%;
+        opacity: 1;
+    }
+}
+
+@keyframes hide-input-file {
+    0% {
+        height: 100%;
+        opacity: 1;
+    }
+    100% {
+        height: 0;
+        opacity: 0;
+    }
+}
+
+.main-config{
+}
+.main-config .top-main{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.top-main .new-graph{
+    background: #0fd9fb;
+    position: absolute;
+    /* height: 3em; */
+    width: 60%;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 3em;
+    margin-top: 0.3em;
+    cursor: pointer;
+    animation: button-sit-down .15s ease-in forwards;
+}
+.top-main .new-graph:hover{
+    animation: button-stand-up .2s ease-out forwards;
+}
+.main-config .bottom-main{
+    display: flex;
+    margin-top: 0.5em;
+}
+.main-config .bottom-main1{
+    display: flex;
+    margin-top: 6.5em;
+}
+.bottom-main1 .left-graph{
+    height: 80vh;
+    width: 50%;
+    margin-left: 1em;
+    border: 1px solid gray;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0.5em 0.5em #ccc;
+}
+.bottom-main1 .right-case{
+    height: 80vh;
+    width: 50%;
+    margin-left: 1em;
+    margin-right: 1em;
+    border: 1px solid gray;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0.5em 0.5em #ccc;
+}
+.bottom-main .left-graph{
+    height: 80vh;
+    width: 50%;
+    margin-left: 1em;
+    border: 1px solid gray;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0.5em 0.5em #ccc;
+}
+.bottom-main .right-case{
+    height: 80vh;
+    width: 50%;
+    margin-left: 1em;
+    margin-right: 1em;
+    border: 1px solid gray;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0.5em 0.5em #ccc;
+}
+.graph-input{
+    margin-top: 6.5em;
+}
+.show-input {
+    animation: show-input-file 1s ease-in forwards;
+}
+
+.hide-input {
+    animation: hide-input-file 1s ease-out forwards;
+}
+
+
+.left-graph .search-box{
+    display: flex;
+    justify-content: right;
+    margin-left: 2.8em;
+}
+.search-box .search{
+    margin-top: 1em;
+    border-radius: 20px;
+    outline: none;
+    text-indent: 0.5em;
+}
+.left-graph .search-icon{
+    cursor: pointer;
+    margin-top: 1.3em;
+    margin-left: 0.3em;
+}
+.left-graph .search-icon:hover{
+    box-shadow: 0 0.1em 0 0 gray;
+}
+.left-graph .graph-list{
+    width: 95%;
+    height: 100%;
+}
+.graph-list .graph-item{
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.1em;
+    box-shadow: 0 0 0.1em 0.1em #ccc inset;
+    border-radius: 5px;
+    font-size: 1.5em;
+    text-indent: 0.5em;
+}
+.graph-item .item-top{
+    display: flex;
+    justify-content: space-between;
+}
+.graph-item .item-bottom{
+    display: flex;
+    justify-content: space-between;
+}
+.graph-item .item-button-box{
+    padding-right: 0.5em;
+}
+.item-top .item-text{
+    width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.item-button-box .item-button{
+    cursor: pointer;
+    text-decoration: none;
+}
+.item-bottom .case-input{
+    border-radius: 20px;
+    font-size: 0.5em;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    margin-left: 1em;
+    width: 70%;
+}
+
+.currentGraph .show-id-input {
+    animation: show-input-file 1s ease-in forwards;
+}
+
+.currentGraph .hide-id-input {
+    animation: hide-input-file 1s ease-out forwards;
+}
