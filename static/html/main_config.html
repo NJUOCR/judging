@@ -53,7 +53,9 @@
 
             </div>
             <div class="right-case">
-
+                <graph-list :graph-list="graphList"
+                            @show-cases="showCases">
+                </graph-list>
             </div>
         </div>
     </div>
@@ -107,6 +109,19 @@
                 }
             },
             created: function () {
+                const url = "/get-graph-list";
+                fetch(url).then((response) => {
+                    if (response.status !== 200) {
+                        console.error("存在一个问题，状态码为：" + response.status);
+                        return null;
+                    }
+
+                    response.json().then((data) => {
+                        console.log(data);
+                        this.graphList = data;
+                        console.log(this.graphList);
+                    })
+                })
             }
         });
 
