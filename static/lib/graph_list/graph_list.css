@@ -117,8 +117,6 @@
 .hide-input {
     animation: hide-input-file 1s ease-out forwards;
 }
-
-
 .left-graph .search-box{
     display: flex;
     justify-content: right;
@@ -141,6 +139,14 @@
 .left-graph .graph-list{
     width: 95%;
     height: 100%;
+}
+.left-graph .separate-line{
+    height: 0.1em;
+    border-top: 0.1em dotted rgb(128, 137, 146);
+    border-right: none;
+    border-bottom: none;
+    border-left: none;
+    border-image: initial;
 }
 .graph-list .graph-item{
     display: flex;
@@ -174,17 +180,10 @@
 }
 .item-bottom .case-input{
     border-radius: 20px;
-    font-size: 0.5em;
-    padding-bottom: 1em;
+    font-size: 0.7em;
     margin-bottom: 1em;
     margin-left: 1em;
     width: 70%;
-}
-
-.currentGraph .show-id-input {
-    animation: show-input-file 1s ease-in forwards;
-}
-
-.currentGraph .hide-id-input {
-    animation: hide-input-file 1s ease-out forwards;
+    outline: none;
+    text-indent: 1em;
 }

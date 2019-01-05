@@ -23,33 +23,28 @@
         <div class="graph-input" v-bind:class="[isClicked ? 'show-input' : 'hide-input']" v-show="isFirstClick()">
             <input id="file-Portrait1" type="file" class="file" name="input-img">
         </div>
-        <!--   v-if="isClick()" v-bind:class="{ active: isClicked }"  -->
         <div :class="[ isFirstClick() ? 'bottom-main' : 'bottom-main1']">
             <div class="left-graph">
-                <!--
-                <ul class="main-button" v-if="isClicked" v-for="(item,index) in buttonlist"></ul>
-                -->
                 <div class="search-box">
                     <input id="search_input" class="search" type="text">
                     <span class="search-icon glyphicon glyphicon-search"></span>
                 </div>
-                <hr style=" height: 0.1em;border-top: 0.1em dotted rgb(128, 137, 146);
-                border-right: none;border-bottom: none;border-left: none;border-image: initial;" />
+                <hr class="separate-line"/>
                 <div class="graph-list-box">
                     <ul class="graph-list">
-                        <li class="graph-item" v-for="(item, index) in graphlist">
+                        <li class="graph-item" v-for="(item, index) in graphlist" :id="index">
                             <div class="item-top">
                                 <span class="item-text">{{ item }}</span>
                                 <div class="item-button-box">
-                                    <a class="item-button glyphicon glyphicon-plus" v-on:click="newCase()"></a>
+                                    <a class="item-button glyphicon glyphicon-plus" v-on:click="newCase(index, 'true')"></a>
                                     <a class="item-button glyphicon glyphicon-minus"></a>
                                 </div>
                             </div>
-                            <div class="item-bottom" :class="[ isNewCase ? 'show-input' : 'hide-input']">
+                            <div class="item-bottom" :class="classes(index)">
                                 <input id="case-id-input" class="case-input" type="text" >
                                 <div class="item-button-box">
                                     <a class="item-button glyphicon glyphicon-ok"></a>
-                                    <a class="item-button glyphicon glyphicon-remove" v-on:click="newCase()"></a>
+                                    <a class="item-button glyphicon glyphicon-remove" v-on:click="newCase(index, 'flase')"></a>
                                 </div>
                             </div>
                         </li>
@@ -58,7 +53,7 @@
 
             </div>
             <div class="right-case">
-                2
+
             </div>
         </div>
     </div>
@@ -73,7 +68,8 @@
                 label: "创建新案由",
 
                 graphlist:["1111", "2222"],
-                isNewCase: false
+                isNewCase: false,
+                currentIndex:"-1"
 
             },
             methods:{
@@ -90,13 +86,24 @@
                 isFirstClick: function (event) {
                     return this.isFirst;
                 },
-                newCase: function (event) {
-                    if(this.isNewCase){
-                        this.isNewCase = false;
-                    }else{
+                newCase: function (index, isTrue) {
+                    this.currentIndex = index;
+                    if(isTrue==="true"){
                         this.isNewCase = true;
+                    }else {
+                        this.isNewCase = false;
                     }
 
+                },
+                classes: function (index) {
+                    //[(index==currentIndex: 'currentGraph'),(isNewCase ? 'show-id-input' : 'hide-id-input')]
+                    let result_class = "";
+                    if(this.isNewCase&&(index===this.currentIndex||this.currentIndex==="-1")){
+                        result_class = result_class + " " + "show-input"
+                    }else {
+                        result_class = result_class + " " + "hide-input"
+                    }
+                    return result_class;
                 }
             },
             created: function () {
