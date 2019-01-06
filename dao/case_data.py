@@ -58,3 +58,8 @@ class CaseData:
     @staticmethod
     def remove(case_id: str):
         CaseData.table.remove(case_id)
+
+    @staticmethod
+    def removeAll(graph_name: str):
+        CaseData.table.remove({'名称': graph_name})
+

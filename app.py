@@ -3,7 +3,7 @@ import os
 import utils.unet as unet
 from typing import Tuple, List
 from service_invoker.service_invoke import ServiceInvoker
-from flask import Flask, request, jsonify, render_template, Response, send_file
+from flask import Flask, request, jsonify, render_template, Response, send_file, redirect, url_for
 from werkzeug.datastructures import FileStorage
 
 from logics.judging_case import JudgingCase
@@ -93,10 +93,10 @@ def test_upload():
 @app.route('/config-graph')
 def config_graph():
     # return render_template('graph_config.html')
-    return send_file('static/html/graph_config2.html')
+    return redirect('static/html/graph_config2.html')
 
 
-@app.route('/remove-graph', methods=['POST'])
+@app.route('/remove-graph')
 def remove_graph():
     """
     删除案由

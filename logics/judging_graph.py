@@ -1,6 +1,7 @@
 import json
 from logics.translation import translate_json
 from dao.graph_data import GraphData
+from dao.case_data import CaseData
 
 
 class JudgingGraph:
@@ -94,6 +95,7 @@ class JudgingGraph:
     def remove_graph(graph_name: str) -> bool:
         if JudgingGraph._data.exists(graph_name):
             JudgingGraph._data.remove_graph(graph_name)
+            CaseData.removeAll(graph_name)
             return True
         else:
             return False

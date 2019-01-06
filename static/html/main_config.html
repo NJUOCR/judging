@@ -11,6 +11,8 @@
     <script src="/static/lib/bootstrap/js/bootstrap.js"></script>
     <script src="/static/lib/bootstrap/js/fileinput.min.js"></script>
     <script src="/static/lib/vue/vue.js"></script>
+    <script src="/static/js/vue-components/graph_list.js"></script>
+    <script src="/static/js/vue-components/case_list.js"></script>
 </head>
 <body>
 
@@ -25,37 +27,16 @@
         </div>
         <div :class="[ isFirstClick() ? 'bottom-main' : 'bottom-main1']">
             <div class="left-graph">
-                <div class="search-box">
-                    <input id="search_input" class="search" type="text">
-                    <span class="search-icon glyphicon glyphicon-search"></span>
-                </div>
-                <hr class="separate-line"/>
-                <div class="graph-list-box">
-                    <ul class="graph-list">
-                        <li class="graph-item" v-for="(item, index) in graphlist" :id="index">
-                            <div class="item-top">
-                                <span class="item-text">{{ item }}</span>
-                                <div class="item-button-box">
-                                    <a class="item-button glyphicon glyphicon-plus" v-on:click="newCase(index, 'true')"></a>
-                                    <a class="item-button glyphicon glyphicon-minus"></a>
-                                </div>
-                            </div>
-                            <div class="item-bottom" :class="classes(index)">
-                                <input id="case-id-input" class="case-input" type="text" >
-                                <div class="item-button-box">
-                                    <a class="item-button glyphicon glyphicon-ok"></a>
-                                    <a class="item-button glyphicon glyphicon-remove" v-on:click="newCase(index, 'flase')"></a>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                <graph-list :graph-list="graphlist"
+                            @show-cases="showCases"
+                            @remove-graph="removeGraph">
+                </graph-list>
 
             </div>
             <div class="right-case">
-                <graph-list :graph-list="graphList"
-                            @show-cases="showCases">
-                </graph-list>
+                <case-list :case-list="caseList"
+                            @remove-case="removeCase">
+                </case-list>
             </div>
         </div>
     </div>
@@ -71,7 +52,9 @@
 
                 graphlist:["1111", "2222"],
                 isNewCase: false,
-                currentIndex:"-1"
+                currentIndex:"-1",
+
+                caseList:[]
 
             },
             methods:{
@@ -88,40 +71,75 @@
                 isFirstClick: function (event) {
                     return this.isFirst;
                 },
-                newCase: function (index, isTrue) {
-                    this.currentIndex = index;
-                    if(isTrue==="true"){
-                        this.isNewCase = true;
-                    }else {
-                        this.isNewCase = false;
-                    }
-
-                },
-                classes: function (index) {
-                    //[(index==currentIndex: 'currentGraph'),(isNewCase ? 'show-id-input' : 'hide-id-input')]
-                    let result_class = "";
-                    if(this.isNewCase&&(index===this.currentIndex||this.currentIndex==="-1")){
-                        result_class = result_class + " " + "show-input"
-                    }else {
-                        result_class = result_class + " " + "hide-input"
-                    }
-                    return result_class;
-                }
-            },
-            created: function () {
-                const url = "/get-graph-list";
-                fetch(url).then((response) => {
+                showCases:function(graphName){
+                    const url = "/get-cases?graph-name="+graphName
+                    fetch(url).then((response) => {
                     if (response.status !== 200) {
                         console.error("存在一个问题，状态码为：" + response.status);
                         return null;
                     }
 
                     response.json().then((data) => {
-                        console.log(data);
-                        this.graphList = data;
-                        console.log(this.graphList);
+                        this.caseList = data;
+                        console.log(this.caseList);
                     })
-                })
+                    })
+                },
+                updateGraph:function(){
+                    const url = "/get-graph-list";
+                    fetch(url, ).then((response) => {
+                        if (response.status !== 200) {
+                            console.error("存在一个问题，状态码为：" + response.status);
+                            return null;
+                        }
+
+                        response.json().then((data) => {
+                            console.log(data);
+                            this.graphlist = data;
+                            if(data!=null){
+                                this.showCases(data[0]);
+                            }
+                            console.log(this.graphlist);
+                        })
+                    })
+                },
+                removeGraph:function(graph_name){
+                    var r = confirm("是否确定删除？");
+                    const url = "/remove-graph?graph-name="+graph_name;
+                    if(r == true){
+                        fetch(url).then((response) => {
+                            if (response.status !== 200) {
+                                console.error("存在一个问题，状态码为：" + response.status);
+                                return null;
+                            }
+
+                            response.json().then((data) => {
+                                console.log(data);
+                                this.updateGraph();
+                            })
+                        });
+                    }
+                },
+                removeCase:function (case_id) {
+                    var r = confirm("是否确定删除？");
+                    const url = "/remove-case?case_id="+case_id;
+                    if(r == true){
+                        fetch(url).then((response) => {
+                            if (response.status !== 200) {
+                                console.error("存在一个问题，状态码为：" + response.status);
+                                return null;
+                            }
+
+                            response.json().then((data) => {
+                                console.log(data);
+                                this.updateGraph()
+                            })
+                        });
+                    }
+                }
+            },
+            created: function () {
+                this.updateGraph();
             }
         });
 
