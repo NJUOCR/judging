@@ -22,7 +22,8 @@
         <div class="top-main">
             <span class="new-graph" v-on:click="changeClicked()">{{ label }}</span>
         </div>
-        <div class="graph-input" v-bind:class="[isClicked ? 'show-input' : 'hide-input']" v-show="isFirstClick()">
+        <hr class="separate-top"/>
+        <div class="graph-input" v-bind:class="[isClicked ? 'show-input' : 'hide-input']" v-show="isClicked">
             <input id="file-Portrait1" type="file" class="file" name="input-img">
         </div>
         <div :class="[ isFirstClick() ? 'bottom-main' : 'bottom-main1']">
