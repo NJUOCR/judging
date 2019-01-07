@@ -10,14 +10,8 @@ Vue.component('graph-list', {
     },
     computed: {
         graphs: function () {
-            var result = Array();
-            var length = this.searchGraph.length
-            for (var i = 0; i < this.graphList.length; i++) {
-                if(this.graphList[i].length >= length && this.graphList[i].substring(0,length)==this.searchGraph) {
-                    result.push(this.graphList[i]);
-                }
-            }
-            return result;
+            var match = new RegExp(this.searchGraph, "i");
+            return this.graphList.filter(c => c.search(match)!==-1);
         }
     },
     template: `
@@ -64,7 +58,7 @@ Vue.component('graph-list', {
 
         },
         createCase: function (index, item) {
-            if (this.inputList[index] == undefined || this.inputList[index] == "" || this.inputList[index] == null) {
+            if (this.inputList[index] === undefined || this.inputList[index] === "" || this.inputList[index] === null) {
                 alert("输入不可以为空！");
                 return;
             }

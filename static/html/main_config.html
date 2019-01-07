@@ -73,7 +73,7 @@
                     return this.isFirst;
                 },
                 showCases:function(graphName){
-                    const url = "/get-cases?graph-name="+graphName
+                    const url = `/get-cases?graph-name=${graphName}`;
                     fetch(url).then((response) => {
                     if (response.status !== 200) {
                         console.error("存在一个问题，状态码为：" + response.status);
@@ -106,8 +106,8 @@
                 },
                 removeGraph:function(graph_name){
                     var r = confirm("是否确定删除？");
-                    const url = "/remove-graph?graph-name="+graph_name;
-                    if(r == true){
+                    const url = `/remove-graph?graph-name=${graph_name}`;
+                    if(r === true){
                         fetch(url).then((response) => {
                             if (response.status !== 200) {
                                 console.error("存在一个问题，状态码为：" + response.status);
@@ -123,8 +123,8 @@
                 },
                 removeCase:function (case_id) {
                     var r = confirm("是否确定删除？");
-                    const url = "/remove-case?case_id="+case_id;
-                    if(r == true){
+                    const url = `/remove-case?case_id=${case_id}`;
+                    if(r === true){
                         fetch(url).then((response) => {
                             if (response.status !== 200) {
                                 console.error("存在一个问题，状态码为：" + response.status);

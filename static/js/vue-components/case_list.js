@@ -10,14 +10,8 @@ Vue.component('case-list', {
         },
     computed: {
         cases: function () {
-            var result = Array();
-            var length = this.searchCase.length
-            for (var i = 0; i < this.caseList.length; i++) {
-                if(this.caseList[i].length >= length && this.caseList[i].substring(0,length)==this.searchCase) {
-                    result.push(this.caseList[i]);
-                }
-            }
-            return result;
+            var match = new RegExp(this.searchCase, "i");
+            return this.caseList.filter(c => c.search(match)!==-1);
         }
     },
     template: `

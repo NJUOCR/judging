@@ -259,7 +259,7 @@
             updateData: function () {
                 case_id = this.getCookie("case-id");
                 graph_name = this.getCookie("graph-name");
-                url = "/get-case?case_id="+case_id+"&graph_name="+graph_name;
+                url = `/get-case?case_id=${case_id}&graph_name=${graph_name}`;
 
                 // fetch(url).then(function (response) {
                 //     if (response.status !== 200) {
