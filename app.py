@@ -140,7 +140,10 @@ def upload():
     if request.method == 'POST':
         file = request.files['input-img']
         # multi files, use 'request.files.getlist(name)'
-        if file:
+        file_bundle: List[Tuple[str, FileStorage]] = list(request.files.items())
+        error_files = []
+        for file_tuple in file_bundle:
+            file = file_tuple[1]
             filename = unet.secure_filename(file.filename)
             raw_path = os.path.join('./static/graph_configs', filename)
             file.save(raw_path)
@@ -149,9 +152,9 @@ def upload():
                 dic.save()
                 return jsonify("上传成功")
             else:
-                return jsonify(error='json格式错误，请重新上传')
-        else:
-            return jsonify(error='no file is uploaded')
+                error_files.append(file_tuple[0])
+        if len(error_files) != 0:
+            return jsonify(error=str(error_files)+'json格式错误，请重新上传')
     else:
         return jsonify(error='method should be post')
 
