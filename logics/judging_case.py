@@ -30,6 +30,12 @@ class JudgingCase:
         else:
             return False
 
+    @staticmethod
+    def update_case(case: dict):
+        case_zh = translate_json(case, to='zh')
+        case_data = CaseData(case_zh, case_zh['_id'])
+        return case_data.update(case_zh)
+
     def get_data(self, lang: str = 'zh'):
         assert lang in ('en', 'zh')
         return self.data_obj.d if lang == 'zh' else translate_json(self.data_obj.d, to='en')

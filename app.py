@@ -109,6 +109,26 @@ def remove_graph():
     return jsonify('删除成功') if JudgingGraph.remove_graph(graph_name) else jsonify(error='指定案由不存在')
 
 
+@app.route('/update-case', methods=['POST'])
+def update_case():
+    """
+    更新一个新的案件
+    :return:
+    """
+    if request.method == 'POST':
+        case_data = request.json['case_data']
+        if case_data is None:
+            return jsonify(error='no case data upload')
+        case_id = case_data['_id']
+        case = JudgingCase(case_id)
+        if case.update_case(case_data):
+            return jsonify('update success')
+        else:
+            return jsonify(error='update failed')
+    else:
+        return jsonify(error='method should be post')
+
+
 @app.route('/upload', methods=['POST'])
 def upload():
     if request.method == 'POST':
