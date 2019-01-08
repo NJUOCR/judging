@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/static/css/hopping-form.css">
     <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
     <link rel="stylesheet" href="/static/css/tab-text-editor.css">
+    <link rel="stylesheet" href="/static/css/bool-list-editor.css">
     <link rel="stylesheet" href="/static/lib/slide_picture/carousel.css"/>
     <script src="/static/lib/vue/vue.js"></script>
     <script src="/static/js/vue-components/tab-text-editor.js"></script>
@@ -18,6 +19,8 @@
     <script src="/static/js/vue-components/media-resource.js"></script>
     <script src="/static/js/vue-components/file-uploader.js"></script>
     <script src="/static/js/vue-components/album.js"></script>
+    <script src="/static/js/vue-components/bool-list-editor.js"></script>
+
 </head>
 <body>
 <div id="graph-container" class="graph-container" @click="select(0, 0)">
@@ -26,7 +29,7 @@
          class="first-level-container" @click="select(1, firstLevelIdx);">
         <div class="box-arrow graph-item-selectable"
              :class="[ isSelected(firstLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected' ]">
-            <div class="box-arrow-text non-selectable">{{ first.name }}</div>
+            <div class="box-arrow-text non-selectable" v-text="(firstLevelIdx+1)+'. '+ first.name"></div>
             <div class="box-arrow-bg">
                 <div class="box-arrow-bg-top"></div>
                 <div class="box-arrow-bg-bottom"></div>
@@ -89,7 +92,9 @@
                                :selected="secondLevel.selectedIdx()"
                                :plain="secondLevel.plain"></selectable-header>
             <hr/>
-            <tab-text-editor :name-and-contents="secondLevel.outlines()"
+            <bool-list-editor @change-bool="changeBool"
+                              :list="secondLevel.boolOutlines()"></bool-list-editor>
+            <tab-text-editor :name-and-contents="secondLevel.textOutlines()"
                              :pointer="secondLevel.pointer"
                              @change-tab="changeTab"></tab-text-editor>
 
@@ -188,7 +193,6 @@
 </main>
 
 <script>
-    //ssssss
     let selection = [-1, -1, -1];
     let graph = new Vue({
         el: '#graph-container',
@@ -240,44 +244,26 @@
                 return true;
             },
 
-            getCookie:function(c_name){
-                if (document.cookie.length>0)
-                  {
-                  c_start=document.cookie.indexOf(c_name + "=")
-                  if (c_start!=-1)
-                    {
-                    c_start=c_start + c_name.length+1
-                    c_end=document.cookie.indexOf(";",c_start)
-                    if (c_end==-1){
-                        c_end=document.cookie.length
+            getCookie: function (c_name) {
+                if (document.cookie.length > 0) {
+                    c_start = document.cookie.indexOf(c_name + "=")
+                    if (c_start != -1) {
+                        c_start = c_start + c_name.length + 1
+                        c_end = document.cookie.indexOf(";", c_start)
+                        if (c_end == -1) {
+                            c_end = document.cookie.length
+                        }
+                        return document.cookie.substring(c_start, c_end)
                     }
-                    return document.cookie.substring(c_start,c_end)
-                    }
-                  }
+                }
                 return ""
             },
             updateData: function () {
+                // fixme 使用cookie的后果是，无法同时打开两个不同的案件
                 case_id = this.getCookie("case-id");
                 graph_name = this.getCookie("graph-name");
-                url = `/get-case?case_id=${case_id}&graph_name=${graph_name}`;
+                const url = `/get-case?case_id=${case_id}&graph_name=${graph_name}`;
 
-                // fetch(url).then(function (response) {
-                //     if (response.status !== 200) {
-                //         // todo #提示 使用 console.[error|warn]来区别输出级别，console.table来显示数组
-                //         console.error("存在一个问题，状态码为：" + response.status);
-                //         return;
-                //     }
-                //     //检查响应文本
-                //     response.json().then(function (data) {
-                //         console.log(data);
-                //         todo @杨关 js中的`this`指向的对象比较奇怪，指的是调用方法的那个对象，即`response.json()`而不是graph
-                //         this.structure = data
-                //     });
-                // }).catch(function (err) {
-                //     console.error("Fetch错误:" + err);
-                // })
-
-                // todo @杨关 使用lambda表达式代替`function`可以避免`this`瞎指
                 fetch(url).then((response) => {
                     if (response.status !== 200) {
                         console.error("存在一个问题，状态码为：" + response.status);
@@ -336,14 +322,35 @@
                     return graph.selection[1]
                 },
 
-                outlines: function () {
+                textOutlines: function () {
                     let secondItem = this.list()[this.selectedIdx()];
-                    if (secondItem && secondItem.outlines) {
+                    if (secondItem) {
+                        let txts = secondItem.outlines.filter(i => i.type !== 'bool');
+                        if (txts) {
+                            if (this.pointer >= txts.length) this.pointer = 0;
+
+                            return txts;
+                        }
+                    }
+
+                    this.pointer = -1;
+                    return [];
+                    /*if (secondItem && secondItem.outlines) {
                         if (this.pointer >= secondItem.outlines.length) this.pointer = 0;
                         return secondItem.outlines
                     } else {
                         this.pointer = -1;
                         return []
+                    }*/
+                },
+
+                boolOutlines: function () {
+                    let secondItem = this.list()[this.selectedIdx()];
+                    if (secondItem) {
+                        let bools = secondItem.outlines.filter(i => i.type === 'bool');
+                        return bools || [];
+                    } else {
+                        return [];
                     }
                 },
 
@@ -659,6 +666,11 @@
 
             changeTab: function (i) {
                 this.secondLevel.pointer = i;
+            },
+
+            changeBool: function (i) {
+                let boolItem = this.secondLevel.boolOutlines()[i];
+                boolItem.contents = boolItem.contents === '是' ? '否':'是';
             },
 
             l1Update: function () {

@@ -1,18 +1,19 @@
 import json
 import os
-import utils.unet as unet
 from typing import Tuple, List
-from service_invoker.service_invoke import ServiceInvoker
-from flask import Flask, request, jsonify, render_template, Response, send_file, redirect, url_for
+
+from flask import Flask, request, jsonify, render_template, Response, send_file, redirect
 from werkzeug.datastructures import FileStorage
 
+import utils.unet as unet
 from logics.judging_case import JudgingCase
 from logics.judging_graph import JudgingGraph
+from service_invoker.service_invoke import ServiceInvoker
 
 app = Flask(__name__)
 
-# TODO （删除案件  通过案由获得案由的案件列表 ）
 
+# TODO （删除案件  通过案由获得案由的案件列表 ）
 
 
 @app.route('/')
