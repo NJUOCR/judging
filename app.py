@@ -23,7 +23,7 @@ def hello_world():
 
 @app.route('/main-graph')
 def main_config():
-    return send_file('static/html/main_config.html')
+    return send_file('static/html/main_config2.html')
 
 
 @app.route('/get-case')
@@ -131,6 +131,12 @@ def update_case():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    """
+    todo @杨关 因为我们的文件组件是 `multiple` 的，这边要改成多文件上传
+    > 参考 `media-upload`
+    使用多文件上传
+    :return:
+    """
     if request.method == 'POST':
         file = request.files['input-img']
         # multi files, use 'request.files.getlist(name)'
