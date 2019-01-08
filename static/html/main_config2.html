@@ -34,7 +34,7 @@
         el: "#main",
         data: {
             creatingGraph: false,
-            graphList: ['1','2'],
+            graphList: [],
             configFileName: '选择案由配置文件',
             configFileForbid: false
         },
@@ -96,16 +96,17 @@
                     }
 
                     response.json().then((data) => {
-                        console.log(data);
-                        this.graphlist = Array(...data);
-                        console.log(this.graphlist);
+                        this.graphList = Array(...data);
                     })
-                })
+                });
             }
+        },
+
+        created: function () {
+            this.refresh();
         }
     });
 
-    main.refresh();
 </script>
 </body>
 </html>
