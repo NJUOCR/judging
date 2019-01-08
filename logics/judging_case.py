@@ -36,7 +36,6 @@ class JudgingCase:
 
     def remove_media(self, tree: list):
         """
-        todo @熊 实现删除媒体资源的功能，参考`insert_media()`
         移除一个媒体资源，包括相关文件和数据库的记录
         :param tree: 前端传来的数组, 包含子路径下的每一个目录名
         :param name: 媒体文件名称

@@ -12,7 +12,6 @@ function upFile(category, description) {
     formData.append("category", "测试案号123/查找被害人，确认死者身份/死亡时间/视听材料/图片集1");
     formData.append("description", "这是关于媒体1文件的描述，这个描述可以很长");
 
-    // todo #解释 文件名可以在后端得到
     fetch(url, {
         method: "post",
         body: formData
@@ -39,7 +38,6 @@ function validate(uploadBtn) {
     let audio = 0b0100;
     let other = 0b1000;
 
-    // todo #tips js可以这样声明一个函数
     let getMediaTypeBits = (suffix) => {
         suffix = suffix.toLowerCase();
         if (suffix === "jpg" || suffix === "png" || suffix === "bmp" || suffix === "svg") {
