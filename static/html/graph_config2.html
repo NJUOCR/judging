@@ -65,6 +65,9 @@
 </div>
 
 <main id="detail">
+    <aside id="tool">
+        <button @click="save" id="save-btn" class="glyphicon glyphicon-cloud-upload"></button>
+    </aside>
     <section id="first-level-section">
         <selectable-header v-on:change-candidate="changeCandidate"
                            v-on:step="step"
@@ -672,11 +675,15 @@
                 boolItem.contents = boolItem.contents === '是' ? '否':'是';
             },
 
+            save: function () {
+
+            },
+
             l1Update: function () {
 
             },
             l2Update: function () {
-                this.changeTab(-1);
+                this.changeTab(this.secondLevel.textOutlines().length > 0 ? 0 : -1);
             },
             l3Update: function () {
                 this.thirdLevel.mediaPointer = null;
