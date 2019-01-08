@@ -13,10 +13,8 @@ Vue.component('tab-text-editor', {
             <li v-for="(nc,i) in nameAndContents" :class="{'selected-tab': i===pointer}" @click="select(i)">{{nc.name}}</li>
         </ul>
     </header>
-        
-    <div>
-        <textarea v-if="pointer >= 0" v-model="pointer === -1 ? '' : nameAndContents[pointer].contents"></textarea>
-    </div>
+    <textarea v-if="pointer >= 0" v-model="pointer === -1 ? '' : nameAndContents[pointer].contents"></textarea>
+
 </article>
     `,
     methods: {
