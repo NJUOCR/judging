@@ -1,0 +1,28 @@
+#main{
+    display: flex;
+    align-content: stretch;
+    max-width: 30em;
+    margin: 0 auto;
+}
+
+.list{
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+.list>li{
+    position: relative;
+    list-style: none;
+}
+.create{
+    border: dashed lightgray 1px;
+}
+
+#graph-list{
+    flex-grow: 2;
+}
+
+#case-list{
+    flex-grow: 3;
+}
