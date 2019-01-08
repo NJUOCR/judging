@@ -13,9 +13,6 @@ from service_invoker.service_invoke import ServiceInvoker
 app = Flask(__name__)
 
 
-# TODO （删除案件  通过案由获得案由的案件列表 ）
-
-
 @app.route('/')
 def hello_world():
     return 'Hello World!'
