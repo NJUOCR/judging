@@ -104,7 +104,7 @@ class JudgingCase:
         ptr: dict = self.get_data()
         hierarchy = ('证据链条', '查证事项', '印证证据')
         tree_nodes = JudgingCase.translate_tree(tree, to='zh')
-        for node, level in zip(tree_nodes, hierarchy):
+        for node, level in zip(tree_nodes[1:], hierarchy):
             items = ptr[level]
             for idx, item in enumerate(items):
                 if item['名称'] == node:
@@ -114,7 +114,7 @@ class JudgingCase:
                 # 找不到指定路径
                 print(tree_nodes, 'not found')
 
-        """  ptr 现在应该指向
+        """  ptr 现在应该指向, eg.
         {
             名称: "视听材料",
             内容: []
@@ -145,4 +145,10 @@ class JudgingCase:
 
     @staticmethod
     def translate_tree(tree: Iterable, to: str) -> Iterable:
-        return map(lambda node: translate_key(node, to), tree)
+        """
+        第一个元素将不会被翻译，因为它是案号
+        :param tree: case_id, levels...
+        :param to:
+        :return:
+        """
+        return tree[:1] + list(map(lambda node: translate_key(node, to), tree[1:]))

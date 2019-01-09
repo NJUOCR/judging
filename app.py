@@ -189,7 +189,7 @@ def media_upload():
         return jsonify(error='No file is uploaded.')
 
     case_id = category[0]  # 案号
-    tree = category[1:]  # 媒体资源存储的子目录
+    tree = category  # 媒体资源存储的子目录
     media_name = category[-1]  # 媒体资源的名称，不是文件名，而是前端编辑的媒体名称。注意它是存储路径中最后一个子目录
     case = JudgingCase(case_id)
     assert case is not None, '不能获取案件实例，这可能是由于 数据库中没有对应案件的记录且无法根据图名初始化一个新的案件记录'
