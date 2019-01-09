@@ -11,8 +11,8 @@
 </head>
 <body>
 <main id="main">
-    <ul class="list" id="graph-list">
-        <li class="create">
+    <ul class="list" id="graph-list" @click="selectGraph();">
+        <li class="create graph graph-entry">
             <div>
                 <file-uploader @validate="validateGraphFile"
                                @upload="uploadGraphFile"
@@ -23,8 +23,8 @@
             </div>
         </li>
         <li v-for="(graphName, idx) in graphList"
-            :class="['entry', idx === curGraphId?'entry-selected':'entry-normal']"
-            @click="selectGraph(graphName, idx)"
+            :class="['entry', 'graph-entry', idx === curGraphId?'entry-selected':'entry-normal']"
+            @click="getCases(graphName, idx)"
             >
             <span class="entry-name">{{ graphName }}</span>
             <span class="entry-control" v-if="idx === curGraphId">
@@ -34,9 +34,17 @@
             </span>
         </li>
     </ul>
-    <ul class="list" id="case-list">
-        <li v-for="(caseName, idx) in caseList"
-            :class="['entry']"></li>
+    <ul :class="['list', caseList.length===0?'empty':'']" id="case-list">
+        <li v-for="(caseId, idx) in caseList"
+            :class="['entry', 'case-entry']">
+            <a class="entry-name" :href="`/config-graph?case-id=${caseId}`"
+               target="_blank" v-text="caseId"></a>
+            <span class="entry-control">
+                <div>
+                    <span class="glyphicon glyphicon-remove "></span>
+                </div>
+            </span>
+        </li>
     </ul>
 </main>
 
@@ -87,9 +95,8 @@
                 }
                 this.configFileForbid = notJson;
             },
-            selectGraph: function (graphName, idx) {
-                window.event.preventDefault();
-                this.curGraphId = idx;
+            getCases: function (graphName, idx) {
+                window.event['graphIdx'] = idx;
                 const url = `/get-cases?graph-name=${graphName}`;
                 fetch(url).then((response) => {
                     if (response.status !== 200) {
@@ -102,6 +109,15 @@
                         console.log(this.caseList);
                     })
                 })
+            },
+            selectGraph: function () {
+                let idx = parseInt(window.event['graphIdx']);
+                if(idx >= 0){
+                    this.curGraphId = idx;
+                }else{
+                    this.curGraphId = -1;
+                    this.caseList = [];
+                }
             },
             refresh: function () {
                 const url = "/get-graph-list";

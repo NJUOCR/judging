@@ -91,7 +91,7 @@ def test_upload():
 @app.route('/config-graph')
 def config_graph():
     args = {**request.args}
-    case_id = args['case-id'] if 'case-id' in args else '测试案号123'
+    case_id = args['case-id'][0] if 'case-id' in args else '测试案号123'
     return render_template('graph_config2.html', case_id=case_id)
     # return redirect('static/html/graph_config2.html')
 
