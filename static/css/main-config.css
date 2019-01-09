@@ -3,10 +3,14 @@
     width: 50em;
     height: 100vh;
     margin: 0 auto;
+    background-color: lightgrey;
 }
 
 body {
-    background-color: lightgrey;
+    background: linear-gradient(to top, #7daac0, #9E9E9E);
+    background: -webkit-linear-gradient( top, #7daac0, #9E9E9E);
+    background: -o-linear-gradient( top, #7daac0, #9E9E9E);
+    background: -moz-linear-gradient( top, #7daac0, #9E9E9E);
 }
 
 .list {
@@ -22,9 +26,6 @@ body {
     list-style: none;
 }
 
-.create {
-    border: dashed lightgray 1px;
-}
 
 @keyframes entry-selected {
     0% {
@@ -95,17 +96,32 @@ body {
     padding: .4em;
     flex-grow: 1;
 }
+input.entry-name{
+    outline: none;
+    border: none;
+    border-bottom: solid 1px rgba(0,0,0,.3);
+}
 
 .entry-control {
     display: inline-block;
     background-color: transparent;
+}
+.entry-control.entry-control-remove{
     color: #c26a63;
+}
+.entry-control.entry-control-add{
+    color: #00B050;
 }
 
 .entry-control:hover {
-    background-color: #c26a63;
     color: whitesmoke;
     cursor: pointer;
+}
+.entry-control.entry-control-remove:hover{
+    background-color: #c26a63;
+}
+.entry-control.entry-control-add:hover{
+    background-color: #00B050;
 }
 
 .entry-control > div {

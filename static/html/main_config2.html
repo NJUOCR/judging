@@ -12,7 +12,7 @@
 <body>
 <main id="main">
     <ul class="list" id="graph-list" @click="selectGraph();">
-        <li class="create graph graph-entry">
+        <li class="graph graph-entry entry-normal">
             <div>
                 <file-uploader @validate="validateGraphFile"
                                @upload="uploadGraphFile"
@@ -27,7 +27,7 @@
             @click="getCases(graphName, idx)"
             >
             <span class="entry-name">{{ graphName }}</span>
-            <span class="entry-control" v-if="idx === curGraphId">
+            <span class="entry-control entry-control-remove" v-if="idx === curGraphId">
                 <div>
                     <span class="glyphicon glyphicon-remove "></span>
                 </div>
@@ -35,11 +35,22 @@
         </li>
     </ul>
     <ul :class="['list', caseList.length===0?'empty':'']" id="case-list">
+        <!-- 案件 新建 -->
+        <li class="entry case-entry" v-if="curGraphId>=0">
+            <input class="entry-name" v-model="newCaseId" placeholder="输入 #案号# 以新建">
+            <span class="entry-control entry-control-add">
+                <div>
+                    <span class="glyphicon glyphicon-plus"></span>
+                </div>
+            </span>
+        </li>
+
+        <!-- 案件 列表项 -->
         <li v-for="(caseId, idx) in caseList"
             :class="['entry', 'case-entry']">
             <a class="entry-name" :href="`/config-graph?case-id=${caseId}`"
                target="_blank" v-text="caseId"></a>
-            <span class="entry-control">
+            <span class="entry-control entry-control-remove">
                 <div>
                     <span class="glyphicon glyphicon-remove "></span>
                 </div>
@@ -58,7 +69,8 @@
             configFileName: '选择案由配置文件',
             configFileForbid: false,
 
-            caseList: []
+            caseList: [],
+            newCaseId: ''
         },
         methods: {
             createGraph: function () {
