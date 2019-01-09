@@ -2,7 +2,7 @@
 <html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ case_id }}</title>
     <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/graph-components.css">
     <link rel="stylesheet" href="/static/css/selectable-header.css">
@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/static/css/hopping-form.css">
     <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
     <link rel="stylesheet" href="/static/css/tab-text-editor.css">
+    <link rel="stylesheet" href="/static/css/bool-list-editor.css">
     <link rel="stylesheet" href="/static/lib/slide_picture/carousel.css"/>
     <script src="/static/lib/vue/vue.js"></script>
     <script src="/static/js/vue-components/tab-text-editor.js"></script>
@@ -18,6 +19,8 @@
     <script src="/static/js/vue-components/media-resource.js"></script>
     <script src="/static/js/vue-components/file-uploader.js"></script>
     <script src="/static/js/vue-components/album.js"></script>
+    <script src="/static/js/vue-components/bool-list-editor.js"></script>
+
 </head>
 <body>
 <div id="graph-container" class="graph-container" @click="select(0, 0)">
@@ -26,7 +29,7 @@
          class="first-level-container" @click="select(1, firstLevelIdx);">
         <div class="box-arrow graph-item-selectable"
              :class="[ isSelected(firstLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected' ]">
-            <div class="box-arrow-text non-selectable">{{ first.name }}</div>
+            <div class="box-arrow-text non-selectable" v-text="(firstLevelIdx+1)+'. '+ first.name"></div>
             <div class="box-arrow-bg">
                 <div class="box-arrow-bg-top"></div>
                 <div class="box-arrow-bg-bottom"></div>
@@ -37,9 +40,9 @@
                 <div class='second-level-container' @click="select(2, secondLevelIdx);">
                     <div class="second-level-text graph-item-selectable"
                          :class="[ isSelected(firstLevelIdx, secondLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected']">
-                        <div class="non-selectable">{{ second.name.substring(0, parseInt(1 + second.name.length)/2) }}
+                        <div class="non-selectable" v-text="second.name.substring(0, parseInt(1 + second.name.length)/2)">
                         </div>
-                        <div class="non-selectable">{{ second.name.substring(parseInt(1 + second.name.length)/2) }}
+                        <div class="non-selectable" v-text="second.name.substring(parseInt(1 + second.name.length)/2)">
                         </div>
                     </div>
                     <ul class="horizontal-list">
@@ -50,7 +53,7 @@
                                 <div ondblclick="window.location = '#third-level-section'"
                                      class="third-level-text graph-item-selectable"
                                      :class="[isSelected(firstLevelIdx, secondLevelIdx, thirdLevelIdx) ? 'graph-item-selected':'graph-item-unselected' ]">
-                                    <span class="non-selectable"> {{ third.name }}</span>
+                                    <span class="non-selectable" v-text="third.name"></span>
                                 </div>
                             </div>
                         </li>
@@ -61,8 +64,10 @@
     </div>
 </div>
 
-<!-- todo #HTML5语义化标签 https://developer.mozilla.org/zh-CN/docs/Web/Guide/HTML/HTML5/HTML5_element_list -->
 <main id="detail">
+    <aside id="tool">
+        <button :disabled="isUpdateCompleted" @click="save" id="save-btn" class="glyphicon glyphicon-cloud-upload"></button>
+    </aside>
     <section id="first-level-section">
         <selectable-header v-on:change-candidate="changeCandidate"
                            v-on:step="step"
@@ -89,7 +94,9 @@
                                :selected="secondLevel.selectedIdx()"
                                :plain="secondLevel.plain"></selectable-header>
             <hr/>
-            <tab-text-editor :name-and-contents="secondLevel.outlines()"
+            <bool-list-editor @change-bool="changeBool"
+                              :list="secondLevel.boolOutlines()"></bool-list-editor>
+            <tab-text-editor :name-and-contents="secondLevel.textOutlines()"
                              :pointer="secondLevel.pointer"
                              @change-tab="changeTab"></tab-text-editor>
 
@@ -98,7 +105,7 @@
              @click="switchSecondLevel">
             <span v-if="!secondLevel.hide" class="glyphicon glyphicon-option-vertical"></span>
             <span v-if="secondLevel.hide" class="l2-char"
-                  v-for="char in secondLevel.listNames()[secondLevel.selectedIdx()]"> {{ char }}</span>
+                  v-for="char in secondLevel.listNames()[secondLevel.selectedIdx()]" v-text="char"></span>
         </div>
         <section class="" id="third-level-section">
             <selectable-header @change-candidate="changeCandidate" @step="step"
@@ -188,7 +195,8 @@
 </main>
 
 <script>
-    //ssssss
+    const caseId = '{{ case_id }}';
+    console.log(caseId);
     let selection = [-1, -1, -1];
     let graph = new Vue({
         el: '#graph-container',
@@ -240,44 +248,26 @@
                 return true;
             },
 
-            getCookie:function(c_name){
-                if (document.cookie.length>0)
-                  {
-                  c_start=document.cookie.indexOf(c_name + "=")
-                  if (c_start!=-1)
-                    {
-                    c_start=c_start + c_name.length+1
-                    c_end=document.cookie.indexOf(";",c_start)
-                    if (c_end==-1){
-                        c_end=document.cookie.length
+            getCookie: function (c_name) {
+                if (document.cookie.length > 0) {
+                    c_start = document.cookie.indexOf(c_name + "=")
+                    if (c_start != -1) {
+                        c_start = c_start + c_name.length + 1
+                        c_end = document.cookie.indexOf(";", c_start)
+                        if (c_end == -1) {
+                            c_end = document.cookie.length
+                        }
+                        return document.cookie.substring(c_start, c_end)
                     }
-                    return document.cookie.substring(c_start,c_end)
-                    }
-                  }
+                }
                 return ""
             },
             updateData: function () {
+                // fixme 使用cookie的后果是，无法同时打开两个不同的案件
                 case_id = this.getCookie("case-id");
                 graph_name = this.getCookie("graph-name");
-                url = `/get-case?case_id=${case_id}&graph_name=${graph_name}`;
+                const url = `/get-case?case_id=${case_id}&graph_name=${graph_name}`;
 
-                // fetch(url).then(function (response) {
-                //     if (response.status !== 200) {
-                //         // todo #提示 使用 console.[error|warn]来区别输出级别，console.table来显示数组
-                //         console.error("存在一个问题，状态码为：" + response.status);
-                //         return;
-                //     }
-                //     //检查响应文本
-                //     response.json().then(function (data) {
-                //         console.log(data);
-                //         todo @杨关 js中的`this`指向的对象比较奇怪，指的是调用方法的那个对象，即`response.json()`而不是graph
-                //         this.structure = data
-                //     });
-                // }).catch(function (err) {
-                //     console.error("Fetch错误:" + err);
-                // })
-
-                // todo @杨关 使用lambda表达式代替`function`可以避免`this`瞎指
                 fetch(url).then((response) => {
                     if (response.status !== 200) {
                         console.error("存在一个问题，状态码为：" + response.status);
@@ -302,6 +292,7 @@
         el: '#detail',
         data: {
             selection: Array(...selection),
+            isUpdateCompleted: false,
             firstLevel: {
                 listNames: function () {
                     if (graph.structure.firstLevelItems)
@@ -336,14 +327,35 @@
                     return graph.selection[1]
                 },
 
-                outlines: function () {
+                textOutlines: function () {
                     let secondItem = this.list()[this.selectedIdx()];
-                    if (secondItem && secondItem.outlines) {
+                    if (secondItem) {
+                        let txts = secondItem.outlines.filter(i => i.type !== 'bool');
+                        if (txts) {
+                            if (this.pointer >= txts.length) this.pointer = 0;
+
+                            return txts;
+                        }
+                    }
+
+                    this.pointer = -1;
+                    return [];
+                    /*if (secondItem && secondItem.outlines) {
                         if (this.pointer >= secondItem.outlines.length) this.pointer = 0;
                         return secondItem.outlines
                     } else {
                         this.pointer = -1;
                         return []
+                    }*/
+                },
+
+                boolOutlines: function () {
+                    let secondItem = this.list()[this.selectedIdx()];
+                    if (secondItem) {
+                        let bools = secondItem.outlines.filter(i => i.type === 'bool');
+                        return bools || [];
+                    } else {
+                        return [];
                     }
                 },
 
@@ -419,6 +431,30 @@
                 this.thirdLevel.active = num;
 
                 this.thirdLevel.leaveToClass = offset > 0 ? "carousel-animate-leave-to-left" : "carousel-animate-leave-to-right";
+            },
+            save: function(){
+                this.isUpdateCompleted = true;
+                let url = "/update-case";
+                console.log("qwerty" + case_id);
+                let case_data = graph.structure;
+                console.log(case_data);
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        case_data: case_data
+                    })
+                }).then((res) => {
+                    if (res.ok) {
+                        //graph.updateData();
+                        console.log("更新成功")
+                    }else {
+                        console.log("更新失败")
+                    }
+                    this.isUpdateCompleted = false;
+                });
             },
             changeCandidate: function (idx, componentName) {
                 // console.log(idx + ' ' + componentName);
@@ -661,11 +697,16 @@
                 this.secondLevel.pointer = i;
             },
 
+            changeBool: function (i) {
+                let boolItem = this.secondLevel.boolOutlines()[i];
+                boolItem.contents = boolItem.contents === '是' ? '否':'是';
+            },
+
             l1Update: function () {
 
             },
             l2Update: function () {
-                this.changeTab(-1);
+                this.changeTab(this.secondLevel.textOutlines().length > 0 ? 0 : -1);
             },
             l3Update: function () {
                 this.thirdLevel.mediaPointer = null;

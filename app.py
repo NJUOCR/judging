@@ -1,18 +1,16 @@
 import json
 import os
-import utils.unet as unet
 from typing import Tuple, List
-from service_invoker.service_invoke import ServiceInvoker
-from flask import Flask, request, jsonify, render_template, Response, send_file, redirect, url_for
+
+from flask import Flask, request, jsonify, render_template, Response, send_file, redirect
 from werkzeug.datastructures import FileStorage
 
+import utils.unet as unet
 from logics.judging_case import JudgingCase
 from logics.judging_graph import JudgingGraph
+from service_invoker.service_invoke import ServiceInvoker
 
 app = Flask(__name__)
-
-# TODO （删除案件  通过案由获得案由的案件列表 ）
-
 
 
 @app.route('/')
@@ -22,7 +20,7 @@ def hello_world():
 
 @app.route('/main-graph')
 def main_config():
-    return send_file('static/html/main_config.html')
+    return send_file('static/html/main_config2.html')
 
 
 @app.route('/get-case')
@@ -92,8 +90,10 @@ def test_upload():
 
 @app.route('/config-graph')
 def config_graph():
-    # return render_template('graph_config.html')
-    return redirect('static/html/graph_config2.html')
+    args = {**request.args}
+    case_id = args['case-id'] if 'case-id' in args else '测试案号123'
+    return render_template('graph_config2.html', case_id=case_id)
+    # return redirect('static/html/graph_config2.html')
 
 
 @app.route('/remove-graph')
@@ -108,12 +108,41 @@ def remove_graph():
     return jsonify('删除成功') if JudgingGraph.remove_graph(graph_name) else jsonify(error='指定案由不存在')
 
 
+@app.route('/update-case', methods=['POST'])
+def update_case():
+    """
+    更新一个新的案件
+    :return:
+    """
+    if request.method == 'POST':
+        case_data = request.json['case_data']
+        if case_data is None:
+            return jsonify(error='no case data upload')
+        case_id = case_data['_id']
+        case = JudgingCase(case_id)
+        if case.update_case(case_data):
+            return jsonify('update success')
+        else:
+            return jsonify(error='update failed')
+    else:
+        return jsonify(error='method should be post')
+
+
 @app.route('/upload', methods=['POST'])
 def upload():
+    """
+    todo @杨关 因为我们的文件组件是 `multiple` 的，这边要改成多文件上传
+    > 参考 `media-upload`
+    使用多文件上传
+    :return:
+    """
     if request.method == 'POST':
         file = request.files['input-img']
         # multi files, use 'request.files.getlist(name)'
-        if file:
+        file_bundle: List[Tuple[str, FileStorage]] = list(request.files.items())
+        error_files = []
+        for file_tuple in file_bundle:
+            file = file_tuple[1]
             filename = unet.secure_filename(file.filename)
             raw_path = os.path.join('./static/graph_configs', filename)
             file.save(raw_path)
@@ -122,9 +151,9 @@ def upload():
                 dic.save()
                 return jsonify("上传成功")
             else:
-                return jsonify(error='json格式错误，请重新上传')
-        else:
-            return jsonify(error='no file is uploaded')
+                error_files.append(file_tuple[0])
+        if len(error_files) != 0:
+            return jsonify(error=str(error_files)+'json格式错误，请重新上传')
     else:
         return jsonify(error='method should be post')
 

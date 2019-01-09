@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/main-config.css">
+    <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
+    <script src="/static/lib/vue/vue.js"></script>
+    <script src="/static/js/vue-components/file-uploader.js"></script>
+</head>
+<body>
+<main id="main">
+    <ul class="list" id="graph-list">
+        <li class="create">
+            <div>
+                <file-uploader @validate="validateGraphFile"
+                               @upload="uploadGraphFile"
+                               :forbid-upload="false"
+                               :input-text="configFileName">
+
+                </file-uploader>
+            </div>
+        </li>
+        <li v-for="(graphName, idx) in graphList"
+            :class="['entry', idx === curGraphId?'entry-selected':'entry-normal']"
+            @click="selectGraph(graphName, idx)"
+            >
+            <span class="entry-name">{{ graphName }}</span>
+            <span class="entry-control" v-if="idx === curGraphId">
+                <div>
+                    <span class="glyphicon glyphicon-remove "></span>
+                </div>
+            </span>
+        </li>
+    </ul>
+    <ul class="list" id="case-list">
+        <li v-for="(caseName, idx) in caseList"
+            :class="['entry']"></li>
+    </ul>
+</main>
+
+<script>
+    let main = new Vue({
+        el: "#main",
+        data: {
+            creatingGraph: false,
+            curGraphId: -1,
+            graphList: [],
+            configFileName: '选择案由配置文件',
+            configFileForbid: false,
+
+            caseList: []
+        },
+        methods: {
+            createGraph: function () {
+                this.creatingGraph = !this.creatingGraph;
+            },
+            uploadGraphFile: function (files) {
+                const url = "/media-upload";
+                let formData = new FormData();
+
+                files.forEach((temp) => {
+                    let filename = temp.name;
+                    formData.append(filename, temp);
+                });
+
+                fetch(url, {
+                    method: 'post',
+                    body: formData
+                }).then(res => {
+                    if (res.ok) {
+                        this.refresh();
+                    }
+                }).catch(err => {
+                    console.error(err);
+                })
+            },
+            validateGraphFile: function (files) {
+                let notJson = files.some(f => f.name.split('.').pop().toLowerCase() !== 'json')
+                if (notJson) {
+                    this.configFileName = '只允许 .json 文件'
+                } else if (files.length === 1) {
+                    this.configFileName = files[0].name;
+                } else {
+                    this.configFileName = `${files.length}个文件`
+                }
+                this.configFileForbid = notJson;
+            },
+            selectGraph: function (graphName, idx) {
+                window.event.preventDefault();
+                this.curGraphId = idx;
+                const url = `/get-cases?graph-name=${graphName}`;
+                fetch(url).then((response) => {
+                    if (response.status !== 200) {
+                        console.error("存在一个问题，状态码为：" + response.status);
+                        return null;
+                    }
+
+                    response.json().then((data) => {
+                        this.caseList = data;
+                        console.log(this.caseList);
+                    })
+                })
+            },
+            refresh: function () {
+                const url = "/get-graph-list";
+                fetch(url,).then((response) => {
+                    if (response.status !== 200) {
+                        console.error("存在一个问题，状态码为：" + response.status);
+                        return null;
+                    }
+
+                    response.json().then((data) => {
+                        this.graphList = Array(...data);
+                    })
+                });
+            }
+        },
+
+        created: function () {
+            this.refresh();
+        }
+    });
+
+</script>
+</body>
+</html>
