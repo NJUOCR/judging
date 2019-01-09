@@ -260,6 +260,7 @@ section audio {
     background-color: whitesmoke;
     border-radius: 50%;
     box-shadow: 0 0 1em black;
+    z-index: 1000;
 }
 #save-btn:hover{
     background-color: #1b6d85;

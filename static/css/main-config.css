@@ -26,6 +26,11 @@ body {
     list-style: none;
 }
 
+.list .separator{
+    height: 1px;
+    margin: .5em 20%;
+    /*background: linear-gradient(to right, #a4a4a4, grey, #a4a4a4);*/
+}
 
 @keyframes entry-selected {
     0% {
@@ -132,6 +137,11 @@ input.entry-name{
     padding: .5em;
 }
 
+.invalid-control{
+    cursor: not-allowed;
+    opacity: .5;
+}
+
 #graph-list {
     flex-grow: 2;
     width: 60%;
@@ -140,7 +150,7 @@ input.entry-name{
 .graph-entry {
     /*border-top: 2px solid rgba(0, 0, 0, .1);*/
     /*border-bottom: 2px solid rgba(0, 0, 0, .1);*/
-    border-left: 5px solid rgba(0, 0, 0, .3);
+    border-left: 5px solid #795548;
 }
 
 #case-list {

@@ -248,25 +248,8 @@
                 return true;
             },
 
-            getCookie: function (c_name) {
-                if (document.cookie.length > 0) {
-                    c_start = document.cookie.indexOf(c_name + "=")
-                    if (c_start != -1) {
-                        c_start = c_start + c_name.length + 1
-                        c_end = document.cookie.indexOf(";", c_start)
-                        if (c_end == -1) {
-                            c_end = document.cookie.length
-                        }
-                        return document.cookie.substring(c_start, c_end)
-                    }
-                }
-                return ""
-            },
             updateData: function () {
-                // fixme 使用cookie的后果是，无法同时打开两个不同的案件
-                case_id = this.getCookie("case-id");
-                graph_name = this.getCookie("graph-name");
-                const url = `/get-case?case_id=${case_id}&graph_name=${graph_name}`;
+                const url = `/get-case?case_id=${caseId}`;
 
                 fetch(url).then((response) => {
                     if (response.status !== 200) {
@@ -435,9 +418,7 @@
             save: function(){
                 this.isUpdateCompleted = true;
                 let url = "/update-case";
-                console.log("qwerty" + case_id);
                 let case_data = graph.structure;
-                console.log(case_data);
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -449,7 +430,9 @@
                 }).then((res) => {
                     if (res.ok) {
                         //graph.updateData();
-                        console.log("更新成功")
+                        res.text().then(txt => {
+                            console.info(`[保存案件] -> ${txt}`);
+                        })
                     }else {
                         console.log("更新失败")
                     }

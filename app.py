@@ -34,6 +34,8 @@ def get_case():
         case = JudgingCase(case_id=args['case_id'], graph_name=args['graph_name'])
     else:
         case = JudgingCase(case_id=args['case_id'])
+
+    # case will never be none
     if case is None:
         return jsonify(error='指定案件不存在')
     _ = case.get_data(lang='en')
@@ -91,7 +93,7 @@ def test_upload():
 @app.route('/config-graph')
 def config_graph():
     args = {**request.args}
-    case_id = args['case-id'][0] if 'case-id' in args else '测试案号123'
+    case_id = args['case-id'][0] if 'case-id' in args else ''
     return render_template('graph_config2.html', case_id=case_id)
     # return redirect('static/html/graph_config2.html')
 
@@ -103,7 +105,6 @@ def remove_graph():
     :return:
     """
     args = request.args
-    print('123')
     graph_name = args['graph-name']
     return jsonify('删除成功') if JudgingGraph.remove_graph(graph_name) else jsonify(error='指定案由不存在')
 

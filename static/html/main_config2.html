@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>XXX系统</title>
     <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/main-config.css">
     <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
@@ -12,20 +12,24 @@
 <body>
 <main id="main">
     <ul class="list" id="graph-list" @click="selectGraph();">
+        <!-- 新增 案由 （配置文件） -->
         <li class="graph graph-entry entry-normal">
             <div>
                 <file-uploader @validate="validateGraphFile"
                                @upload="uploadGraphFile"
-                               :forbid-upload="false"
-                               :input-text="configFileName">
+                               :forbid-upload="configFileForbid"
+                               :input-text="configFileName"
+                               :btn-text="`<span class='glyphicon glyphicon-plus'></span>`">
 
                 </file-uploader>
             </div>
         </li>
+        <li role="separator" class="separator"></li>
+
+        <!-- 案由列表项 -->
         <li v-for="(graphName, idx) in graphList"
             :class="['entry', 'graph-entry', idx === curGraphId?'entry-selected':'entry-normal']"
-            @click="getCases(graphName, idx)"
-            >
+            @click="getCases(graphName, idx)">
             <span class="entry-name">{{ graphName }}</span>
             <span class="entry-control entry-control-remove" v-if="idx === curGraphId">
                 <div>
@@ -38,7 +42,9 @@
         <!-- 案件 新建 -->
         <li class="entry case-entry" v-if="curGraphId>=0">
             <input class="entry-name" v-model="newCaseId" placeholder="输入 #案号# 以新建">
-            <span class="entry-control entry-control-add">
+            <span class="entry-control entry-control-add"
+                  :class="[isCaseIdValid()?'':'invalid-control']"
+                  @click="createCase">
                 <div>
                     <span class="glyphicon glyphicon-plus"></span>
                 </div>
@@ -50,9 +56,9 @@
             :class="['entry', 'case-entry']">
             <a class="entry-name" :href="`/config-graph?case-id=${caseId}`"
                target="_blank" v-text="caseId"></a>
-            <span class="entry-control entry-control-remove">
+            <span class="entry-control entry-control-remove" @click="removeCase(caseId);">
                 <div>
-                    <span class="glyphicon glyphicon-remove "></span>
+                    <span class="glyphicon glyphicon-remove"></span>
                 </div>
             </span>
         </li>
@@ -67,7 +73,7 @@
             curGraphId: -1,
             graphList: [],
             configFileName: '选择案由配置文件',
-            configFileForbid: false,
+            configFileForbid: true,
 
             caseList: [],
             newCaseId: ''
@@ -97,18 +103,21 @@
                 })
             },
             validateGraphFile: function (files) {
-                let notJson = files.some(f => f.name.split('.').pop().toLowerCase() !== 'json')
-                if (notJson) {
+                let notJson = files.some(f => f.name.split('.').pop().toLowerCase() !== 'json');
+                if (files.length === 0) {
+                    this.configFileName = '至少选择一个文件';
+                } else if (notJson) {
                     this.configFileName = '只允许 .json 文件'
                 } else if (files.length === 1) {
                     this.configFileName = files[0].name;
                 } else {
                     this.configFileName = `${files.length}个文件`
                 }
-                this.configFileForbid = notJson;
+                this.configFileForbid = notJson || files.length === 0;
             },
             getCases: function (graphName, idx) {
-                window.event['graphIdx'] = idx;
+                if (arguments.length > 1) window.event['graphIdx'] = idx;
+
                 const url = `/get-cases?graph-name=${graphName}`;
                 fetch(url).then((response) => {
                     if (response.status !== 200) {
@@ -124,12 +133,45 @@
             },
             selectGraph: function () {
                 let idx = parseInt(window.event['graphIdx']);
-                if(idx >= 0){
+                if (idx >= 0) {
                     this.curGraphId = idx;
-                }else{
+                } else {
                     this.curGraphId = -1;
                     this.caseList = [];
                 }
+            },
+            isCaseIdValid: function () {
+                let id = this.newCaseId;
+                return !(id === undefined ||
+                    id === null ||
+                    id === '' ||
+                    this.caseList.some(caseId => caseId === id));
+            },
+            createCase: function () {
+                if (!this.isCaseIdValid()) {
+                    console.info('案号不合法')
+                }
+                let graphName = this.graphList[this.curGraphId];
+                const url = `/get-case?case_id=${this.newCaseId}&graph_name=${graphName}`;
+                fetch(url, {
+                    method: 'get'
+                }).then(res => {
+                    // 省略参数 id
+                    if (res.ok) this.getCases(graphName)
+                })
+            },
+            removeCase: function (caseId) {
+                const url = `/remove-case?case_id=${caseId}`;
+                fetch(url, {
+                    method: 'get'
+                }).then(res => {
+                    if (res.ok) {
+                        res.text().then(txt => {
+                            console.log(`[删除案件] -> ${txt}`);
+                            this.getCases(this.graphList[this.curGraphId]);
+                        })
+                    }
+                })
             },
             refresh: function () {
                 const url = "/get-graph-list";

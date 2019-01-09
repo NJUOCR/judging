@@ -1,5 +1,5 @@
 Vue.component('file-uploader', {
-    props: ['forbidUpload', 'inputText'],
+    props: ['forbidUpload', 'inputText', 'btnText'],
     template: `
         <div class="up-file">
             <div class="up-file-control input-file">
@@ -7,7 +7,11 @@ Vue.component('file-uploader', {
                        @change="validate"/>
                        {{ inputText }}
             </div>
-            <button class="up-file-control up-button" @click="upload" :disabled="forbidUpload">上传</button>
+            <button class="up-file-control up-button" 
+            @click="upload" 
+            :disabled="forbidUpload"
+            v-html="btnText || '上传'"
+            ></button>
         </div>
     `,
     methods: {
