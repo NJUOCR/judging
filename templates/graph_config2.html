@@ -2,7 +2,7 @@
 <html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ case_id }}</title>
     <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/graph-components.css">
     <link rel="stylesheet" href="/static/css/selectable-header.css">
@@ -40,9 +40,9 @@
                 <div class='second-level-container' @click="select(2, secondLevelIdx);">
                     <div class="second-level-text graph-item-selectable"
                          :class="[ isSelected(firstLevelIdx, secondLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected']">
-                        <div class="non-selectable">{{ second.name.substring(0, parseInt(1 + second.name.length)/2) }}
+                        <div class="non-selectable" v-text="second.name.substring(0, parseInt(1 + second.name.length)/2)">
                         </div>
-                        <div class="non-selectable">{{ second.name.substring(parseInt(1 + second.name.length)/2) }}
+                        <div class="non-selectable" v-text="second.name.substring(parseInt(1 + second.name.length)/2)">
                         </div>
                     </div>
                     <ul class="horizontal-list">
@@ -53,7 +53,7 @@
                                 <div ondblclick="window.location = '#third-level-section'"
                                      class="third-level-text graph-item-selectable"
                                      :class="[isSelected(firstLevelIdx, secondLevelIdx, thirdLevelIdx) ? 'graph-item-selected':'graph-item-unselected' ]">
-                                    <span class="non-selectable"> {{ third.name }}</span>
+                                    <span class="non-selectable" v-text="third.name"></span>
                                 </div>
                             </div>
                         </li>
@@ -105,7 +105,7 @@
              @click="switchSecondLevel">
             <span v-if="!secondLevel.hide" class="glyphicon glyphicon-option-vertical"></span>
             <span v-if="secondLevel.hide" class="l2-char"
-                  v-for="char in secondLevel.listNames()[secondLevel.selectedIdx()]"> {{ char }}</span>
+                  v-for="char in secondLevel.listNames()[secondLevel.selectedIdx()]" v-text="char"></span>
         </div>
         <section class="" id="third-level-section">
             <selectable-header @change-candidate="changeCandidate" @step="step"
@@ -195,6 +195,8 @@
 </main>
 
 <script>
+    const caseId = '{{ case_id }}';
+    console.log(caseId);
     let selection = [-1, -1, -1];
     let graph = new Vue({
         el: '#graph-container',

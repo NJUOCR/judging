@@ -22,11 +22,22 @@
                 </file-uploader>
             </div>
         </li>
-        <li @click="showCases(graphName)" v-for="graphName in graphList">
-            {{ graphName }}
+        <li v-for="(graphName, idx) in graphList"
+            :class="['entry', idx === curGraphId?'entry-selected':'entry-normal']"
+            @click="selectGraph(graphName, idx)"
+            >
+            <span class="entry-name">{{ graphName }}</span>
+            <span class="entry-control" v-if="idx === curGraphId">
+                <div>
+                    <span class="glyphicon glyphicon-remove "></span>
+                </div>
+            </span>
         </li>
     </ul>
-    <ul class="list" id="case-list"></ul>
+    <ul class="list" id="case-list">
+        <li v-for="(caseName, idx) in caseList"
+            :class="['entry']"></li>
+    </ul>
 </main>
 
 <script>
@@ -34,9 +45,12 @@
         el: "#main",
         data: {
             creatingGraph: false,
+            curGraphId: -1,
             graphList: [],
             configFileName: '选择案由配置文件',
-            configFileForbid: false
+            configFileForbid: false,
+
+            caseList: []
         },
         methods: {
             createGraph: function () {
@@ -73,7 +87,9 @@
                 }
                 this.configFileForbid = notJson;
             },
-            showCases: function (graphName) {
+            selectGraph: function (graphName, idx) {
+                window.event.preventDefault();
+                this.curGraphId = idx;
                 const url = `/get-cases?graph-name=${graphName}`;
                 fetch(url).then((response) => {
                     if (response.status !== 200) {
