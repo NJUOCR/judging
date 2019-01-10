@@ -51,7 +51,7 @@ class JudgingCase:
         ptr: dict = self.get_data()
         hierarchy = ('证据链条', '查证事项', '印证证据')
         tree_nodes = JudgingCase.translate_tree(tree, to='zh')
-        for node, level in zip(tree_nodes, hierarchy):
+        for node, level in zip(tree_nodes[1:], hierarchy):
             items = ptr[level]
             for idx, item in enumerate(items):
                 if item['名称'] == node:
