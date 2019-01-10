@@ -201,7 +201,7 @@ def media_upload():
 def media_remove():
     category: list = request.json['category'].split('/')
     case_id = category[0]
-    tree = category[1:]
+    tree = category
     case = JudgingCase(case_id)
     case.remove_media(tree)
     return jsonify(msg='ok')
