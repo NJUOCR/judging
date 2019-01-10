@@ -57,11 +57,11 @@
 }
 
 .show-l2 {
-    animation: show-second-level 1s ease-in forwards;
+    animation: show-second-level .4s ease-in forwards;
 }
 
 .hide-l2 {
-    animation: hide-second-level 1s ease-out forwards;
+    animation: hide-second-level .3s ease-out forwards;
 }
 
 #second-level-section {
@@ -187,11 +187,11 @@ section audio {
 }
 
 #media-previewer.show-media {
-    animation: show-media-previewer 1s ease-in forwards;
+    animation: show-media-previewer .6s ease-in forwards;
 }
 
 #media-previewer.hide-media {
-    animation: hide-media-previewer 1s ease-out forwards;
+    animation: hide-media-previewer .5s ease-out forwards;
 
 }
 
