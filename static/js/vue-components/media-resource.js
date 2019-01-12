@@ -1,10 +1,3 @@
-let mediaIcons = {
-    audio: '',
-    video: '',
-    image: '',
-    create: ''
-};
-
 Vue.component('media-resource', {
     props: ['type', 'name', 'description'],
     template:
