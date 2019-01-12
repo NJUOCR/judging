@@ -15,7 +15,7 @@
     100% {
         top: -1rem;
         box-shadow: .1rem .5rem 1rem grey;
-        font-size: 120%;
+        /*font-size: 120%;*/
         z-index: 10;
         opacity: 1;
     }
@@ -25,14 +25,14 @@
     0% {
         top: -1rem;
         box-shadow: .1rem .5rem 1rem grey;
-        font-size: 120%;
+        /*font-size: 120%;*/
         z-index: 10;
         opacity: 1;
     }
     100% {
         top: 0;
         box-shadow: .1rem .5rem 1rem transparent;
-        font-size: 100%;
+        /*font-size: 100%;*/
         z-index: 0;
         opacity: .95;
     }
@@ -59,7 +59,7 @@
     position: relative;
     overflow-x: auto;
     text-align: center;
-    padding: 1rem .2rem;
+    padding: 1.5rem .2rem;
     line-height: 1;
 }
 
@@ -143,7 +143,7 @@
 
 .box-arrow-text {
     color: var(--l1-fg-color);
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     white-space: nowrap;
     position: relative;
     z-index: 1;
@@ -173,10 +173,10 @@
 }
 
 .second-level-text>.non-selectable{
-    font-size: 1.2rem;
+    /*font-size: 1.2rem;*/
     /*max-width: 6rem;*/
     margin: .2rem auto;
-    height: 1.2rem;
+    height: 1.4rem;
     /*white-space: normal;*/
 }
 /* 第三层元素 */
@@ -185,7 +185,7 @@
     background-color: #00B050;
     border: 2px solid #238e23;
     margin: 0 2px;
-    padding: .2rem;
+    padding: .4rem;
     position: relative;
 }
 
@@ -194,7 +194,7 @@
 }
 
 .third-level-text>.non-selectable{
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     max-width: 2rem;
     white-space: normal;
 }
