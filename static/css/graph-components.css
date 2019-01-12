@@ -10,12 +10,15 @@
         top: 0;
         z-index: 10;
         box-shadow: .1rem .5rem 1rem transparent;
-        opacity: .95;
+        opacity: .9;
+        font-weight: normal;
+        font-size: 100%;
     }
     100% {
         top: -1rem;
         box-shadow: .1rem .5rem 1rem grey;
-        /*font-size: 120%;*/
+        font-size: 110%;
+        font-weight: bolder;
         z-index: 10;
         opacity: 1;
     }
@@ -25,16 +28,18 @@
     0% {
         top: -1rem;
         box-shadow: .1rem .5rem 1rem grey;
-        /*font-size: 120%;*/
+        font-size: 110%;
+        font-weight: bolder;
         z-index: 10;
         opacity: 1;
     }
     100% {
         top: 0;
         box-shadow: .1rem .5rem 1rem transparent;
-        /*font-size: 100%;*/
+        font-size: 100%;
+        font-weight: normal;
         z-index: 0;
-        opacity: .95;
+        opacity: .9;
     }
 }
 
