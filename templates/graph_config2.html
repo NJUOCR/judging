@@ -81,18 +81,21 @@
                 class="glyphicon glyphicon-cloud-upload"></button>
     </aside>
     <section id="first-level-section">
-        <selectable-header v-on:change-candidate="changeCandidate"
-                           v-on:step="step"
-                           name="first-level-header"
-                           :candidates="firstLevel.listNames()"
-                           :selected="firstLevel.selectedIdx()"
-                           :plain="firstLevel.plain">
+        <h1>
+            <selectable-header v-on:change-candidate="changeCandidate"
+                               v-on:step="step"
+                               name="first-level-header"
+                               :candidates="firstLevel.listNames()"
+                               :selected="firstLevel.selectedIdx()"
+                               :plain="firstLevel.plain">
 
-        </selectable-header>
+            </selectable-header>
+        </h1>
+
         <div class="level-content"
              :class="[firstLevel.plain || firstLevel.selectedIdx !== -1? 'level-content-out':'level-content-in']">
             <div>
-                一级标题内容
+                {#                一级标题内容#}
             </div>
         </div>
 
@@ -100,11 +103,13 @@
 
     <div id="editor">
         <section :class="[secondLevel.hide?'hide-l2':'show-l2']" id="second-level-section">
-            <selectable-header @change-candidate="changeCandidate" @step="step"
-                               name="second-level-header"
-                               :candidates="secondLevel.listNames()"
-                               :selected="secondLevel.selectedIdx()"
-                               :plain="secondLevel.plain"></selectable-header>
+            <h2>
+                <selectable-header @change-candidate="changeCandidate" @step="step"
+                                   name="second-level-header"
+                                   :candidates="secondLevel.listNames()"
+                                   :selected="secondLevel.selectedIdx()"
+                                   :plain="secondLevel.plain"></selectable-header>
+            </h2>
             <hr/>
             <bool-list-editor @change-bool="changeBool"
                               :list="secondLevel.boolOutlines()"></bool-list-editor>
@@ -120,11 +125,13 @@
                   v-for="char in secondLevel.listNames()[secondLevel.selectedIdx()]" v-text="char"></span>
         </div>
         <section class="" id="third-level-section">
-            <selectable-header @change-candidate="changeCandidate" @step="step"
-                               name="third-level-header"
-                               :candidates="thirdLevel.listNames()"
-                               :selected="thirdLevel.selectedIdx()"
-                               :plain="thirdLevel.plain"></selectable-header>
+            <h3>
+                <selectable-header @change-candidate="changeCandidate" @step="step"
+                                   name="third-level-header"
+                                   :candidates="thirdLevel.listNames()"
+                                   :selected="thirdLevel.selectedIdx()"
+                                   :plain="thirdLevel.plain"></selectable-header>
+            </h3>
             <hr/>
             <div v-if="thirdLevel.selectedIdx() !== -1">
 
@@ -283,8 +290,8 @@
 
             secondNameLines: function (name) {
                 if (name.length < 7) {
-                    return [" ",name," "]
-                }else {
+                    return [" ", name, " "]
+                } else {
                     let p = ((name.length + 2) / 3) ^ 0;
                     return [name.substring(0, p), name.substring(p, p + p), name.substring(p + p)]
                 }
@@ -294,12 +301,12 @@
              * not used
              * */
             thirdNameLines: function (name) {
-                if(name.length < 4){
+                if (name.length < 4) {
                     return [name];
-                }else{
+                } else {
                     let lines = [];
                     let end, start;
-                    for(end=2,start=0;end<name.length;start+=2,end+=2){
+                    for (end = 2, start = 0; end < name.length; start += 2, end += 2) {
                         lines.push(name.substring(start, end));
                     }
                     lines.push(name.substring(start));

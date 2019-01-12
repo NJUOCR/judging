@@ -1,4 +1,6 @@
-#selecting {
+.selecting {
+
+    margin: .5em 0 0 0;
 }
 
 #detail hr {
@@ -24,6 +26,11 @@
 #first-level-section {
     /*background-color: #ffe3b5;*/
     padding: 2em 2em .5em 2em;
+}
+
+#first-level-section>h1{
+    font-size: inherit;
+    margin: 0;
 }
 
 #first-level-section .selecting {
@@ -70,6 +77,10 @@
     padding: 2em 0;
     width: 0;
 }
+#second-level-section>h2{
+    font-size: inherit;
+    margin: 0;
+}
 
 #second-level-section > * {
     margin: 0 2em;
@@ -112,7 +123,10 @@
     width: 70%;
     flex-grow: 1;
 }
-
+#third-level-section>h3{
+    font-size: inherit;
+    margin: 0;
+}
 #third-level-section .selecting {
 
     font-size: 1.2em;
