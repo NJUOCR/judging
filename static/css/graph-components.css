@@ -7,27 +7,31 @@
 
 @keyframes stand-out {
     0% {
+        top: 0;
         z-index: 10;
+        box-shadow: .1rem .5rem 1rem transparent;
+        opacity: .95;
     }
     100% {
         top: -1rem;
-        box-shadow: .1rem .5rem 1rem rgba(0, 0, 0, .8);
+        box-shadow: .1rem .5rem 1rem grey;
         font-size: 120%;
         z-index: 10;
+        opacity: 1;
     }
 }
 
 @keyframes stand-in {
     0% {
         top: -1rem;
-        box-shadow: .1rem .5rem 1rem rgba(0, 0, 0, .8);
+        box-shadow: .1rem .5rem 1rem grey;
         font-size: 120%;
         z-index: 10;
         opacity: 1;
     }
     100% {
         top: 0;
-        box-shadow: none;
+        box-shadow: .1rem .5rem 1rem transparent;
         font-size: 100%;
         z-index: 0;
         opacity: .95;
@@ -55,7 +59,8 @@
     position: relative;
     overflow-x: auto;
     text-align: center;
-    padding-top: 2rem;
+    padding: 1rem .2rem;
+    line-height: 1;
 }
 
 .non-selectable {
@@ -70,11 +75,11 @@
 /*}*/
 
 .graph-item-selected {
-    animation: stand-out .5s forwards ease-in;
+    animation: stand-out .5s forwards ease-out;
 }
 
 .graph-item-unselected{
-    animation: stand-in .3s forwards ease-out;
+    animation: stand-in .3s forwards ease-in;
 
 }
 
@@ -85,7 +90,7 @@
 /*第一层元素*/
 .first-level-container {
     position: relative;
-    margin: 0 5px;
+    margin: 0 2px;
     align-items: flex-start;
     height: fit-content;
     cursor: pointer;
@@ -93,7 +98,7 @@
 
 .box-arrow {
     position: relative;
-    padding: 10px 1em;
+    padding: 10px .5em;
 }
 
 .box-arrow-bg {
@@ -138,7 +143,7 @@
 
 .box-arrow-text {
     color: var(--l1-fg-color);
-    font-size: 1.2em;
+    font-size: 1.4rem;
     white-space: nowrap;
     position: relative;
     z-index: 1;
@@ -161,23 +166,35 @@
 .second-level-text {
     background-color: #0070C0;
     border: 3px solid #055b98;
-    font-size: 1.1em;
     margin: 0 2px;
     padding: 0.2em 0.5em;
     white-space: nowrap;
     position: relative;
 }
 
+.second-level-text>.non-selectable{
+    font-size: 1.2rem;
+    /*max-width: 6rem;*/
+    margin: .2rem auto;
+    height: 1.2rem;
+    /*white-space: normal;*/
+}
 /* 第三层元素 */
 
 .third-level-text {
     background-color: #00B050;
     border: 2px solid #238e23;
     margin: 0 2px;
-    padding: 0.3em 0.3em;
+    padding: .2rem;
     position: relative;
 }
 
 .second-level-container > .horizontal-list > li {
     min-width: 2em;
+}
+
+.third-level-text>.non-selectable{
+    font-size: 1.1rem;
+    max-width: 2rem;
+    white-space: normal;
 }

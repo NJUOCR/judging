@@ -40,11 +40,17 @@
                 <div class='second-level-container' @click="select(2, secondLevelIdx);">
                     <div class="second-level-text graph-item-selectable"
                          :class="[ isSelected(firstLevelIdx, secondLevelIdx) ? 'graph-item-selected' : 'graph-item-unselected']">
+                        <!-- 二级标题分行 -->
+                        <!--
                         <div class="non-selectable"
                              v-text="second.name.substring(0, parseInt(1 + second.name.length)/2)">
                         </div>
                         <div class="non-selectable" v-text="second.name.substring(parseInt(1 + second.name.length)/2)">
                         </div>
+
+                        <div class="non-selectable adaptive-height" v-text="second.name"></div>
+                        -->
+                        <div class="non-selectable" v-for="line in secondNameLines(second.name)" v-text="line"></div>
                     </div>
                     <ul class="horizontal-list">
                         <li v-for="(third, thirdLevelIdx) in second.thirdLevelItems"
@@ -54,6 +60,9 @@
                                 <div ondblclick="window.location = '#third-level-section'"
                                      class="third-level-text graph-item-selectable"
                                      :class="[isSelected(firstLevelIdx, secondLevelIdx, thirdLevelIdx) ? 'graph-item-selected':'graph-item-unselected' ]">
+                                    <!--
+                                    <span class="non-selectable" v-for="line3 in thirdNameLines(third.name)" v-text="line3"></span>
+                                    -->
                                     <span class="non-selectable" v-text="third.name"></span>
                                 </div>
                             </div>
@@ -271,6 +280,32 @@
                     })
                 })
             },
+
+            secondNameLines: function (name) {
+                if (name.length < 7) {
+                    return [" ",name," "]
+                }else {
+                    let p = ((name.length + 2) / 3) ^ 0;
+                    return [name.substring(0, p), name.substring(p, p + p), name.substring(p + p)]
+                }
+            },
+
+            /**
+             * not used
+             * */
+            thirdNameLines: function (name) {
+                if(name.length < 4){
+                    return [name];
+                }else{
+                    let lines = [];
+                    let end, start;
+                    for(end=2,start=0;end<name.length;start+=2,end+=2){
+                        lines.push(name.substring(start, end));
+                    }
+                    lines.push(name.substring(start));
+                    return lines;
+                }
+            }
         },
 
 
