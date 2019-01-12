@@ -12,7 +12,7 @@ Vue.component('media-resource', {
 <div class="media-container">
     <div class="media-icon" :class="icon(type)"></div>
     <div class="media-name"> {{ name }} </div>
-    <div class="media-remove glyphicon glyphicon-remove"></div>
+    <!--<div class="media-remove glyphicon glyphicon-remove"></div>-->
 </div>
     `,
     methods: {
