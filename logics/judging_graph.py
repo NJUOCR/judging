@@ -60,11 +60,13 @@ class JudgingGraph:
                     if not isinstance(temp1, list):
                         return False
                     for p in temp2:
-                        if len(p.keys()) != 2:
+                        if 2 <= len(p.keys()) <= 3:
                             return False
                         if not isinstance(p["名称"], str):
                             return False
                         if not (isinstance(p["内容"], str) or isinstance(p["内容"], list)):
+                            return False
+                        if not isinstance(p["类型"], str):
                             return False
                     if '印证证据' in j.keys():
                         temp3 = j['印证证据']

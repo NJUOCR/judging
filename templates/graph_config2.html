@@ -480,8 +480,8 @@
                 }).then((res) => {
                     if (res.ok) {
                         //graph.updateData();
-                        res.text().then(txt => {
-                            console.info(`[保存案件] -> ${txt}`);
+                        res.json().then(j => {
+                            console.info(`[保存案件] -> ${JSON.stringify(j)}`);
                         })
                     } else {
                         console.log("更新失败")
@@ -594,6 +594,7 @@
                     })
                 }).then((res) => {
                     if (res.ok) {
+                        res.json().then(j=>console.log(`[删除媒体] -> ${JSON.stringify(j)}`));
                         graph.updateData();
                     }
                 })
@@ -639,7 +640,7 @@
                         this.thirdLevel.forbidUpload = true;
                         this.thirdLevel.inputText = '一组图片 或 一个其他类型文件';
                         graph.updateData();
-                        console.log(data);
+                        console.dir(data);
                     });
                 }).catch(function (err) {
                     console.error("Fetch错误:" + err);
@@ -711,10 +712,12 @@
                     })
                 }).then((res) => {
                     console.log('ocr return');
-                    res.json().then(j => {
-                        console.log(j);
-                        this.detailMedia().description += j['txt'];
-                    })
+                    if (res.ok) {
+                        res.json().then(j => {
+                            console.info(j['result']);
+                            this.detailMedia().description += '\n\n'+j['msg'];
+                        })
+                    }
                 })
             },
 

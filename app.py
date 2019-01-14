@@ -119,11 +119,16 @@ def upload_graph():
             dic = JudgingGraph.from_file("static/graph_configs/" + filename)
             if dic.validate():
                 dic.save()
-                return jsonify("上传成功")
+                return json.dumps({
+                    'result': 'ok'
+                })
             else:
                 error_files.append(file_tuple[0])
         if len(error_files) != 0:
-            return jsonify(error=str(error_files) + 'json格式错误，请重新上传')
+            return json.dumps({
+                'result': 'error',
+                'msg': '配置文件格式验证失败\n[%s]' % ', '.join(error_files),
+            }, ensure_ascii=False, indent=2)
     else:
         return jsonify(error='method should be post')
 
@@ -136,7 +141,10 @@ def remove_graph():
     """
     args = request.args
     graph_name = args['graph-name']
-    return jsonify('删除成功') if JudgingGraph.remove_graph(graph_name) else jsonify(error='指定案由不存在')
+    return jsonify(result='ok') if JudgingGraph.remove_graph(graph_name) else json.dumps({
+        'result': 'error',
+        'msg': '指定案由不存在'
+    })
 
 
 @app.route('/update-case', methods=['POST'])
@@ -148,15 +156,15 @@ def update_case():
     if request.method == 'POST':
         case_data = request.json['case_data']
         if case_data is None:
-            return jsonify(error='no case data upload')
+            return jsonify(result='error', msg='uploaded data is empty')
         case_id = case_data['_id']
         case = JudgingCase(case_id)
         if case.update_case(case_data):
-            return jsonify('update success')
+            return jsonify(result='ok')
         else:
-            return jsonify(error='update failed')
+            return jsonify(result='error', msg='update failed')
     else:
-        return jsonify(error='method should be post')
+        return jsonify(result='error', msg='method should be post')
 
 
 @app.route('/favicon.ico')
@@ -194,7 +202,7 @@ def media_upload():
     case = JudgingCase(case_id)
     assert case is not None, '不能获取案件实例，这可能是由于 数据库中没有对应案件的记录且无法根据图名初始化一个新的案件记录'
     result = case.insert_media(tree, media_name, description, file_bundle)
-    return jsonify(msg='ok' if result else 'duplicate media name found')
+    return jsonify(result='ok' if result else 'error', msg='')
 
 
 @app.route('/media-remove', methods=['POST'])
@@ -204,7 +212,7 @@ def media_remove():
     tree = category
     case = JudgingCase(case_id)
     case.remove_media(tree)
-    return jsonify(msg='ok')
+    return jsonify(result='ok')
 
 
 @app.route('/ocr', methods=['POST'])
@@ -215,7 +223,7 @@ def ocr():
         'path': path
     })
 
-    return jsonify(msg='error') if result is False else jsonify(txt=result)
+    return jsonify(result='error') if result is False else jsonify(result='ok', msg=result)
 
 
 if __name__ == '__main__':

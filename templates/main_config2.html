@@ -105,7 +105,7 @@
                     body: formData
                 }).then(res => {
                     if (res.ok) {
-                        res.text().then(txt=>console.log(txt));
+                        res.json().then(j=>console.dir(j));
                         this.refresh();
                     }
                 }).catch(err => {
@@ -176,8 +176,8 @@
                     method: 'get'
                 }).then(res => {
                     if (res.ok) {
-                        res.text().then(txt => {
-                            console.log(`[删除案件] -> ${txt}`);
+                        res.json().then(j => {
+                            console.dir(j);
                             this.getCases(this.graphList[this.curGraphId]);
                         })
                     }
