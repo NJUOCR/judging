@@ -60,7 +60,7 @@ class JudgingGraph:
                     if not isinstance(temp1, list):
                         return False
                     for p in temp2:
-                        if 2 <= len(p.keys()) <= 3:
+                        if 3 <= len(p.keys()) or len(p.keys()) <= 2:
                             return False
                         if not isinstance(p["名称"], str):
                             return False
