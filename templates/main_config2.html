@@ -87,8 +87,11 @@
                 fetch(url, {
                     method: "get"
                 }).then((res) => {
-                    if(res.ok)
+                    if(res.ok){
                         this.refresh();
+                        this.caseList = [];
+                    }
+
                 })
             },
             uploadGraphFile: function (files) {
