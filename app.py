@@ -138,7 +138,6 @@ def upload():
     :return:
     """
     if request.method == 'POST':
-        file = request.files['input-img']
         # multi files, use 'request.files.getlist(name)'
         file_bundle: List[Tuple[str, FileStorage]] = list(request.files.items())
         error_files = []
