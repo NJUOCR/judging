@@ -152,6 +152,7 @@
 
 .hopping-form > #media-description {
     flex-grow: 1;
+    min-height: 35em;
 }
 
 #media-separator {
