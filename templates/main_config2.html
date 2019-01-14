@@ -30,8 +30,8 @@
         <li v-for="(graphName, idx) in graphList"
             :class="['entry', 'graph-entry', idx === curGraphId?'entry-selected':'entry-normal']"
             @click="getCases(graphName, idx)">
-            <span class="entry-name">{{ graphName }}</span>
-            <span class="entry-control entry-control-remove" v-if="idx === curGraphId">
+            <span class="entry-name" v-text="graphName"></span>
+            <span @click="removeGraph(graphName)" class="entry-control entry-control-remove" v-if="idx === curGraphId">
                 <div>
                     <span class="glyphicon glyphicon-remove "></span>
                 </div>
@@ -82,8 +82,17 @@
             createGraph: function () {
                 this.creatingGraph = !this.creatingGraph;
             },
+            removeGraph: function (graphName) {
+                const url = `/remove-graph?graph-name=${graphName}`;
+                fetch(url, {
+                    method: "get"
+                }).then((res) => {
+                    if(res.ok)
+                        this.refresh();
+                })
+            },
             uploadGraphFile: function (files) {
-                const url = "/upload";
+                const url = "/upload-graph";
                 let formData = new FormData();
 
                 files.forEach((temp) => {

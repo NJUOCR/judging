@@ -2,7 +2,7 @@ import json
 import os
 from typing import Tuple, List
 
-from flask import Flask, request, jsonify, render_template, Response, send_file, redirect
+from flask import Flask, request, jsonify, render_template, Response, send_file
 from werkzeug.datastructures import FileStorage
 
 import utils.unet as unet
@@ -20,7 +20,8 @@ def hello_world():
 
 @app.route('/main-graph')
 def main_config():
-    return send_file('static/html/main_config2.html')
+    # return send_file('static/html/main_config2.html')
+    return render_template("main_config2.html")
 
 
 @app.route('/get-case')
@@ -98,6 +99,35 @@ def config_graph():
     # return redirect('static/html/graph_config2.html')
 
 
+@app.route('/upload-graph', methods=['POST'])
+def upload_graph():
+    """
+    todo @杨关 因为我们的文件组件是 `multiple` 的，这边要改成多文件上传
+    > 参考 `media-upload`
+    使用多文件上传
+    :return:
+    """
+    if request.method == 'POST':
+        # multi files, use 'request.files.getlist(name)'
+        file_bundle: List[Tuple[str, FileStorage]] = list(request.files.items())
+        error_files = []
+        for file_tuple in file_bundle:
+            file = file_tuple[1]
+            filename = unet.secure_filename(file.filename)
+            raw_path = os.path.join('./static/graph_configs', filename)
+            file.save(raw_path)
+            dic = JudgingGraph.from_file("static/graph_configs/" + filename)
+            if dic.validate():
+                dic.save()
+                return jsonify("上传成功")
+            else:
+                error_files.append(file_tuple[0])
+        if len(error_files) != 0:
+            return jsonify(error=str(error_files) + 'json格式错误，请重新上传')
+    else:
+        return jsonify(error='method should be post')
+
+
 @app.route('/remove-graph')
 def remove_graph():
     """
@@ -125,35 +155,6 @@ def update_case():
             return jsonify('update success')
         else:
             return jsonify(error='update failed')
-    else:
-        return jsonify(error='method should be post')
-
-
-@app.route('/upload', methods=['POST'])
-def upload():
-    """
-    todo @杨关 因为我们的文件组件是 `multiple` 的，这边要改成多文件上传
-    > 参考 `media-upload`
-    使用多文件上传
-    :return:
-    """
-    if request.method == 'POST':
-        # multi files, use 'request.files.getlist(name)'
-        file_bundle: List[Tuple[str, FileStorage]] = list(request.files.items())
-        error_files = []
-        for file_tuple in file_bundle:
-            file = file_tuple[1]
-            filename = unet.secure_filename(file.filename)
-            raw_path = os.path.join('./static/graph_configs', filename)
-            file.save(raw_path)
-            dic = JudgingGraph.from_file("static/graph_configs/" + filename)
-            if dic.validate():
-                dic.save()
-                return jsonify("上传成功")
-            else:
-                error_files.append(file_tuple[0])
-        if len(error_files) != 0:
-            return jsonify(error=str(error_files)+'json格式错误，请重新上传')
     else:
         return jsonify(error='method should be post')
 
