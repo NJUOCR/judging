@@ -72,7 +72,7 @@
 }
 
 #second-level-section {
-    background-color: #e5ebfb;
+    /*background-color: #e5ebfb;*/
     overflow-x: hidden;
     padding: 2em 0;
     width: 0;
@@ -87,7 +87,6 @@
 }
 
 #second-level-section .selecting {
-
     font-size: 1.4em;
     min-width: 18em;
 }
@@ -118,7 +117,7 @@
 
 /* 3rd level */
 #third-level-section {
-    background-color: #deffdb;
+    /*background-color: #deffdb;*/
     padding: 2em 2em .5em 2em;
     width: 70%;
     flex-grow: 1;
