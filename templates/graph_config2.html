@@ -321,8 +321,10 @@
             },
             
             outlineProgress: function (outlines) {
-                {#outlines.filter(outline => outline.content !== '')#}
-                let ratio = 100 * outlines.filter(o => o.contents !== '').length / outlines.length;
+                /**
+                 * o.contents can be an `Array` or a `String`
+                */
+                let ratio = 100 * outlines.filter(o => o.contents.length !== 0).length / outlines.length;
                 return ratio+"%";
             }
         },
