@@ -35,7 +35,7 @@
                 <div class="box-arrow-bg-bottom"></div>
             </div>
         </div>
-        <ul class="horizontal-list">
+        <ul v-if="first.expand" class="horizontal-list">
             <li v-for="(second, secondLevelIdx) in first.secondLevelItems">
                 <div class='second-level-container' @click="select(2, secondLevelIdx);">
                     <div class="second-level-text graph-item-selectable"
@@ -57,7 +57,7 @@
                         -->
                         <div class="non-selectable" v-for="line in secondNameLines(second.name)" v-text="line"></div>
                     </div>
-                    <ul class="horizontal-list">
+                    <ul v-if="second.expand" class="horizontal-list">
                         <li v-for="(third, thirdLevelIdx) in second.thirdLevelItems"
                             :style="{width: parseInt(100 * third.name.length /
                                     second.thirdLevelItems.map(i => i.name.length).reduce((x1, x2) => x1+x2)) + '%'}">
@@ -246,9 +246,11 @@
                 let e = window.event;
                 switch (level) {
                     case 3:
+                        e['trigger-level'] = 2;
                         e['selection'] = [-1, -1, idx];
                         break;
                     case 2:
+                        if (!e['trigger-level'])  e['trigger-level'] = 1;
                         if (e['selection']) {
                             e['selection'][1] = idx;
                         } else {
@@ -256,6 +258,7 @@
                         }
                         break;
                     case 1:
+                        if (!e['trigger-level'])  e['trigger-level'] = 0;
                         if (e['selection']) {
                             e['selection'][0] = idx;
                         } else {
@@ -264,6 +267,17 @@
                         break;
                     case 0:
                         this.selection = e['selection'] || [-1, -1, -1];
+
+                        let triggerLevel = e['trigger-level'];
+
+                        let node = {};
+                        if(triggerLevel === 0){
+                            // 点击的是L1元素
+                            node = this.structure.firstLevelItems[this.selection[0]];
+                        }else if(triggerLevel === 1){
+                            node = this.structure.firstLevelItems[this.selection[0]].secondLevelItems[this.selection[1]];
+                        }
+                        node.expand = !(node.expand || false);
                     // console.log(this.selection);
                 }
             },

@@ -18,7 +18,7 @@ def hello_world():
     return 'Hello World!'
 
 
-@app.route('/main-graph')
+@app.route('/index')
 def main_config():
     # return send_file('static/html/main_config2.html')
     return render_template("main_config2.html")
