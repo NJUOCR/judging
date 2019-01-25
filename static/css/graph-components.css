@@ -57,6 +57,7 @@
 .horizontal-list > li {
     display: inline-block;
     /*margin: 0 2px;*/
+    height: fit-content;
     flex-grow: 1;
 }
 

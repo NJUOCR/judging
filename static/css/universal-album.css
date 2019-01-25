@@ -1,0 +1,14 @@
+.universal-album{
+    display: flex;
+    align-items: center;
+}
+
+.universal-album>img{
+    width: 100%;
+}
+
+.universal-album-control{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}

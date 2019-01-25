@@ -1,0 +1,33 @@
+#indexing{
+    width: 100%;
+    display: flex;
+}
+
+#indexing>aside{
+    width: 30%;
+    flex-shrink: 0;
+}
+
+#indexing ul{
+    list-style: none;
+    padding: 0;
+}
+
+.indexing-item{
+    font-size: 1.2em;
+    display: flex;
+}
+
+.indexing-right{
+    flex-grow: 1;
+}
+
+.indexing-right .up-file{
+    width: 20em;
+    align-self: end;
+}
+
+.indexing-right .tool-kit{
+    display: flex;
+    justify-content: space-between;
+}

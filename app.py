@@ -21,7 +21,7 @@ def hello_world():
 @app.route('/index')
 def main_config():
     # return send_file('static/html/main_config2.html')
-    return render_template("main_config2.html")
+    return render_template("index.html")
 
 
 @app.route('/get-case')
@@ -91,11 +91,11 @@ def test_upload():
     return render_template("fileinput.html")
 
 
-@app.route('/config-graph')
+@app.route('/main')
 def config_graph():
     args = {**request.args}
     case_id = args['case-id'][0] if 'case-id' in args else ''
-    return render_template('graph_config2.html', case_id=case_id)
+    return render_template('main.html', case_id=case_id)
     # return redirect('static/html/graph_config2.html')
 
 
@@ -224,6 +224,32 @@ def ocr():
     })
 
     return jsonify(result='error') if result is False else jsonify(result='ok', msg=result)
+
+
+@app.route('/upload-document', methods=['POST'])
+def upload_document():
+    case_id = request.values['case_id']
+    file_bundle: List[Tuple[str, FileStorage]] = list(request.files.items())
+    case = JudgingCase(case_id)
+    case.save_document(file_bundle)
+    return "{}"
+
+
+@app.route('/get-document')
+def get_document():
+    args = request.args
+    case_id = args['case_id']
+    case = JudgingCase(case_id)
+    urls = case.get_document_urls()
+    return jsonify(urls)
+
+
+@app.route('/get-headers')
+def get_headers():
+    args = request.args
+    case_id = args['case_id']
+    case = JudgingCase(case_id)
+    return jsonify(case.get_headers())
 
 
 if __name__ == '__main__':

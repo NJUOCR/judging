@@ -32,7 +32,7 @@
 .tab-text-editor textarea{
     display: block;
     resize: none;
-    min-height: 10em;
+    min-height: 30em;
     height: 100%;
     width: 100%;
 

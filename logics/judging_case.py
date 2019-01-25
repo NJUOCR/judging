@@ -1,4 +1,4 @@
-import os
+import dao.document_data as doc_data
 from typing import Iterable, List, Tuple
 from werkzeug.datastructures import FileStorage
 
@@ -12,6 +12,7 @@ class JudgingCase:
 
     def __init__(self, case_id: str, graph_name: str = None):
         # 尝试根据案号获取一个案件实例，如果失败，则尝试根据图名新建一个实例
+        self.case_id = case_id
         self.data_obj = CaseData.fetch_case(case_id) or CaseData.create_case(graph_name, case_id)
 
     @staticmethod
@@ -152,3 +153,20 @@ class JudgingCase:
         :return:
         """
         return tree[:1] + list(map(lambda node: translate_key(node, to), tree[1:]))
+
+    def save_document(self, file_bundle: List[Tuple[str, FileStorage]]):
+        doc_data.save_document(self.case_id, [(file, name.split('.').pop()) for name, file in file_bundle])
+
+    def get_document_urls(self):
+        return list(map(lambda path: '/'+path, doc_data.get_document_paths(self.case_id)))
+
+    def get_headers(self):
+        d = self.data_obj.d
+        if '目录' in d:
+            return d['目录']
+        headers = set()
+        for first in d['证据链条']:
+            for second in first['查证事项']:
+                for third in second['印证证据']:
+                    headers.add(third['名称'])
+        return list(headers)

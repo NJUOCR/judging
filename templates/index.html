@@ -54,7 +54,7 @@
         <!-- 案件 列表项 -->
         <li v-for="(caseId, idx) in caseList"
             :class="['entry', 'case-entry']">
-            <a class="entry-name" :href="`/config-graph?case-id=${caseId}`"
+            <a class="entry-name" :href="`/main?case-id=${caseId}`"
                target="_blank" v-text="caseId"></a>
             <span class="entry-control entry-control-remove" @click="removeCase(caseId);">
                 <div>

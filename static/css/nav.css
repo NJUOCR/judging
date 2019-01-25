@@ -1,0 +1,14 @@
+#nav{
+    background-color: grey;
+    display: flex;
+}
+
+.nav-btn{
+    font-size: 1.2em;
+    padding: .2em 2em;
+}
+
+.nav-btn.nav-btn-active{
+    background-color: darkgray;
+    color: whitesmoke;
+}
