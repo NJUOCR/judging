@@ -3,7 +3,7 @@
     display: flex;
 }
 
-#indexing>aside{
+#indexing-right{
     width: 30%;
     flex-shrink: 0;
 }
@@ -18,16 +18,21 @@
     display: flex;
 }
 
-.indexing-right{
+#indexing-middle{
     flex-grow: 1;
 }
 
-.indexing-right .up-file{
+#indexing-middle .up-file{
     width: 20em;
     align-self: end;
 }
 
-.indexing-right .tool-kit{
+#indexing-middle .tool-kit{
     display: flex;
     justify-content: space-between;
+}
+
+#indexing-middle .tool-kit>div{
+    display: flex;
+    align-items: center;
 }

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
     <link rel="stylesheet" href="/static/css/tab-text-editor.css">
     <link rel="stylesheet" href="/static/css/bool-list-editor.css">
+    <link rel="stylesheet" href="/static/css/switch-btn.css">
     <link rel="stylesheet" href="/static/lib/slide_picture/carousel.css"/>
 {#    <link rel="stylesheet" href="/static/css/universal-album.css"/>#}
     <script src="/static/lib/vue/vue.js"></script>
@@ -22,6 +23,7 @@
     <script src="/static/js/vue-components/media-resource.js"></script>
     <script src="/static/js/vue-components/file-uploader.js"></script>
     <script src="/static/js/vue-components/album.js"></script>
+    <script src="/static/js/vue-components/switch-btn.js"></script>
 {#    <script src="/static/js/vue-components/universal-album.js"></script>#}
     <script src="/static/js/vue-components/bool-list-editor.js"></script>
 
@@ -234,7 +236,7 @@
 </main>
 
 <main v-if="show" id="indexing">
-    <aside>
+    <aside id="indexing-left">
         <ul>
             <li :class="['indexing-item']" v-for="header in headers">
                 <span v-text="header"></span>
@@ -242,12 +244,16 @@
             </li>
         </ul>
     </aside>
-    <div class="indexing-right">
+    <div id="indexing-middle">
         <div class="tool-kit">
             <div>
                 <button>上一页</button>
                 <input placeholder="快速跳转" type="number">
                 <button>下一页</button>
+            </div>
+            <div>
+                <span>批注</span>
+                <switch-btn :on="commenting" @switch="switchComment"></switch-btn>
             </div>
             <file-uploader :forbid-upload="forbidUpload"
                            :input-text="uploaderMsg"
@@ -255,8 +261,12 @@
                            @upload="uploadDocument">
             </file-uploader>
         </div>
-        <album :active="cur" :urls="imgUrls" :boxes="boxes" @draw-box="drawBox" @remove-box="removeBox" :forward="true" :enable-canvas="true" @album-move="goto"></album>
+        <album :active="cur" :urls="imgUrls"  :forward="true"
+               :boxes="boxes" @draw-box="drawBox" @remove-box="removeBox"
+               :enable-canvas="commenting" @album-move="goto">
+        </album>
     </div>
+    <div id="indexing-right"></div>
 </main>
 
 <script>
@@ -847,7 +857,8 @@
 
             imgUrls: [],
             cur: -1,
-            boxes: []
+            boxes: [],
+            commenting: false,
         },
         methods: {
             getHeaders: function () {
@@ -907,6 +918,10 @@
                         })
                     }
                 })
+            },
+
+            switchComment: function () {
+                  this.commenting = !this.commenting;
             },
 
             drawBox: function (x1, y1, x2, y2) {
