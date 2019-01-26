@@ -266,17 +266,3 @@ section audio {
     bottom: 1em;
     right: 1em;
 }
-
-#save-btn{
-    border: gray 2px solid;
-    font-size: 1.8em;
-    padding: .5em;
-    background-color: whitesmoke;
-    border-radius: 50%;
-    box-shadow: 0 0 1em black;
-    z-index: 1000;
-}
-#save-btn:hover{
-    background-color: #1b6d85;
-    color: whitesmoke;
-}

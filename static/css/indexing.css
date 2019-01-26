@@ -1,38 +1,120 @@
-#indexing{
+#indexing {
     width: 100%;
     display: flex;
 }
 
-#indexing-right{
-    width: 30%;
-    flex-shrink: 0;
-}
-
-#indexing ul{
+#indexing ul {
     list-style: none;
     padding: 0;
 }
 
-.indexing-item{
-    font-size: 1.2em;
-    display: flex;
+/* left */
+#indexing-left {
+    position: relative;
+    z-index: 300;
+    width: 20%;
+    flex-shrink: 0;
+    background: #bebbbb;
 }
 
-#indexing-middle{
+#indexing-left .indexing-item {
+    transition: .5s;
+    font-size: 1.2em;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: whitesmoke;
+    padding: .3em;
+    border-left: 5px solid #227625;
+    margin: 2px 0;
+    box-shadow: 0 0 0 grey;
+}
+
+#indexing-left .indexing-item:hover {
+    box-shadow: 5px 0 5px grey;
+    font-weight: bolder;
+}
+
+#indexing-left .page-number {
+    padding: 0 .5em;
+    transition: .3s;
+    text-align: end;
+    font-size: 80%;
+    height: auto;
+}
+
+#indexing-left .page-number:hover {
+    cursor: pointer;
+    border-radius: .5em;
+    background-color: #1b6d85;
+    color: whitesmoke;
+}
+
+.indexing-item .pin {
+    transition: .3s .2s;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    overflow: hidden;
+    /* opacity: 0; */
+    display: flex;
+    align-items: center;
+    background: whitesmoke;
+    font-size: 1em;
+    box-shadow: 5px 0 5px grey;
+}
+
+.indexing-item:hover .pin {
+    width: 2em;
+    padding: 0 .5em;
+    right: -2em;
+}
+
+.indexing-item:hover .pin:hover {
+    background-color: #FF5722;
+    color: whitesmoke;
+    cursor: pointer;
+}
+
+/* right */
+#indexing-right {
+    width: 20%;
+    flex-shrink: 0;
+}
+
+#indexing-middle {
     flex-grow: 1;
 }
 
-#indexing-middle .up-file{
-    width: 20em;
+#indexing-middle .up-file {
+    width: 15em;
     align-self: end;
 }
 
-#indexing-middle .tool-kit{
+#indexing-middle .tool-kit {
     display: flex;
     justify-content: space-between;
 }
 
-#indexing-middle .tool-kit>div{
+#indexing-middle .tool-kit > div {
     display: flex;
     align-items: center;
+}
+
+#goto-input {
+    background: #fadfdf;
+    padding: .3em .5em;
+    box-shadow: 0 2px 5px #a49d9d inset;
+    border-radius: 10px;
+}
+
+#goto-input > input {
+    width: 4em;
+    border: none;
+    outline: none;
+    /* border-bottom: 1px solid gray; */
+    text-align: end;
 }

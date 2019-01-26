@@ -219,6 +219,10 @@ def media_remove():
 def ocr():
     service = ServiceInvoker.which('ocr')
     path = request.json['staticPath']
+    x1 = request.json['x1']
+    y1 = request.json['y1']
+    x2 = request.json['x2']
+    y2 = request.json['y2']
     result = service.invoke({
         'path': path
     })

@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="/static/css/bool-list-editor.css">
     <link rel="stylesheet" href="/static/css/switch-btn.css">
     <link rel="stylesheet" href="/static/lib/slide_picture/carousel.css"/>
-{#    <link rel="stylesheet" href="/static/css/universal-album.css"/>#}
+    {#    <link rel="stylesheet" href="/static/css/universal-album.css"/>#}
     <script src="/static/lib/vue/vue.js"></script>
     <script src="/static/js/vue-components/tab-text-editor.js"></script>
     <script src="/static/js/vue-components/selectable-header.js"></script>
@@ -24,7 +24,7 @@
     <script src="/static/js/vue-components/file-uploader.js"></script>
     <script src="/static/js/vue-components/album.js"></script>
     <script src="/static/js/vue-components/switch-btn.js"></script>
-{#    <script src="/static/js/vue-components/universal-album.js"></script>#}
+    {#    <script src="/static/js/vue-components/universal-album.js"></script>#}
     <script src="/static/js/vue-components/bool-list-editor.js"></script>
 
 </head>
@@ -32,6 +32,9 @@
 <nav id="nav">
     <button :class="['nav-btn', tab.active?'nav-btn-active':'']" v-for="(tab, idx) in tabs" v-text="tab.name"
             @click="switcher(idx)"></button>
+
+    <button :disabled="!savingCompleted" @click="save" id="save-btn"
+            class="glyphicon glyphicon-cloud-upload"></button>
 </nav>
 <div v-if="show" id="graph-container" class="graph-container" @click="select(0, 0)">
     <!--<div class="graph-mask"></div>-->
@@ -93,10 +96,8 @@
 
 <main v-if="show" id="detail">
     <!-- todo 可以拖动 -->
-    <aside id="tool">
-        <button :disabled="isUpdateCompleted" @click="save" id="save-btn"
-                class="glyphicon glyphicon-cloud-upload"></button>
-    </aside>
+    {#    <aside id="tool">#}
+    {#    </aside>#}
     <section id="first-level-section">
         <h1>
             <selectable-header v-on:change-candidate="changeCandidate"
@@ -238,9 +239,10 @@
 <main v-if="show" id="indexing">
     <aside id="indexing-left">
         <ul>
-            <li :class="['indexing-item']" v-for="header in headers">
-                <span v-text="header"></span>
-                <span v-text=""></span>
+            <li :class="['indexing-item']" v-for="(header, hid) in headers">
+                <span v-text="header.name"></span>
+                <i class="page-number" v-text="numPage(hid)" @click="locPageByHeader(hid)"></i>
+                <span class="pin glyphicon glyphicon-pushpin" @click="pinPage(hid)"></span>
             </li>
         </ul>
     </aside>
@@ -248,7 +250,11 @@
         <div class="tool-kit">
             <div>
                 <button>上一页</button>
-                <input placeholder="快速跳转" type="number">
+                <div id="goto-input">
+                    <input title="跳转到" ref="goto" @keyup.enter="locPageByInput()" :value="cur + 1" type="number">
+                    <span>/</span>
+                    <span v-text="imgUrls.length"></span>
+                </div>
                 <button>下一页</button>
             </div>
             <div>
@@ -261,7 +267,7 @@
                            @upload="uploadDocument">
             </file-uploader>
         </div>
-        <album :active="cur" :urls="imgUrls"  :forward="true"
+        <album :active="cur" :urls="imgUrls" :forward="true"
                :boxes="boxes" @draw-box="drawBox" @remove-box="removeBox"
                :enable-canvas="commenting" @album-move="goto">
         </album>
@@ -400,7 +406,6 @@
         el: '#detail',
         data: {
             selection: Array(...selection),
-            isUpdateCompleted: false,
             show: false,
             firstLevel: {
                 listNames: function () {
@@ -867,7 +872,7 @@
                     method: 'get'
                 }).then(res => res.json()).then(headers => {
                     this.headers = headers.map(name => {
-                        return {name: name, start: -1, end: -1}
+                        return {name: name, start: null}
                     });
                 });
             },
@@ -897,7 +902,7 @@
                     method: "post",
                     body: formData
                 }).then(res => {
-                    if(res.ok){
+                    if (res.ok) {
                         this.getDocumentUrls();
                     }
                     this.forbidUpload = false;
@@ -909,8 +914,8 @@
                 const url = `/get-document?case_id=${caseId}`;
                 fetch(url, {
                     method: 'get'
-                }).then(res =>{
-                    if(res.ok){
+                }).then(res => {
+                    if (res.ok) {
                         res.json().then(j => {
                             this.imgUrls = j;
                             this.boxes = new Array(this.imgUrls.length).fill(new Array(...[]));
@@ -921,7 +926,7 @@
             },
 
             switchComment: function () {
-                  this.commenting = !this.commenting;
+                this.commenting = !this.commenting;
             },
 
             drawBox: function (x1, y1, x2, y2) {
@@ -934,11 +939,38 @@
 
             goto: function (offset) {
                 let size = this.imgUrls.length;
-                if(size === 0)   return;
+                if (size === 0) return;
                 let ptr = this.cur + offset;
-                if(ptr < 0) ptr += size;
+                if (ptr < 0) ptr += size;
                 ptr %= size;
                 this.cur = ptr;
+            },
+
+            pinPage: function (headerIdx) {
+                this.headers[headerIdx].start = this.cur;
+            },
+
+            locPageByHeader: function (headerIdx) {
+                let start = this.headers[headerIdx]['start'];
+                if(start !== null && start >= 0 && start < this.imgUrls.length){
+                    this.cur = start;
+                }
+            },
+
+            locPageByInput: function () {
+                let start = parseInt(this.$refs.goto.value) - 1;
+                if(start >= 0 && start < this.imgUrls.length){
+                    this.cur = start;
+                }
+            },
+
+            numPage: function (headerIdx) {
+                let start = this.headers[headerIdx]['start'];
+                if(start === null){
+                    return '';
+                }else{
+                    return start + 1;
+                }
             }
 
         },
@@ -952,6 +984,7 @@
         el: "#nav",
         data: {
             show: false,
+            savingCompleted: true,
 
             tabs: [
                 {
@@ -979,13 +1012,38 @@
                         con.show = tabIdx === idx;
                     })
                 })
-            }
+            },
+
+            save: function () {
+                this.savingCompleted = false;
+                let url = "/update-case";
+                let case_data = graph.structure;
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        case_data: case_data
+                    })
+                }).then((res) => {
+                    if (res.ok) {
+                        //graph.updateData();
+                        res.json().then(j => {
+                            console.info(`[保存案件] -> ${JSON.stringify(j)}`);
+                        })
+                    } else {
+                        console.log("更新失败")
+                    }
+                    this.savingCompleted = true;
+                });
+            },
         }
     });
     nav.switcher(0);
 
     window.onscroll = function () {
-        if(!graph.show) return;
+        if (!graph.show) return;
         let y = window.scrollY;
         let graphHeight = document.getElementById('graph-container').offsetHeight;
         if (y > graphHeight / 2) {

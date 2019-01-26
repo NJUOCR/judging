@@ -29,8 +29,8 @@ def save_document(case_id: str, files: List[Tuple[FileStorage, str]]) -> List[st
     os.makedirs(case_dir_path, exist_ok=True)
     paths = []
     for index, (file, suffix) in enumerate(files):
-        path = '%s%05d.%s' % (case_dir_path, index, suffix)
-        file.save('%s%d.%s' % (case_dir_path, index, suffix))
+        path = '%s%08d.%s' % (case_dir_path, index, suffix)
+        file.save(path)
         paths.append(path)
     return paths
 
@@ -42,4 +42,4 @@ def get_document_paths(case_id: str):
             lambda img: case_dir_path + img,
             sorted(os.listdir(case_dir_path))
         )
-    ) if os.listdir(case_dir_path) else []
+    ) if os.path.isdir(case_dir_path) else []
