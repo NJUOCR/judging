@@ -216,18 +216,15 @@ def media_remove():
 
 
 @app.route('/ocr', methods=['POST'])
-def ocr():
+def ocr(imgs: list=None):
     service = ServiceInvoker.which('ocr')
-    path = request.json['staticPath']
-    x1 = request.json['x1']
-    y1 = request.json['y1']
-    x2 = request.json['x2']
-    y2 = request.json['y2']
-    result = service.invoke({
-        'path': path
-    })
+    param_list = request.json['imgs'] if imgs is None else imgs
+    results = []
+    for param in param_list:
+        result = service.invoke(param)
+        results.append(result)
 
-    return jsonify(result='error') if result is False else jsonify(result='ok', msg=result)
+    return jsonify(results)
 
 
 @app.route('/upload-document', methods=['POST'])
@@ -235,8 +232,8 @@ def upload_document():
     case_id = request.values['case_id']
     file_bundle: List[Tuple[str, FileStorage]] = list(request.files.items())
     case = JudgingCase(case_id)
-    case.save_document(file_bundle)
-    return "{}"
+    relative_paths = case.save_document(file_bundle)
+    return jsonify(relative_paths)
 
 
 @app.route('/get-document')

@@ -118,3 +118,51 @@
     /* border-bottom: 1px solid gray; */
     text-align: end;
 }
+
+/* 弹出框 */
+#new-comment{
+    position: relative;
+    max-height: 0;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: 1s;
+}
+#new-comment.show-maker{
+    max-height: 100vh;
+}
+#new-comment>ul{
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+}
+#new-comment li{
+    word-break: keep-all;
+    font-size: .7em;
+    position: relative;
+    border: solid 2px rgba(128, 128, 128, .5);
+    border-radius: .7em;
+    padding: .2em .5em;
+    color: gray;
+    transition: .3s;
+    margin: 5px;
+    flex-grow: 1;
+    background-color: #f6f5f5;
+    text-align: center;
+}
+#new-comment li:hover{
+    font-weight: bolder;
+    top: -5px;
+    box-shadow: 0 5px 5px gray;
+    cursor: pointer;
+}
+#new-comment li.selected{
+    background-color: #0070C0;
+    color: whitesmoke;
+}
+#new-comment textarea{
+    resize: none;
+    width: 100%;
+    min-height: 10em;
+}

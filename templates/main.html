@@ -268,11 +268,30 @@
             </file-uploader>
         </div>
         <album :active="cur" :urls="imgUrls" :forward="true"
-               :boxes="boxes" @draw-box="drawBox" @remove-box="removeBox"
+               :boxes="boxes" @draw-box="makeComment" @remove-box="removeBox"
                :enable-canvas="commenting" @album-move="goto">
         </album>
+
     </div>
-    <div id="indexing-right"></div>
+    <div id="indexing-right">
+        <div id="new-comment" :class="[commentMaker.show&&commenting?'show-maker':'hide-maker']">
+            <header>添加到事实</header>
+            <ul>
+                <li @click="fact.selected = !fact.selected"
+                    v-for="fact in commentMaker.facts"
+                    :class="[fact.selected?'selected':'']">
+                    <span v-text="fact.name"></span>
+                </li>
+            </ul>
+            <header>简述
+            </header>
+            <textarea title="description" v-model="commentMaker.description"></textarea>
+            <div>
+                <button><span class="glyphicon glyphicon-ok"></span></button>
+                <button><span class="glyphicon glyphicon-remove"></span></button>
+            </div>
+        </div>
+    </div>
 </main>
 
 <script>
@@ -580,7 +599,6 @@
                 }
                 this.thirdLevel.mediaPointer = null;
             },
-
             step: function (direction, componentName) {
                 let level = null;
                 if (componentName === 'first-level-header') {
@@ -603,7 +621,6 @@
                     }
                 }
             },
-
             validateMedia: function (files) {
                 // 二进制
                 let image = 0b0001;
@@ -652,7 +669,6 @@
                     return true;
                 }
             },
-
             removeMedia: function () {
                 const url = "/media-remove";
                 const filenameForbidden = this.thirdLevel.filenameForbidden;
@@ -679,7 +695,6 @@
                     }
                 })
             },
-
             uploadMedia: function (files) {
                 const url = "/media-upload";
                 let formData = new FormData();
@@ -726,17 +741,14 @@
                     console.error("Fetch错误:" + err);
                 });
             },
-
             chooseMedia: function (idx) {
                 this.thirdLevel.mediaPointer = idx;
                 // console.dir(this.thirdLevel.mediaList()[idx])
             },
-
             createMedia: function () {
                 console.log('creating');
                 this.thirdLevel.mediaPointer = -1;
             },
-
             detailMedia: function () {
                 const ptr = this.thirdLevel.mediaPointer;
                 if (ptr === null || this.thirdLevel.mediaList() === false || ptr >= this.thirdLevel.mediaList().length) {
@@ -754,7 +766,6 @@
                     return this.thirdLevel.mediaList()[ptr]
                 }
             },
-
             previewMedia: function () {
                 if (this.thirdLevel.mediaList() === false || this.thirdLevel.mediaPointer >= this.thirdLevel.mediaList().length) {
                     this.thirdLevel.mediaPointer = null;
@@ -861,9 +872,17 @@
             forbidUpload: false,
 
             imgUrls: [],
+            imgHeaderTexts: [],
             cur: -1,
             boxes: [],
             commenting: false,
+
+            commentMaker: {
+                show: false,
+                facts: [],
+                description: ''
+            }
+
         },
         methods: {
             getHeaders: function () {
@@ -875,6 +894,72 @@
                         return {name: name, start: null}
                     });
                 });
+            },
+
+            sortHeaders: function () {
+                this.headers.sort((h1, h2) => {
+                    let p1 = h1.start === null ? Infinity : parseInt(h1.start);
+                    let p2 = h2.start === null ? Infinity : parseInt(h2.start);
+                    return p1 - p2;
+                })
+            },
+
+            getFactsByEvidence: function (evidenceName) {
+                if (evidenceName === undefined || evidenceName === null) return [];
+                let facts = [];
+                let struct = graph.structure;
+                struct.firstLevelItems.forEach(first => {
+                    first.secondLevelItems.forEach(second => {
+                        let match = second.thirdLevelItems.some(third => third.name === evidenceName);
+                        if (match) facts.push(second.name);
+                    })
+                });
+                return facts;
+            },
+
+            initCommentMaker: function (show) {
+                this.commentMaker.facts = [];
+                this.commentMaker.show = show;
+                this.commentMaker.description = '';
+            },
+            makeComment: function (x1, y1, x2, y2) {
+                console.log('ocr comment');
+                if(x1 === x2 || y1 === y2)  return;
+
+                // todo this.boxes[this.cur].push([x1, y1, x2, y2]);
+                this.initCommentMaker(true);
+                fetch('/ocr', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        imgs: [{
+                            path: '.' + this.imgUrls[this.cur],
+                            x1: x1,
+                            y1: y1,
+                            x2: x2,
+                            y2: y2
+                        }]
+                    })
+                }).then(res => {
+                    if (res.ok) {
+                        res.json().then(results => {
+                            this.commentMaker.description += '\n'+results[0].replace('\n', '');
+                        })
+                    }
+                });
+                if (this.cur < 0 || this.cur > this.imgUrls.length) return [];
+                let evidenceName = null;
+                for (let i = 0; i < this.headers.length; i++) {
+                    let header = this.headers[i];
+                    if (header.start === null || header.start > this.cur) {
+                        evidenceName = i === 0 ? null : this.headers[i - 1].name;
+                        break;
+                    }
+                }
+                this.commentMaker.facts = this.getFactsByEvidence(evidenceName).
+                                            map(name => {return {name:name, selected: false}});
             },
 
             validateDocument: function (files) {
@@ -904,9 +989,42 @@
                 }).then(res => {
                     if (res.ok) {
                         this.getDocumentUrls();
+                        res.json().then(paths => {
+                            // ocr
+                            this.autoIndexing(paths);
+                        });
                     }
                     this.forbidUpload = false;
                     this.uploaderMsg = '上传卷宗图片';
+                })
+            },
+
+            autoIndexing: function () {
+                console.info('auto indexing...');
+                fetch('/ocr', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        imgs: this.imgUrls.map(url => {
+                            return {
+                                path: '.' + url,
+                                x1: 0.,
+                                y1: 0.,
+                                x2: 1.,
+                                y2: .25,
+                            }
+                        })
+                    })
+                }).then(res => {
+                    if (res.ok) {
+                        res.json().then(j => {
+                            this.imgHeaderTexts = j;
+                            console.log(j);
+                        })
+
+                    }
                 })
             },
 
@@ -930,7 +1048,6 @@
             },
 
             drawBox: function (x1, y1, x2, y2) {
-                this.boxes[this.cur].push([x1, y1, x2, y2]);
             },
 
             removeBox: function (idx) {
@@ -944,31 +1061,35 @@
                 if (ptr < 0) ptr += size;
                 ptr %= size;
                 this.cur = ptr;
+                this.initCommentMaker(false);
             },
 
             pinPage: function (headerIdx) {
                 this.headers[headerIdx].start = this.cur;
+                this.sortHeaders();
             },
 
             locPageByHeader: function (headerIdx) {
                 let start = this.headers[headerIdx]['start'];
-                if(start !== null && start >= 0 && start < this.imgUrls.length){
+                if (start !== null && start >= 0 && start < this.imgUrls.length) {
                     this.cur = start;
                 }
+                this.initCommentMaker(false);
             },
 
             locPageByInput: function () {
                 let start = parseInt(this.$refs.goto.value) - 1;
-                if(start >= 0 && start < this.imgUrls.length){
+                if (start >= 0 && start < this.imgUrls.length) {
                     this.cur = start;
                 }
+                this.initCommentMaker(false);
             },
 
             numPage: function (headerIdx) {
                 let start = this.headers[headerIdx]['start'];
-                if(start === null){
+                if (start === null) {
                     return '';
-                }else{
+                } else {
                     return start + 1;
                 }
             }

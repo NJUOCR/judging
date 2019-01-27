@@ -80,6 +80,10 @@
     /*background: rgba(255,255,255,.25);*/
     /*pointer-events: auto;*/
 /*}*/
+.bounding{
+    background-color: rgba(0, 0, 0, .3);
+    position: absolute;
+}
 .box{
     border: solid 2px blue;
     position: absolute;

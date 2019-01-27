@@ -18,7 +18,8 @@ class ServiceInvoker:
         print('invoking outer service: %s \n %s' % (url, json.dumps(pars, ensure_ascii=False, indent=2)))
         try:
             return (requests.get(url, pars)).text if pattern == 'get' else requests.post(url, pars).text
-        except Exception:
+        except Exception as e:
+            print(e)
             return False
 
     @staticmethod
@@ -30,7 +31,7 @@ class ServiceInvoker:
 
 
 class OCRInvoker(ServiceInvoker):
-    url = 'http://172.18.0.2:555/'
+    url = 'http://ocr4judging:4444/'
     ocr_resource_root = '/usr/local/src'
     # params = {'path': '/usr/local/src/data/doc_imgs/2014东刑初字第0100号_诈骗罪208页.pdf/img-0008.jpg'}
     pattern = 'get'
@@ -39,7 +40,6 @@ class OCRInvoker(ServiceInvoker):
         pass
 
     def invoke(self, params: dict) -> str:
-        params['path'] = OCRInvoker.ocr_resource_root + params['path']
         return ServiceInvoker.link(self.url, params, pattern='get')
 
 

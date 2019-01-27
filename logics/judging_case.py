@@ -154,8 +154,9 @@ class JudgingCase:
         """
         return tree[:1] + list(map(lambda node: translate_key(node, to), tree[1:]))
 
-    def save_document(self, file_bundle: List[Tuple[str, FileStorage]]):
-        doc_data.save_document(self.case_id, [(file, name.split('.').pop()) for name, file in file_bundle])
+    def save_document(self, file_bundle: List[Tuple[str, FileStorage]]) -> List[str]:
+        paths = doc_data.save_document(self.case_id, [(file, name.split('.').pop()) for name, file in file_bundle])
+        return paths
 
     def get_document_urls(self):
         return list(map(lambda path: '/'+path, doc_data.get_document_paths(self.case_id)))
