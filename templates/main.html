@@ -95,9 +95,6 @@
 </div>
 
 <main v-if="show" id="detail">
-    <!-- todo 可以拖动 -->
-    {#    <aside id="tool">#}
-    {#    </aside>#}
     <section id="first-level-section">
         <h1>
             <selectable-header v-on:change-candidate="changeCandidate"
@@ -268,7 +265,9 @@
             </file-uploader>
         </div>
         <album :active="cur" :urls="imgUrls" :forward="true"
-               :boxes="boxes" @draw-box="makeComment" @remove-box="removeBox"
+               :boxes="curPageBoxes"
+               :active-box-idx="curCommentOnCurPage"
+               @draw-box="makeComment"
                :enable-canvas="commenting" @album-move="goto">
         </album>
 
@@ -287,10 +286,25 @@
             </header>
             <textarea title="description" v-model="commentMaker.description"></textarea>
             <div>
-                <button><span class="glyphicon glyphicon-ok"></span></button>
-                <button><span class="glyphicon glyphicon-remove"></span></button>
+                <button id="accept-comment" @click="acceptComment"
+                        :disabled="commentMaker.facts.every(fact=>!fact.selected)"><span
+                        class="glyphicon glyphicon-ok"></span></button>
+                <button id="abandon-comment" @click="abandonComment"><span class="glyphicon glyphicon-remove"></span>
+                </button>
             </div>
         </div>
+        <ul>
+            <li v-for="(comment, commentIdx) in curPageComments"
+                @click="curCommentOnCurPage=commentIdx"
+                :class="['comment-item', commentIdx===curCommentOnCurPage?'active-comment':'']">
+                <header>
+                    <span class="comment-item-id" v-text="commentIdx+1"></span>
+                    <span v-text="comment.factName"></span>
+                    <span class="remove glyphicon glyphicon-remove" @click="removeComment(comment)"></span>
+                </header>
+                <p v-text="comment.description"></p>
+            </li>
+        </ul>
     </div>
 </main>
 
@@ -417,7 +431,7 @@
 
 
         created: function () {
-            this.updateData();
+            {#this.updateData();#}
         }
     });
 
@@ -564,30 +578,7 @@
 
                 this.thirdLevel.forward = offset > 0 ? "carousel-animate-leave-to-left" : "carousel-animate-leave-to-right";
             },
-            save: function () {
-                this.isUpdateCompleted = true;
-                let url = "/update-case";
-                let case_data = graph.structure;
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        case_data: case_data
-                    })
-                }).then((res) => {
-                    if (res.ok) {
-                        //graph.updateData();
-                        res.json().then(j => {
-                            console.info(`[保存案件] -> ${JSON.stringify(j)}`);
-                        })
-                    } else {
-                        console.log("更新失败")
-                    }
-                    this.isUpdateCompleted = false;
-                });
-            },
+
             changeCandidate: function (idx, componentName) {
                 // console.log(idx + ' ' + componentName);
                 if (componentName === 'first-level-header') {
@@ -874,13 +865,20 @@
             imgUrls: [],
             imgHeaderTexts: [],
             cur: -1,
-            boxes: [],
+            comments: [],
             commenting: false,
-
+            curCommentOnCurPage: -1,
+            curPageBoxes: [],
+            curPageComments: [],
             commentMaker: {
                 show: false,
                 facts: [],
-                description: ''
+                description: '',
+                evidenceName: '',
+                location: {
+                    page: -1,
+                    box: [0, 0, 0, 0]
+                },
             }
 
         },
@@ -890,9 +888,7 @@
                 fetch(url, {
                     method: 'get'
                 }).then(res => res.json()).then(headers => {
-                    this.headers = headers.map(name => {
-                        return {name: name, start: null}
-                    });
+                    this.headers = headers;
                 });
             },
 
@@ -921,13 +917,19 @@
                 this.commentMaker.facts = [];
                 this.commentMaker.show = show;
                 this.commentMaker.description = '';
+                this.commentMaker.evidenceName = '';
+                this.commentMaker.location = {
+                    page: -1,
+                    box: [0, 0, 0, 0]
+                }
             },
             makeComment: function (x1, y1, x2, y2) {
                 console.log('ocr comment');
-                if(x1 === x2 || y1 === y2)  return;
+                if (x1 === x2 || y1 === y2) return;
 
                 // todo this.boxes[this.cur].push([x1, y1, x2, y2]);
                 this.initCommentMaker(true);
+                this.commentMaker.location = {page: this.cur, box: [x1, y1, x2, y2]};
                 fetch('/ocr', {
                     method: 'POST',
                     headers: {
@@ -945,7 +947,9 @@
                 }).then(res => {
                     if (res.ok) {
                         res.json().then(results => {
-                            this.commentMaker.description += '\n'+results[0].replace('\n', '');
+                            let result = results[0];
+                            if (result === false) return;
+                            this.commentMaker.description += '\n' + results[0].replace('\n', '');
                         })
                     }
                 });
@@ -958,16 +962,94 @@
                         break;
                     }
                 }
-                this.commentMaker.facts = this.getFactsByEvidence(evidenceName).
-                                            map(name => {return {name:name, selected: false}});
+                this.commentMaker.evidenceName = evidenceName;
+                this.commentMaker.facts = this.getFactsByEvidence(evidenceName).map(name => {
+                    return {name: name, selected: false}
+                });
+            },
+
+            acceptComment: function () {
+                // 选择的事实
+                let selectedFacts = this.commentMaker.facts.filter(fact => fact.selected);
+                graph.structure.firstLevelItems.forEach(first => {
+                    first.secondLevelItems.forEach(second => {
+                        for (let i = 0; i < selectedFacts.length; i++) {
+                            let fact = selectedFacts[i];
+
+                            // 找到了对应事实
+                            if (second['name'] === fact['name']) {
+                                // 对应事实下的证据
+                                let targetThird = second.thirdLevelItems.find(third => third['name'] === this.commentMaker.evidenceName);
+                                targetThird.contents.unshift({
+                                    page: this.commentMaker['location']['page'],
+                                    box: this.commentMaker['location']['box'],
+                                    description: this.commentMaker['description']
+                                })
+                            }
+                        }
+                    })
+                });
+                console.log('refreshing comment list...');
+                this.initCommentMaker(false);
+                this.listComment();
+            },
+
+            removeComment: function (comment) {
+                let node = graph.structure.firstLevelItems.find(first => first['name'] === comment.nodeName)
+                if (node) {
+                    let fact = node.secondLevelItems.find(second => second['name'] === comment.factName);
+                    if (fact) {
+
+                    }
+                }
+            },
+
+            listComment: function () {
+                let comments = [];
+                graph.structure.firstLevelItems.forEach(first => {
+                    first.secondLevelItems.forEach(second => {
+                        second.thirdLevelItems.forEach(third => {
+                            third.contents.forEach(item => {
+                                comments.push({
+                                    page: item['page'],
+                                    box: item['box'],
+                                    description: item['description'],
+                                    evidenceName: third['name'],
+                                    factName: second['name'],
+                                    nodeName: first['name']
+                                })
+                            })
+                        })
+                    })
+                });
+                this.comments = comments;
+                this.refreshCurPageComments();
+                console.log('comment list refreshed')
+            },
+
+            refreshCurPageComments: function () {
+                this.curPageComments = this.comments.filter(c => c['page'] === this.cur);
+                this.curPageBoxes = this.curPageComments.map(c => c['box']);
+
+            },
+            abandonComment: function () {
+                this.commentMaker.show = false;
             },
 
             validateDocument: function (files) {
                 let fileList = new Array(...files);
-                let illegalSuffix = fileList.map(file => file.name.split('.').pop()).filter(suffix => {
-                    suffix = suffix.toLowerCase();
-                    return suffix !== 'png' && suffix !== 'jpg' && suffix !== 'jpeg'
-                });
+                let illegalSuffix = true;
+                if (fileList.length === 1) {
+                    let suffix = fileList[0].name.split('.').pop().toLowerCase();
+                    if(suffix === 'png' || suffix === 'jpg' || suffix === 'jpeg' || suffix === 'pdf'){
+                        illegalSuffix = [];
+                    }
+                } else {
+                    illegalSuffix = fileList.map(file => file.name.split('.').pop()).filter(suffix => {
+                        suffix = suffix.toLowerCase();
+                        return suffix !== 'png' && suffix !== 'jpg' && suffix !== 'jpeg'
+                    });
+                }
                 this.forbidUpload = illegalSuffix.length !== 0;
                 this.uploaderMsg = this.forbidUpload ? `存在无效的格式：${illegalSuffix[0]}` : `已选择 ${files.length} 张图片`;
                 return !this.forbidUpload;
@@ -1047,13 +1129,6 @@
                 this.commenting = !this.commenting;
             },
 
-            drawBox: function (x1, y1, x2, y2) {
-            },
-
-            removeBox: function (idx) {
-                this.boxes[this.cur].splice(idx, 1);
-            },
-
             goto: function (offset) {
                 let size = this.imgUrls.length;
                 if (size === 0) return;
@@ -1062,6 +1137,7 @@
                 ptr %= size;
                 this.cur = ptr;
                 this.initCommentMaker(false);
+                this.refreshCurPageComments();
             },
 
             pinPage: function (headerIdx) {
@@ -1075,6 +1151,7 @@
                     this.cur = start;
                 }
                 this.initCommentMaker(false);
+                this.refreshCurPageComments();
             },
 
             locPageByInput: function () {
@@ -1083,6 +1160,7 @@
                     this.cur = start;
                 }
                 this.initCommentMaker(false);
+                this.refreshCurPageComments();
             },
 
             numPage: function (headerIdx) {
@@ -1136,9 +1214,11 @@
             },
 
             save: function () {
+                console.info('saving...');
                 this.savingCompleted = false;
                 let url = "/update-case";
                 let case_data = graph.structure;
+                case_data['headers'] = indexing.headers;
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -1159,6 +1239,22 @@
                     this.savingCompleted = true;
                 });
             },
+        },
+        mounted: function () {
+            const url = `/get-case?case_id=${caseId}`;
+
+            fetch(url).then((response) => {
+                if (response.ok) {
+                    response.json().then(j => {
+                        console.log('nav init...');
+                        graph.structure = j;
+                        console.log(graph.structure);
+                        indexing.listComment();
+                        console.log(indexing.comments);
+                    })
+                }
+
+            })
         }
     });
     nav.switcher(0);

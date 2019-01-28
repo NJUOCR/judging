@@ -155,7 +155,10 @@ class JudgingCase:
         return tree[:1] + list(map(lambda node: translate_key(node, to), tree[1:]))
 
     def save_document(self, file_bundle: List[Tuple[str, FileStorage]]) -> List[str]:
-        paths = doc_data.save_document(self.case_id, [(file, name.split('.').pop()) for name, file in file_bundle])
+        if len(file_bundle) == 1 and file_bundle[0][0].split('.').pop().lower() == 'pdf':
+            paths = doc_data.save_transform_pdf(self.case_id, file_bundle[0][1])
+        else:
+            paths = doc_data.save_document(self.case_id, [(file, name.split('.').pop()) for name, file in file_bundle])
         return paths
 
     def get_document_urls(self):
@@ -164,10 +167,12 @@ class JudgingCase:
     def get_headers(self):
         d = self.data_obj.d
         if '目录' in d:
-            return d['目录']
-        headers = set()
-        for first in d['证据链条']:
-            for second in first['查证事项']:
-                for third in second['印证证据']:
-                    headers.add(third['名称'])
-        return list(headers)
+            headers = d['目录']
+        else:
+            headers = set()
+            for first in d['证据链条']:
+                for second in first['查证事项']:
+                    for third in second['印证证据']:
+                        headers.add(third['名称'])
+            headers = list(map(lambda h_name: {'名称': h_name, '起始页': None}, headers))
+        return translate_json(headers, to='en')

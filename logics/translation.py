@@ -8,7 +8,9 @@ DICTIONARY = {
     "印证证据": "thirdLevelItems",
     "类型": "type",
     "路径": 'path',
-    "描述": 'description'
+    "描述": 'description',
+    "目录": 'headers',
+    "起始页": 'start'
 }
 
 

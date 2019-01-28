@@ -1,3 +1,7 @@
+:root{
+    --box-color: #3F51B5;
+}
+
 .album-ground {
     width: 100%;
     position: relative;
@@ -85,21 +89,37 @@
     position: absolute;
 }
 .box{
-    border: solid 2px blue;
+    border: solid 1px var(--box-color);
     position: absolute;
     z-index: 101;
 }
-.box>.remove{
+.box.active-box{
+    z-index: 110;
+    background-color: rgba(0, 100, 172, 0.35);
+}
+/*.box>.remove{
     position: absolute;
-    top: 0;
+    top: -1em;
     right: 0;
     width: 1em;
     height: 1em;
-    background: blue;
+    background: var(--box-color);
     color: whitesmoke;
 }
 .box>.remove:hover{
     cursor: pointer;
+}*/
+.box>.box-id{
+    position: absolute;
+    font-size: .5em;
+    z-index: 500;
+    left: -1px;
+    background-color: var(--box-color);
+    color: whitesmoke;
+    padding: 0 1em;
+    /* border-radius: 50%; */
+    border: none;
+    bottom: 100%;
 }
 
 .album-indicator {

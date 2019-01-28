@@ -12,7 +12,8 @@ Vue.component('album', {
          *      ...
          * ]
          */
-        boxes: Array
+        boxes: Array,
+        activeBoxIdx: Number
     },
     template: `
     <div class="album-ground">
@@ -27,12 +28,14 @@ Vue.component('album', {
                         
                     </div>
                     <div v-if="enableCanvas" ref="bounding" class="bounding"></div>
-                    <div class="box"  v-for="(box,boxIdx) in getCommentBoxes(active)"
-                        :style="{top: box[1]+'%',
-                                left: box[0]+'%', 
-                                width: box[2]-box[0]+'%',
-                                height: box[3]-box[1]+'%'}">
-                        <span class="glyphicon glyphicon-remove remove" @click="removeCommentBox(boxIdx)"></span>
+                    <div :class="['box', boxIdx===activeBoxIdx?'active-box':'']"  v-for="(box,boxIdx) in getCommentBoxes(active)"
+                        :style="{top: box[1]*100+'%',
+                                left: box[0]*100+'%', 
+                                width: (box[2]-box[0])*100+'%',
+                                height: (box[3]-box[1])*100+'%'}" 
+                        @click="selectBox(boxIdx)">
+                        <span class="box-id" v-text="boxIdx+1"></span>
+                        <!--<span class="glyphicon glyphicon-remove remove" @click="removeCommentBox(boxIdx)"></span>-->
                     </div>
                 </div>
             </div>
@@ -65,8 +68,8 @@ Vue.component('album', {
             let self = this;
             let w = canvas.offsetWidth,
                 h = canvas.offsetHeight;
-            let x1 = e.offsetX * 100 / w,
-                y1 = e.offsetY * 100 / h,
+            let x1 = e.offsetX / w,
+                y1 = e.offsetY / h,
                 x2 = 0,
                 y2 = 0;
             function move(e1){
@@ -91,16 +94,18 @@ Vue.component('album', {
             canvas.addEventListener('mouseup', up);
         },
 
-        getCommentBoxes: function (idx) {
-            if(this.boxes !== undefined && this.boxes.length > idx){
-                return this.boxes[idx]
+        getCommentBoxes: function () {
+            let boxes = this.boxes;
+            if(boxes !== undefined){
+                return boxes
             }else{
                 return []
             }
         },
 
-        removeCommentBox: function (idx) {
-            this.$emit('remove-box', idx);
+        selectBox: function (boxIdx) {
+            this.$emit('select-box')
+
         }
     }
 });
