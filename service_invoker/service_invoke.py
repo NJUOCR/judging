@@ -40,7 +40,9 @@ class OCRInvoker(ServiceInvoker):
         pass
 
     def invoke(self, params: dict) -> str:
-        return ServiceInvoker.link(self.url, params, pattern='get')
+        rs = ServiceInvoker.link(self.url, params, pattern='get')
+        print(rs)
+        return rs
 
 
 class Context:
@@ -56,4 +58,16 @@ class Context:
 if __name__ == '__main__':
     ocr = OCRInvoker()
     context = Context(ocr)
-    print(context.invoke({'path': 'static/resources/media/查找被害人，确认死者身份/死亡时间/视听时间/课程表.png'}))
+    print(context.invoke(
+        {
+            "path": "./static/resources/documents/津南检公诉刑诉【2018】222号/00000016.png",
+            # "path": "./static/resources/documents/津南检公诉刑诉【2018】66号/00000135.png",
+            # "path": "./static/resources/documents/津南检公诉刑诉【2018】632号/00000041.png",
+            # "path": "./static/resources/documents/津南检公诉刑诉【2018】632号/00000098.png",
+            "auxiliary": True,
+            "x1": 0.1,
+            "y1": 0.1,
+            "x2": 0.9,
+            "y2": 0.6
+        }
+    ))

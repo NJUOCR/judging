@@ -1,10 +1,10 @@
 import json
 import os
 from typing import Tuple, List
-
+from fuzzywuzzy import fuzz
 from flask import Flask, request, jsonify, render_template, Response, send_file
 from werkzeug.datastructures import FileStorage
-
+from logics.indexing import match_index
 import utils.unet as unet
 from logics.judging_case import JudgingCase
 from logics.judging_graph import JudgingGraph
@@ -223,8 +223,19 @@ def ocr(imgs: list=None):
     for param in param_list:
         result = service.invoke(param)
         results.append(result)
-
     return jsonify(results)
+
+
+@app.route('/ocr-indexing', methods=['POST'])
+def ocr_indexing():
+    case_id = request.json['case_id']
+    param_list = request.json['imgs']
+    service = ServiceInvoker.which('ocr')
+    pred = [service.invoke(param).replace('\n', '') for param in param_list]
+    headers = JudgingCase(case_id).get_headers()
+    headers = match_index(headers, pred)
+
+    return jsonify(headers=headers, texts=pred)
 
 
 @app.route('/upload-document', methods=['POST'])

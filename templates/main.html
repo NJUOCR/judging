@@ -71,7 +71,7 @@
                         <div class="non-selectable" v-for="line in secondNameLines(second.name)" v-text="line"></div>
                     </div>
                     <ul v-if="second.expand" class="horizontal-list">
-                        <li v-for="(third, thirdLevelIdx) in second.thirdLevelItems"
+                        <li v-for="(third, thirdLevelIdx) in second.thirdLevelItems.filter(_=>_.name!=='其他')"
                             :style="{width: parseInt(100 * third.name.length /
                                     second.thirdLevelItems.map(i => i.name.length).reduce((x1, x2) => x1+x2)) + '%'}">
                             <div class="third-level-container" @click="select(3, thirdLevelIdx)">
@@ -236,23 +236,32 @@
 <main v-if="show" id="indexing">
     <aside id="indexing-left">
         <ul>
+            <li class="indexing-item">
+                <input v-model="newHeaderText" @keyup.enter="newHeader()" title="自定义目录" placeholder="自定义目录">
+                {#                <span class="glyphicon glyphicon-ok-circle" @click="newHeader()"></span>#}
+                <span class="tail pin glyphicon glyphicon-pushpin" @click="newHeader()"></span>
+            </li>
+            <hr />
             <li :class="['indexing-item']" v-for="(header, hid) in headers">
                 <span v-text="header.name"></span>
                 <i class="page-number" v-text="numPage(hid)" @click="locPageByHeader(hid)"></i>
-                <span class="pin glyphicon glyphicon-pushpin" @click="pinPage(hid)"></span>
+                <span v-if="!header['custom']" class="tail pin glyphicon glyphicon-pushpin"
+                      @click="pinPage(hid)"></span>
+                <span v-if="header['custom']" class="tail remove glyphicon glyphicon-trash"
+                      @click="removePage(hid)"></span>
             </li>
         </ul>
     </aside>
     <div id="indexing-middle">
         <div class="tool-kit">
             <div>
-                <button>上一页</button>
+                <button class="page-btn" @click="goto(-1)">上一页</button>
                 <div id="goto-input">
                     <input title="跳转到" ref="goto" @keyup.enter="locPageByInput()" :value="cur + 1" type="number">
                     <span>/</span>
                     <span v-text="imgUrls.length"></span>
                 </div>
-                <button>下一页</button>
+                <button class="page-btn" @click="goto(1)">下一页</button>
             </div>
             <div>
                 <span>批注</span>
@@ -272,12 +281,19 @@
         </album>
 
     </div>
-    <div id="indexing-right">
+    <aside id="indexing-right">
         <div id="new-comment" :class="[commentMaker.show&&commenting?'show-maker':'hide-maker']">
             <header>添加到事实</header>
+            <input placeholder="快速查询" @keyup="queryFacts" title="搜索事实" v-model="factKeywords">
             <ul>
                 <li @click="fact.selected = !fact.selected"
+                    v-for="fact in factsByKeywords"
+                    :class="[fact.selected?'selected':'']">
+                    <span v-text="fact.name"></span>
+                </li>
+                <li @click="fact.selected = !fact.selected"
                     v-for="fact in commentMaker.facts"
+                    v-if="factsByKeywords.length === 0"
                     :class="[fact.selected?'selected':'']">
                     <span v-text="fact.name"></span>
                 </li>
@@ -287,7 +303,7 @@
             <textarea title="description" v-model="commentMaker.description"></textarea>
             <div>
                 <button id="accept-comment" @click="acceptComment"
-                        :disabled="commentMaker.facts.every(fact=>!fact.selected)"><span
+                        :disabled="commentMaker.facts.every(fact=>!fact.selected) && factsByKeywords.every(fact=>!fact.selected)"><span
                         class="glyphicon glyphicon-ok"></span></button>
                 <button id="abandon-comment" @click="abandonComment"><span class="glyphicon glyphicon-remove"></span>
                 </button>
@@ -305,7 +321,7 @@
                 <p v-text="comment.description"></p>
             </li>
         </ul>
-    </div>
+    </aside>
 </main>
 
 <script>
@@ -858,12 +874,14 @@
         data: {
             show: false,
             headers: [],
+            newHeaderText: '',
 
             uploaderMsg: '上传卷宗图片',
-            forbidUpload: false,
+            forbidUpload: true,
 
             imgUrls: [],
             imgHeaderTexts: [],
+            headerScores: [],
             cur: -1,
             comments: [],
             commenting: false,
@@ -879,7 +897,9 @@
                     page: -1,
                     box: [0, 0, 0, 0]
                 },
-            }
+            },
+            factKeywords: '',
+            factsByKeywords: [],
 
         },
         methods: {
@@ -970,7 +990,9 @@
 
             acceptComment: function () {
                 // 选择的事实
-                let selectedFacts = this.commentMaker.facts.filter(fact => fact.selected);
+                let selectedFacts = this.commentMaker.facts
+                    .concat(this.factsByKeywords)
+                    .filter(fact => fact.selected);
                 graph.structure.firstLevelItems.forEach(first => {
                     first.secondLevelItems.forEach(second => {
                         for (let i = 0; i < selectedFacts.length; i++) {
@@ -980,11 +1002,19 @@
                             if (second['name'] === fact['name']) {
                                 // 对应事实下的证据
                                 let targetThird = second.thirdLevelItems.find(third => third['name'] === this.commentMaker.evidenceName);
+                                if (targetThird === undefined) {
+                                    second.thirdLevelItems.push({
+                                        name: '其他',
+                                        contents: []
+                                    });
+                                    targetThird = second.thirdLevelItems.find(third => third['name'] === '其他');
+                                }
                                 targetThird.contents.unshift({
                                     page: this.commentMaker['location']['page'],
                                     box: this.commentMaker['location']['box'],
                                     description: this.commentMaker['description']
                                 })
+
                             }
                         }
                     })
@@ -995,11 +1025,30 @@
             },
 
             removeComment: function (comment) {
-                let node = graph.structure.firstLevelItems.find(first => first['name'] === comment.nodeName)
+                let node = graph.structure.firstLevelItems.find(first => first['name'] === comment.nodeName);
+                // debugger;
                 if (node) {
                     let fact = node.secondLevelItems.find(second => second['name'] === comment.factName);
+                    // debugger;
                     if (fact) {
+                        let evidence = fact.thirdLevelItems.find(third => third['name'] === comment.evidenceName);
+                        if (!evidence) evidence = fact.thirdLevelItems.find(third => third['name'] === '其他')
+                        // debugger;
+                        if (evidence) {
+                            for (let i = 0; i < evidence.contents.length; i++) {
+                                let piece = evidence.contents[i];
+                                if (piece['page'] === comment['page']
+                                    && piece['description'] === comment['description']
+                                // && JSON.stringify(piece['box']) === JSON.stringify(comment['box'])
+                                ) {
 
+                                    evidence.contents.splice(i, 1);
+                                    this.listComment();
+                                    console.log('piece removed');
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -1027,6 +1076,22 @@
                 console.log('comment list refreshed')
             },
 
+            queryFacts: function () {
+                this.factsByKeywords = [];
+                if (this.factKeywords !== '') {
+                    graph.structure.firstLevelItems.forEach(first => {
+                        first.secondLevelItems.forEach(second => {
+                            if (second.name.search(this.factKeywords) >= 0) {
+                                this.factsByKeywords.push({
+                                    name: second.name,
+                                    selected: false
+                                });
+                            }
+                        })
+                    });
+                }
+            },
+
             refreshCurPageComments: function () {
                 this.curPageComments = this.comments.filter(c => c['page'] === this.cur);
                 this.curPageBoxes = this.curPageComments.map(c => c['box']);
@@ -1041,7 +1106,7 @@
                 let illegalSuffix = true;
                 if (fileList.length === 1) {
                     let suffix = fileList[0].name.split('.').pop().toLowerCase();
-                    if(suffix === 'png' || suffix === 'jpg' || suffix === 'jpeg' || suffix === 'pdf'){
+                    if (suffix === 'png' || suffix === 'jpg' || suffix === 'jpeg' || suffix === 'pdf') {
                         illegalSuffix = [];
                     }
                 } else {
@@ -1080,10 +1145,12 @@
                     this.uploaderMsg = '上传卷宗图片';
                 })
             },
+            matchIndexing: function (pred, trgt) {
 
+            },
             autoIndexing: function () {
                 console.info('auto indexing...');
-                fetch('/ocr', {
+                fetch('/ocr-indexing', {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json"
@@ -1092,18 +1159,32 @@
                         imgs: this.imgUrls.map(url => {
                             return {
                                 path: '.' + url,
-                                x1: 0.,
-                                y1: 0.,
-                                x2: 1.,
-                                y2: .25,
+                                // 有些图片有边框，会影响分行
+                                x1: 0.1,
+                                y1: 0.1,
+                                x2: 0.9,
+                                // 框选部分的大小会影响OTSU判断，所以范围尽量大一些
+                                y2: .6,
                             }
-                        })
+                        }),
+                        case_id: caseId
                     })
                 }).then(res => {
                     if (res.ok) {
                         res.json().then(j => {
-                            this.imgHeaderTexts = j;
-                            console.log(j);
+                            this.imgHeaderTexts = j['texts'];
+                            this.headers = j['headers'].map(_ => {
+                                return {
+                                    name: _['name'],
+                                    start: _['start'],
+                                    // todo 去除score
+                                    score: _['score']
+                                }
+                            });
+                            this.headerScores = j['headers'].map(_ => _['score'])
+                            {#console.log(this.headers);#}
+                            {#console.log(this.imgHeaderTexts);#}
+                            this.sortHeaders();
                         })
 
                     }
@@ -1142,6 +1223,22 @@
 
             pinPage: function (headerIdx) {
                 this.headers[headerIdx].start = this.cur;
+                this.sortHeaders();
+            },
+
+            removePage: function (headerIdx) {
+                this.headers.splice(headerIdx, 1),
+                    this.sortHeaders();
+            },
+
+            newHeader: function () {
+                if (this.newHeaderText === '') return;
+                this.headers.push({
+                    name: this.newHeaderText,
+                    start: this.cur,
+                    custom: true
+                });
+                this.newHeaderText = '';
                 this.sortHeaders();
             },
 
