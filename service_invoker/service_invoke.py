@@ -60,7 +60,7 @@ if __name__ == '__main__':
     context = Context(ocr)
     print(context.invoke(
         {
-            "path": "./static/resources/documents/津南检公诉刑诉【2018】222号/00000016.png",
+            "path": "./static/resources/documents/津南检公诉刑诉【2018】66号/00000061.png",
             # "path": "./static/resources/documents/津南检公诉刑诉【2018】66号/00000135.png",
             # "path": "./static/resources/documents/津南检公诉刑诉【2018】632号/00000041.png",
             # "path": "./static/resources/documents/津南检公诉刑诉【2018】632号/00000098.png",

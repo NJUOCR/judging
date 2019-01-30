@@ -1,0 +1,110 @@
+#checking {
+    display: flex;
+}
+
+#checking-left {
+    width: 25%;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .2);
+
+}
+
+#checking-left > ol {
+    list-style: none;
+    padding: -0;
+}
+
+#checking-left .checking-item-first {
+background: linear-gradient(to left, #f2f0f0, #e8e2e2);}
+
+#checking-left .checking-item-first > header {
+    border: solid 2px rgba(111, 111, 111, .1);
+    border-left: 5px solid darkorange;
+    padding: .4em;
+    font-size: 1.25em;
+    font-weight: bold;
+    position: relative;
+    transition: .3s;
+    left: 0;
+}
+
+.checking-item-first.expand-sub > header {
+    box-shadow: 1px 5px 5px rgba(0, 0, 0, .3);
+    color: black;
+    background: #fcfafa;
+    top: -5px;
+}
+
+.checking-item-first.collapse-sub > header {
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, .3) inset;
+    background: #ece7e7;
+    color: #4a565c;
+    right: 5px;
+    font-size: 95%;
+}
+#checking-left .checking-item-first > header:hover {
+    cursor: pointer;
+    left: 5px;
+}
+
+#checking-left .sub-list {
+    list-style: none;
+    padding: 0;
+    transition: .3s;
+    overflow-y: hidden;
+    margin: 0 1em 0 2em;
+}
+
+
+.checking-item-first.expand-sub .sub-list {
+    max-height: 100vh;
+}
+
+.checking-item-first.collapse-sub .sub-list {
+    max-height: 0;
+}
+
+#checking-left .checking-item-second {
+    margin: 2px 0;
+    border-left: 4px solid #3f51b5;
+    transition: .4s;
+    background: whitesmoke;
+}
+
+#checking-left .checking-item-second:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#checking-left .checking-item-second > header {
+    font-size: 1.1em;
+    padding: .3em;
+}
+
+/* right */
+#checking-right{
+    width: 75%;
+}
+
+.checking-item-third{
+    display: flex;
+    /*align-items: stretch;*/
+    width: 100%;
+    padding: 0 3em;
+}
+.checking-item-third>div{
+    display: flex;
+    align-items: center;
+
+}
+.checking-item-third .source{
+    width: 15%;
+}
+.checking-item-third .description{
+    width: 30%;
+}
+.checking-item-third .piece{
+    width: 55%;
+}
+canvas{
+    border: solid 1px black;
+}

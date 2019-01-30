@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/nav.css">
     <link rel="stylesheet" href="/static/css/indexing.css">
+    <link rel="stylesheet" href="/static/css/checking.css">
     <link rel="stylesheet" href="/static/css/graph-components.css">
     <link rel="stylesheet" href="/static/css/selectable-header.css">
     <link rel="stylesheet" href="/static/css/graph-detail.css">
@@ -241,7 +242,7 @@
                 {#                <span class="glyphicon glyphicon-ok-circle" @click="newHeader()"></span>#}
                 <span class="tail pin glyphicon glyphicon-pushpin" @click="newHeader()"></span>
             </li>
-            <hr />
+            <li role="separator"></li>
             <li :class="['indexing-item']" v-for="(header, hid) in headers">
                 <span v-text="header.name"></span>
                 <i class="page-number" v-text="numPage(hid)" @click="locPageByHeader(hid)"></i>
@@ -254,6 +255,11 @@
     </aside>
     <div id="indexing-middle">
         <div class="tool-kit">
+            <file-uploader :forbid-upload="forbidUpload"
+                           :input-text="uploaderMsg"
+                           @validate="validateDocument"
+                           @upload="uploadDocument">
+            </file-uploader>
             <div>
                 <button class="page-btn" @click="goto(-1)">上一页</button>
                 <div id="goto-input">
@@ -267,11 +273,6 @@
                 <span>批注</span>
                 <switch-btn :on="commenting" @switch="switchComment"></switch-btn>
             </div>
-            <file-uploader :forbid-upload="forbidUpload"
-                           :input-text="uploaderMsg"
-                           @validate="validateDocument"
-                           @upload="uploadDocument">
-            </file-uploader>
         </div>
         <album :active="cur" :urls="imgUrls" :forward="true"
                :boxes="curPageBoxes"
@@ -322,6 +323,35 @@
             </li>
         </ul>
     </aside>
+</main>
+
+<main v-if="show" id="checking">
+    <aside id="checking-left">
+        <ol>
+            <li :class="['checking-item-first', expandFlags[firstIdx]?'expand-sub':'collapse-sub']"
+                v-for="(first, firstIdx) in firsts">
+                <header v-text="first.name" @click="switchSublist(firstIdx)"></header>
+                <ul class="sub-list">
+                    <li class="checking-item-second"
+                        v-for="(second, secondIdx) in first.secondLevelItems"
+                        @click="selectFact(firstIdx, secondIdx)">
+                        <header v-text="second.name"></header>
+                    </li>
+                </ul>
+            </li>
+        </ol>
+    </aside>
+    <div id="checking-right">
+        <div class="checking-item-third" v-for="(comment, cid) in comments">
+            <div class="source">
+                <span v-text="comment.evidenceName"></span>
+            </div>
+            <div class="description">
+                <p v-text="comment.description"></p>
+            </div>
+            <canvas class="piece" :id="'canvas-'+cid"></canvas>
+        </div>
+    </div>
 </main>
 
 <script>
@@ -1276,6 +1306,118 @@
         }
     });
 
+    let checking = new Vue({
+        el: "#checking",
+        data: {
+            show: false,
+            firsts: [],
+            expandFlags: [],
+            comments: [],
+        },
+        methods: {
+            init: function (firsts) {
+                this.firsts = firsts;
+                this.expandFlags = firsts.map(_ => true);
+            },
+            switchSublist: function (firstIdx) {
+                this.$set(this.expandFlags, firstIdx, !this.expandFlags[firstIdx]);
+            },
+            selectFact: function (fid, sid) {
+                let second = graph.structure.firstLevelItems[fid].secondLevelItems[sid];
+                let comments = [];
+                second.thirdLevelItems.forEach(third => {
+                    third.contents.forEach(content => {
+                        comments.push({
+                            page: content['page'],
+                            imgUrl: indexing.imgUrls[content['page']] || '',
+                            box: content['box'],
+                            description: content['description'],
+                            evidenceName: third['name']
+                        })
+                    })
+                });
+                this.comments = comments;
+                console.log(this.comments);
+                this.$nextTick(()=>{
+                setTimeout(this.drawPiece(comments), 0);
+
+                });
+            },
+            drawPiece: function (comments) {
+                comments.forEach((comment, cid) => {
+                    let url = comment['imgUrl'],
+                        box = comment['box'],
+                        canvas = document.getElementById('canvas-' + cid);
+                    console.log(canvas);
+                    if (canvas === null) return;
+                    let ctx = canvas.getContext('2d');
+                    if (!ctx) return;
+
+                    let img = new Image();
+                    img.src = url;
+                    img.onload = () => {
+                        let naturalWidth = img.naturalWidth,
+                            naturalHeight = img.naturalHeight;
+
+                        let x1 = box[0] * naturalWidth,
+                            y1 = box[1] * naturalHeight,
+                            x2 = box[2] * naturalWidth,
+                            y2 = box[3] * naturalHeight;
+                        let pieceNaturalWidth = x2 - x1,
+                            pieceNaturalHeight = y2 - y1;
+                        // canvas.height = canvas.offsetWidth * pieceNaturalHeight / pieceNaturalWidth;
+                        let canvasWidth = canvas.offsetWidth,
+                            canvasHeight = canvas.offsetHeight;
+                        /*
+                        let pieceWH = pieceNaturalWidth / pieceNaturalHeight,
+                            canvasWH = canvasWidth / canvasHeight;
+                        let targetWidth = 0,
+                            targetHeight = 0;
+                        if(pieceWH > canvasWH){
+                            // 进行上下填充
+                            targetHeight = pieceNaturalWidth / canvasWH;
+                            targetWidth = pieceNaturalWidth
+                        }else{
+                            targetHeight = pieceNaturalHeight;
+                            targetWidth = pieceNaturalHeight * canvasWH;
+                        }
+
+                        ctx.drawImage(img, x1, y1, targetWidth*2, targetHeight, 0, 0, canvasWidth, canvasHeight)
+                        */
+                        let wRate = canvasWidth / pieceNaturalWidth,
+                            hRate = canvasHeight / pieceNaturalHeight;
+
+                        let rate = 1;
+                        if(wRate > 1 && hRate > 1){
+                            rate = Math.min(wRate, hRate);
+                        }else if(wRate < 1 && hRate > 1){
+                            rate = wRate;
+                        }else if(wRate > 1 && hRate < 1){
+                            rate = hRate;
+                        }else if(wRate < 1 && hRate < 1){
+                            rate = Math.min(wRate, hRate)
+                        }
+                        debugger;
+                        console.log(box);
+                        console.log(x1, y1, x2, y2);
+                        console.log(pieceNaturalWidth, pieceNaturalHeight);
+                        console.log(pieceNaturalWidth * rate, pieceNaturalHeight * rate);
+                        ctx.drawImage(img,
+                            //x1, y1,
+                            0, 0,
+                            //naturalWidth, naturalHeight,
+                            //pieceNaturalWidth, pieceNaturalHeight,
+                            //0, 0,
+                            canvasWidth, canvasHeight
+                            //pieceNaturalWidth * rate, pieceNaturalHeight * rate
+                        )
+                    };
+
+                })
+            }
+        }
+    });
+
     let nav = new Vue({
         el: "#nav",
         data: {
@@ -1284,19 +1426,14 @@
 
             tabs: [
                 {
-                    name: "卷宗导入",
-                    active: true,
+                    name: "卷宗批注",
+                    active: false,
                     cons: [indexing]
                 },
                 {
-                    name: "批注",
-                    active: false,
-                    cons: []
-                },
-                {
-                    name: "检查",
-                    active: false,
-                    cons: []
+                    name: "检查事实",
+                    active: true,
+                    cons: [checking]
                 }
             ]
         },
@@ -1348,13 +1485,14 @@
                         console.log(graph.structure);
                         indexing.listComment();
                         console.log(indexing.comments);
+                        checking.init(j.firstLevelItems);
                     })
                 }
 
             })
         }
     });
-    nav.switcher(0);
+    nav.switcher(1);
 
     window.onscroll = function () {
         if (!graph.show) return;
