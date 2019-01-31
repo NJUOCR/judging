@@ -1,6 +1,7 @@
 #nav{
-    background-color: grey;
+    background-color: #607D8B;
     display: flex;
+        margin-bottom: .5em;
 }
 
 .nav-btn{
@@ -25,8 +26,9 @@
     padding: .3em;
     align-self: end;
     transition: .4s;
-    position: absolute;
     right: 0;
+    outline: none;
+    position: fixed;
 }
 #save-btn:hover{
     background-color: #1b6d85;

@@ -22,7 +22,7 @@
     flex-shrink: 0;
     background: #bebbbb;
     padding: 0 0 0 5px;
-        box-shadow: 5px 0 5px rgba(0,0,0,.3);
+    box-shadow: 5px 0 5px rgba(0, 0, 0, .3);
 }
 
 #indexing-left .indexing-item {
@@ -36,7 +36,7 @@
     padding: .3em;
     border-left: 5px solid #3f51b5;
     margin: 2px 0;
-    box-shadow: 0 0 0 rgba(0,0,0,.3);
+    box-shadow: 0 0 0 rgba(0, 0, 0, .3);
 }
 
 #indexing-left .indexing-item:hover {
@@ -72,7 +72,7 @@
     align-items: center;
     background: whitesmoke;
     font-size: 1em;
-    box-shadow: 5px 0 5px rgba(0,0,0,.3);
+    box-shadow: 5px 0 5px rgba(0, 0, 0, .3);
 }
 
 .indexing-item:hover .tail {
@@ -123,6 +123,33 @@
     align-items: center;
 }
 
+#indexing-middle .indexing-btn {
+    background: #fafafa;
+    box-shadow: 0 2px 2px #a49d9d;
+    transition: .3s;
+    border: solid 1px lightgray;
+    outline: none;
+
+}
+#indexing-middle .indexing-btn[disabled]{
+    box-shadow: 0 1px 1px transparent;
+    opacity: .8;
+    cursor: not-allowed;
+}
+@keyframes rotation {
+    0%{
+        transform: rotate(0deg);
+    }
+    50%{
+        transform: rotate(180deg);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
+}
+#indexing-middle .indexing-btn[disabled] .refreshing {
+    animation: rotation 1s linear infinite;
+}
 #indexing-middle .page-btn {
     color: #645a56;
     background: #fafafa;
@@ -172,6 +199,7 @@
 #new-comment > ul, #new-comment > textarea {
     width: 100%;
     border-radius: 1em;
+    outline: none;
 }
 
 #new-comment > header {

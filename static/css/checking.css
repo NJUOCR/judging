@@ -14,7 +14,8 @@
 }
 
 #checking-left .checking-item-first {
-background: linear-gradient(to left, #f2f0f0, #e8e2e2);}
+    background: linear-gradient(to left, #f2f0f0, #e8e2e2);
+}
 
 #checking-left .checking-item-first > header {
     border: solid 2px rgba(111, 111, 111, .1);
@@ -25,6 +26,7 @@ background: linear-gradient(to left, #f2f0f0, #e8e2e2);}
     position: relative;
     transition: .3s;
     left: 0;
+
 }
 
 .checking-item-first.expand-sub > header {
@@ -41,6 +43,7 @@ background: linear-gradient(to left, #f2f0f0, #e8e2e2);}
     right: 5px;
     font-size: 95%;
 }
+
 #checking-left .checking-item-first > header:hover {
     cursor: pointer;
     left: 5px;
@@ -53,7 +56,6 @@ background: linear-gradient(to left, #f2f0f0, #e8e2e2);}
     overflow-y: hidden;
     margin: 0 1em 0 2em;
 }
-
 
 .checking-item-first.expand-sub .sub-list {
     max-height: 100vh;
@@ -78,33 +80,161 @@ background: linear-gradient(to left, #f2f0f0, #e8e2e2);}
 #checking-left .checking-item-second > header {
     font-size: 1.1em;
     padding: .3em;
+    display: flex;
+    justify-content: space-between;
+}
+
+.item-state {
+    font-size: 90%;
+    text-align: center;
 }
 
 /* right */
-#checking-right{
+#checking-right {
     width: 75%;
 }
 
-.checking-item-third{
+#checking-right>h1{
+    margin: .5em;
+}
+
+.checking-item-third {
     display: flex;
-    /*align-items: stretch;*/
+    border-bottom: solid 1px #9E9E9E;
     width: 100%;
     padding: 0 3em;
+    min-height: 3em;
 }
-.checking-item-third>div{
+
+.checking-item-third > div {
     display: flex;
     align-items: center;
 
 }
-.checking-item-third .source{
+
+.checking-item-third .source {
     width: 15%;
 }
-.checking-item-third .description{
+
+.checking-item-third .description {
     width: 30%;
 }
-.checking-item-third .piece{
+
+.checking-item-third .piece {
     width: 55%;
+    position: relative;
 }
-canvas{
+
+.checking-item-third .piece-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.checking-item-third .piece img {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+canvas {
     border: solid 1px black;
+}
+
+#checking-right hr {
+    padding: .5em;
+}
+
+#checking-right p{
+    margin: 0;
+}
+
+.checking-item-third-header {
+    background: #607D8B;
+    color: snow;
+    min-height: 2em;
+}
+
+/* checking result*/
+#checking-result {
+    width: 100%;
+    padding: 0 2em;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+}
+
+#checking-result > textarea {
+    border-radius: 10px;
+    box-shadow: 0 0 5px grey inset;
+    background: #f6f6f6;
+    resize: none;
+    width: 30em;
+    outline: none;
+}
+
+#checking-result > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+}
+
+#checking-result > div > button {
+    padding: .5em 2em;
+    transition: .2s;
+    background: whitesmoke;
+    border: solid 1px rgba(0, 0, 0, .2);
+    border-radius: 10px;
+    box-shadow: 0 0 5px gray;
+    margin: 2px .5em;
+    outline: none;
+}
+
+#checking-result > div > button:hover {
+    color: white;
+    box-shadow: 0 0 10px #2a1c1c;
+}
+
+#checking-result .checking-accept-btn {
+    color: #37913b;
+}
+
+#checking-result .checking-accept-btn:hover {
+    background: #37913b;
+}
+
+#checking-result .checking-reject-btn {
+    color: #d7372b;
+}
+
+#checking-result .checking-reject-btn:hover {
+    background: #d7372b;
+}
+
+#checking-result .checking-clear-btn{
+    color: gray;
+}
+#checking-result .checking-clear-btn:hover{
+    background: gray;
+}
+
+.header-state {
+    font-size: 45%;
+    font-weight: bolder;
+    border: solid 2px;
+    border-radius: 10px;
+    padding: .2em .5em;
+}
+
+.pass-state {
+    color: #37913b;
+}
+
+.reject-state {
+    color: #d7372b;
+}
+
+.tbd-state{
+    color: grey;
 }

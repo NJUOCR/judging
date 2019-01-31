@@ -255,6 +255,10 @@
     </aside>
     <div id="indexing-middle">
         <div class="tool-kit">
+            <button class="indexing-btn" :disabled="indexingProcessing" @click="autoIndexing()">
+                <span>智能编目</span>
+                <span :class="['glyphicon', indexingProcessing?'glyphicon-refresh refreshing':'glyphicon-sort-by-order']"></span>
+            </button>
             <file-uploader :forbid-upload="forbidUpload"
                            :input-text="uploaderMsg"
                            @validate="validateDocument"
@@ -335,13 +339,27 @@
                     <li class="checking-item-second"
                         v-for="(second, secondIdx) in first.secondLevelItems"
                         @click="selectFact(firstIdx, secondIdx)">
-                        <header v-text="second.name"></header>
+                        <header>
+                            <span v-text="second.name"></span>
+                            <span :class="['item-state', stateStyle(second.state, true)]"></span>
+                        </header>
                     </li>
                 </ul>
             </li>
         </ol>
     </aside>
-    <div id="checking-right">
+    <div id="checking-right" v-if="curFact.name !== ''">
+        <h1>
+            <small v-text="titles[0]"></small>
+            <br/>
+            <span v-text="titles[1]"></span>
+            <span :class="[stateStyle(curFact.state), 'header-state']" v-text="' '+curFact.state"></span>
+        </h1>
+        <div class="checking-item-third checking-item-third-header">
+            <div class="source"><span>来源</span></div>
+            <div class="description"><span>备注</span></div>
+            <div class="piece"><span>批注截图</span></div>
+        </div>
         <div class="checking-item-third" v-for="(comment, cid) in comments">
             <div class="source">
                 <span v-text="comment.evidenceName"></span>
@@ -349,7 +367,20 @@
             <div class="description">
                 <p v-text="comment.description"></p>
             </div>
-            <canvas class="piece" :id="'canvas-'+cid"></canvas>
+            <div class="piece">
+                <div class="piece-container" :id="'piece-container-'+cid">
+                    <!-- img here -->
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div id="checking-result">
+            <textarea title="理由" placeholder="补充说明理由" v-model="curFact.reason"></textarea>
+            <div>
+                <button class="checking-accept-btn" @click="pass()">通过</button>
+                <button class="checking-reject-btn" @click="reject()">拒绝</button>
+                <button class="checking-clear-btn" @click="clear()">清除状态</button>
+            </div>
         </div>
     </div>
 </main>
@@ -903,6 +934,7 @@
         el: "#indexing",
         data: {
             show: false,
+            indexingProcessing: false,
             headers: [],
             newHeaderText: '',
 
@@ -1180,6 +1212,7 @@
             },
             autoIndexing: function () {
                 console.info('auto indexing...');
+                this.indexingProcessing = true;
                 fetch('/ocr-indexing', {
                     method: 'POST',
                     headers: {
@@ -1191,10 +1224,10 @@
                                 path: '.' + url,
                                 // 有些图片有边框，会影响分行
                                 x1: 0.1,
-                                y1: 0.1,
+                                y1: 0.08,
                                 x2: 0.9,
                                 // 框选部分的大小会影响OTSU判断，所以范围尽量大一些
-                                y2: .6,
+                                y2: .4,
                             }
                         }),
                         case_id: caseId
@@ -1218,6 +1251,7 @@
                         })
 
                     }
+                    this.indexingProcessing = false;
                 })
             },
 
@@ -1313,17 +1347,52 @@
             firsts: [],
             expandFlags: [],
             comments: [],
+
+            titles: ['', ''],
+
+            curFact: {
+                name: '',
+                state: '',
+                reason: ''
+            },
         },
         methods: {
-            init: function (firsts) {
-                this.firsts = firsts;
-                this.expandFlags = firsts.map(_ => true);
+            refreshData: function () {
+                this.firsts = graph.structure.firstLevelItems;
+                this.expandFlags = this.firsts.map(_ => true);
+                this.firsts.forEach(first => {
+                    first.secondLevelItems.forEach(second => {
+                        if (second['state'] === undefined) {
+                            second['state'] = '未决'
+                        }
+                        if (second['reason'] === undefined) {
+                            second['reason'] = ''
+                        }
+                    })
+                })
+            },
+            stateStyle: function (state, withIcon) {
+                let classes = [];
+                if(state === '通过'){
+                    classes = ['pass-state', 'glyphicon', 'glyphicon-ok'];
+                }else if(state === '不通过'){
+                    classes = ['reject-state', 'glyphicon', 'glyphicon-remove'];
+                }else{
+                    classes = [''];
+                }
+                if(withIcon){
+                    return classes.join(' ');
+                }else{
+                    return classes.shift();
+                }
             },
             switchSublist: function (firstIdx) {
                 this.$set(this.expandFlags, firstIdx, !this.expandFlags[firstIdx]);
             },
             selectFact: function (fid, sid) {
+                this.titles = [this.firsts[fid].name, this.firsts[fid].secondLevelItems[sid].name];
                 let second = graph.structure.firstLevelItems[fid].secondLevelItems[sid];
+                this.curFact = second;
                 let comments = [];
                 second.thirdLevelItems.forEach(third => {
                     third.contents.forEach(content => {
@@ -1338,12 +1407,12 @@
                 });
                 this.comments = comments;
                 console.log(this.comments);
-                this.$nextTick(()=>{
-                setTimeout(this.drawPiece(comments), 0);
-
+                this.$nextTick(() => {
+                    setTimeout(this.drawPiece(comments), 0);
                 });
             },
-            drawPiece: function (comments) {
+            /* DEPRECATED! */
+            drawPieceOnCanvas: function (comments) {
                 comments.forEach((comment, cid) => {
                     let url = comment['imgUrl'],
                         box = comment['box'],
@@ -1388,13 +1457,13 @@
                             hRate = canvasHeight / pieceNaturalHeight;
 
                         let rate = 1;
-                        if(wRate > 1 && hRate > 1){
+                        if (wRate > 1 && hRate > 1) {
                             rate = Math.min(wRate, hRate);
-                        }else if(wRate < 1 && hRate > 1){
+                        } else if (wRate < 1 && hRate > 1) {
                             rate = wRate;
-                        }else if(wRate > 1 && hRate < 1){
+                        } else if (wRate > 1 && hRate < 1) {
                             rate = hRate;
-                        }else if(wRate < 1 && hRate < 1){
+                        } else if (wRate < 1 && hRate < 1) {
                             rate = Math.min(wRate, hRate)
                         }
                         debugger;
@@ -1414,6 +1483,57 @@
                     };
 
                 })
+            },
+            drawPiece: function (comments) {
+                comments.forEach((comment, cid) => {
+                    let url = comment['imgUrl'],
+                        box = comment['box'],
+                        container = document.querySelector(`#piece-container-${cid}`);
+                    if (!container) {
+                        console.info('no container found');
+                        return;
+                    }
+                    let img = new Image();
+                    img.src = url;
+                    console.log('loading img');
+                    img.onload = () => {
+                        // 图片加载完毕回调,
+                        let naturalWidth = img.naturalWidth,
+                            naturalHeight = img.naturalHeight;
+
+                        let x1 = box[0] * naturalWidth,
+                            y1 = box[1] * naturalHeight,
+                            x2 = box[2] * naturalWidth,
+                            y2 = box[3] * naturalHeight;
+                        let pieceNaturalWidth = x2 - x1,
+                            pieceNaturalHeight = y2 - y1;
+                        let containerWidth = container.offsetWidth;
+                        let rate = containerWidth / pieceNaturalWidth;
+                        let resizedWidth = naturalWidth * rate,
+                            resizedHeight = naturalHeight * rate;
+                        img.style.width = `${resizedWidth ^ 0}px`;
+                        img.style.height = `${resizedHeight ^ 0}px`;
+                        let pieceResizedWidth = containerWidth,
+                            pieceResizedHeight = pieceNaturalHeight * rate;
+                        img.style.top = `-${y1 * rate ^ 0}px`;
+                        img.style.left = `-${x1 * rate ^ 0}px`;
+                        container.style.height = `${pieceResizedHeight ^ 0}px`;
+                        container.appendChild(img);
+
+                    }
+                })
+            },
+            pass: function () {
+                this.curFact.state = '通过';
+                this.refreshData();
+            },
+            reject: function () {
+                this.curFact.state = '不通过';
+                this.refreshData();
+            },
+            clear: function () {
+                this.curFact.state = '未决';
+                this.refreshData();
             }
         }
     });
@@ -1485,7 +1605,7 @@
                         console.log(graph.structure);
                         indexing.listComment();
                         console.log(indexing.comments);
-                        checking.init(j.firstLevelItems);
+                        checking.refreshData();
                     })
                 }
 

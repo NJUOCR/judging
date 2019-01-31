@@ -92,6 +92,7 @@
     border: solid 1px var(--box-color);
     position: absolute;
     z-index: 101;
+    pointer-events: none;
 }
 .box.active-box{
     z-index: 110;
