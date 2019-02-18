@@ -31,7 +31,7 @@
 </head>
 <body>
 <nav id="nav">
-    <button :class="['nav-btn', tab.active?'nav-btn-active':'']" v-for="(tab, idx) in tabs" v-text="tab.name"
+    <button :class="['nav-btn', tab.active?'nav-btn-active':'nav-btn-inactive']" v-for="(tab, idx) in tabs" v-text="tab.name"
             @click="switcher(idx)"></button>
 
     <button :disabled="!savingCompleted" @click="save" id="save-btn"
@@ -1006,35 +1006,39 @@
                 }
             },
             makeComment: function (x1, y1, x2, y2) {
+                let recognize = (x1, y1, x2, y2, remove_lines) => {
+                    fetch('/ocr', {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            imgs: [{
+                                path: '.' + this.imgUrls[this.cur],
+                                x1: x1,
+                                y1: y1,
+                                x2: x2,
+                                y2: y2,
+                                remove_lines: !!remove_lines | true
+                            }]
+                        })
+                    }).then(res => {
+                        if (res.ok) {
+                            res.json().then(results => {
+                                let result = results[0];
+                                if (result === false) return;
+                                this.commentMaker.description += '\n' + results[0].replace('\n', '');
+                            })
+                        }
+                    });
+                };
                 console.log('ocr comment');
                 if (x1 === x2 || y1 === y2) return;
 
                 // todo this.boxes[this.cur].push([x1, y1, x2, y2]);
                 this.initCommentMaker(true);
                 this.commentMaker.location = {page: this.cur, box: [x1, y1, x2, y2]};
-                fetch('/ocr', {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        imgs: [{
-                            path: '.' + this.imgUrls[this.cur],
-                            x1: x1,
-                            y1: y1,
-                            x2: x2,
-                            y2: y2
-                        }]
-                    })
-                }).then(res => {
-                    if (res.ok) {
-                        res.json().then(results => {
-                            let result = results[0];
-                            if (result === false) return;
-                            this.commentMaker.description += '\n' + results[0].replace('\n', '');
-                        })
-                    }
-                });
+                recognize(x1, y1, x2, y2, true);
                 if (this.cur < 0 || this.cur > this.imgUrls.length) return [];
                 let evidenceName = null;
                 for (let i = 0; i < this.headers.length; i++) {
@@ -1373,16 +1377,16 @@
             },
             stateStyle: function (state, withIcon) {
                 let classes = [];
-                if(state === '通过'){
+                if (state === '通过') {
                     classes = ['pass-state', 'glyphicon', 'glyphicon-ok'];
-                }else if(state === '不通过'){
+                } else if (state === '不通过') {
                     classes = ['reject-state', 'glyphicon', 'glyphicon-remove'];
-                }else{
+                } else {
                     classes = [''];
                 }
-                if(withIcon){
+                if (withIcon) {
                     return classes.join(' ');
-                }else{
+                } else {
                     return classes.shift();
                 }
             },

@@ -1,9 +1,9 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-from abc import abstractmethod
-import os
-import requests
 import json
+from abc import abstractmethod
+
+import requests
 
 
 class ServiceInvoker:
@@ -60,14 +60,12 @@ if __name__ == '__main__':
     context = Context(ocr)
     print(context.invoke(
         {
-            "path": "./static/resources/documents/津津南检公诉刑诉【2017】614号/00000141.png",
-            # "path": "./static/resources/documents/津南检公诉刑诉【2018】66号/00000135.png",
-            # "path": "./static/resources/documents/津南检公诉刑诉【2018】632号/00000041.png",
-            # "path": "./static/resources/documents/津南检公诉刑诉【2018】632号/00000098.png",
+            "path": "./static/resources/documents/津津南检公诉刑诉【2017】614号/00000136.png",
+            "x1": 0.10550996483001172,
+            "y1": 0.6674958540630183,
+            "x2": 0.39859320046893315,
+            "y2": 0.7587064676616916,
             "auxiliary": True,
-            "x1": 0.1,
-            "y1": 0.1,
-            "x2": 0.9,
-            "y2": 0.4
+            "remove_lines": 1
         }
     ))

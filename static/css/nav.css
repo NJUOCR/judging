@@ -7,6 +7,17 @@
 .nav-btn{
     font-size: 1.2em;
     padding: .2em 2em;
+    border: none;
+    outline: none;
+    transition: .4s
+}
+.nav-btn-inactive{
+    background: rgba(0,0,0,0);
+
+}
+.nav-btn-inactive:hover{
+    background: rgba(255,255,255,.3);
+    font-weight: bolder;
 }
 
 .nav-btn.nav-btn-active{
