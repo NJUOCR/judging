@@ -129,6 +129,7 @@
     transition: .3s;
     border: solid 1px lightgray;
     outline: none;
+        border-radius: 8px;
 
 }
 #indexing-middle .indexing-btn[disabled]{

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>{{ case_id }}</title>
     <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/fa/css/all.css">
     <link rel="stylesheet" href="/static/css/nav.css">
     <link rel="stylesheet" href="/static/css/indexing.css">
     <link rel="stylesheet" href="/static/css/checking.css">
@@ -31,11 +32,19 @@
 </head>
 <body>
 <nav id="nav">
-    <button :class="['nav-btn', tab.active?'nav-btn-active':'nav-btn-inactive']" v-for="(tab, idx) in tabs" v-text="tab.name"
-            @click="switcher(idx)"></button>
+    <div>
+        <button :class="['nav-btn', tab.active?'nav-btn-active':'nav-btn-inactive']" v-for="(tab, idx) in tabs"
+                v-text="tab.name"
+                @click="switcher(idx)"></button>
 
-    <button :disabled="!savingCompleted" @click="save" id="save-btn"
-            class="glyphicon glyphicon-cloud-upload"></button>
+    </div>
+    <div>
+        <button :disabled="!savingCompleted" @click="save" id="save-btn">
+            <span class="fas fa-cloud-upload-alt"></span>
+            <label title="save">保存</label>
+        </button>
+
+    </div>
 </nav>
 <div v-if="show" id="graph-container" class="graph-container" @click="select(0, 0)">
     <!--<div class="graph-mask"></div>-->
@@ -255,7 +264,8 @@
     </aside>
     <div id="indexing-middle">
         <div class="tool-kit">
-            <button class="indexing-btn" :disabled="indexingProcessing" @click="autoIndexing()">
+            <button class="indexing-btn" :disabled="indexingProcessing"
+                    @click="autoIndexing()">
                 <span>智能编目</span>
                 <span :class="['glyphicon', indexingProcessing?'glyphicon-refresh refreshing':'glyphicon-sort-by-order']"></span>
             </button>
