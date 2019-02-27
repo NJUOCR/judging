@@ -15,11 +15,10 @@ class CaseData:
         d = GraphData().fetch(graph_name)
         if d is not None:
             d['_id'] = case_id
-            CaseData.table.save(d)
+            CaseData.table.insert_one(d)
             return CaseData(d, case_id)
         else:
             return None
-        # return CaseData(d, case_id) if d is not None else None
 
     @staticmethod
     def fetch_case(case_id: str) -> 'CaseData':

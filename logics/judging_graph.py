@@ -1,7 +1,8 @@
 import json
-from logics.translation import translate_json
-from dao.graph_data import GraphData
+
 from dao.case_data import CaseData
+from dao.graph_data import GraphData
+from logics.translation import translate_json
 
 
 class JudgingGraph:
@@ -21,9 +22,12 @@ class JudgingGraph:
 
     @staticmethod
     def from_file(file_path: str) -> 'JudgingGraph':
-        with open(file_path, encoding='utf-8') as f:
-            d = json.load(f)
-            return JudgingGraph.from_json(d)
+        try:
+            with open(file_path, encoding='utf-8') as f:
+                d = json.load(f)
+                return JudgingGraph.from_json(d)
+        except Exception:
+            return JudgingGraph()
 
     @staticmethod
     def from_db(graph_name: str) -> 'JudgingGraph':
@@ -34,6 +38,37 @@ class JudgingGraph:
         JudgingGraph._data.save(self._definition)
 
     def validate(self) -> bool:
+        def validate_node(struct):
+            return ("名称" in struct and isinstance(struct['名称'], str) and
+                    "查证事项" in struct and isinstance(struct['查证事项'], list))
+
+        def validate_fact(struct):
+            return ("名称" in struct and isinstance(struct['名称'], str) and
+                    "印证证据" in struct and isinstance(struct['印证证据'], list))
+
+        def validate_evidence(struct):
+            return ("名称" in struct and isinstance(struct['名称'], str) and
+                    "内容" in struct and isinstance(struct['内容'], list))
+
+        d: dict = self._definition
+        if ("名称" in d and isinstance(d['名称'], str) and
+                "证据链条" in d and isinstance(d['证据链条'], list)):
+            for node in d['证据链条']:
+                if not validate_node(node):
+                    return False
+                else:
+                    for fact in node['查证事项']:
+                        if not validate_fact(fact):
+                            return False
+                        else:
+                            for evidence in fact['印证证据']:
+                                if not validate_evidence(evidence):
+                                    return False
+            return True
+        else:
+            return False
+
+    def validate_legacy(self) -> bool:
         dic: dict = self._definition
         try:
             if len(dic.keys()) != 2:
@@ -78,6 +113,8 @@ class JudgingGraph:
                             if not (isinstance(q["内容"], str) or isinstance(q["内容"], list)):
                                 return False
         except KeyError:
+            return False
+        except AttributeError:
             return False
         return True
 

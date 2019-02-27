@@ -33,24 +33,24 @@
     font-weight: bold;
 }
 
-#save-btn {
-        /*border: rgba(0,0,0,.3) 1px solid;*/
+.side-btn{
+
     border: none;
     font-size: 1.5em;
     background-color: whitesmoke;
-    /* border-radius: 50%; */
-
-    box-shadow: -0.15em 0 0.3em rgba(0,0,0,.3);    z-index: 1000;
-    /* margin: 2px; */
+    box-shadow: -0.15em 0 0.3em rgba(0,0,0,.3);
+    z-index: 1000;
     transition: .2s;
     outline: none;
-    /*width: 2em;*/
     height: 2em;
     position: relative;
-    right: .5em;
     overflow: hidden;
     display: flex;
     align-items: center;
+}
+
+#nav-side{
+    display: flex;
 }
 
 #save-btn:hover {
@@ -58,7 +58,12 @@
     color: whitesmoke;
     border-color: transparent;
 }
-#save-btn>label{
+#toggle-btn:hover{
+    background: #00B050;
+    color: whitesmoke;
+    border-color: transparent;
+}
+.side-btn>label{
     max-width: 0;
     max-height: 0;
     transition: .3s;
@@ -67,8 +72,8 @@
     padding: 0 .2em;
     margin: 0;
 }
-#save-btn:hover>label{
-    max-width: 4em;
+.side-btn:hover>label{
+    max-width: 20em;
     max-height: 2em;
     cursor: pointer;
 }

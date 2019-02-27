@@ -11,26 +11,28 @@ def __score(standard: str, tester: str):
             if si != 0 and i >= tolerance:
                 break
 
-    return score / len(standard), 1/(sub_index+.00001)
+    return score / len(standard), 1 / (sub_index + .00001)
 
 
 def match_index(headers: list, texts: list):
+    """
+    找到texts和headers的最佳匹配。
+    对每一个目录项(header)尝试找到一个text序号，这种匹配必须满足最小分数要求`minimum_score`
+    :param headers: 目录项，结构实例： {'name': "询问笔录", "start": 0}
+    :param texts: 每页卷宗上半部分的OCR结果
+    :return:
+    """
     minimum_score = .7
-    scores = [(0.,0.) for _ in range(len(texts))]
+    scores = [(0., 0.) for _ in range(len(texts))]
     texts = list(map(lambda _: _[:50], texts))
     for header_idx, header in enumerate(headers):
         for text_idx, text in enumerate(texts):
-            # if header['name'] in ('讯问笔录', '询问笔录') and text_idx in(7, 135):
-            #     print('##################')
-
             primary_score, secondary_score = __score(header['name'], text)
-            # score = fuzz.token_sort_ratio(text, header['name'])
             if primary_score <= minimum_score:
                 continue
             elif primary_score > scores[header_idx][0] or \
                     (primary_score == scores[header_idx][0] and secondary_score > scores[header_idx][1]):
                 header['start'] = text_idx
-                header['text'] = text
                 scores[header_idx] = primary_score, secondary_score
     return headers
 

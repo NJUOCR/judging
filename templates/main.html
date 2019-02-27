@@ -38,12 +38,15 @@
                 @click="switcher(idx)"></button>
 
     </div>
-    <div>
-        <button :disabled="!savingCompleted" @click="save" id="save-btn">
+    <div id="nav-side">
+        <button :disabled="!savingCompleted" @click="save" id="save-btn" class="side-btn">
             <span class="fas fa-cloud-upload-alt"></span>
             <label title="save">保存</label>
         </button>
-
+        <button @click="toggle" id="toggle-btn" class="side-btn">
+            <span class="fas fa-sitemap"></span>
+            <label title="toggle" v-text="graphToggleInfo"></label>
+        </button>
     </div>
 </nav>
 <div v-if="show" id="graph-container" class="graph-container" @click="select(0, 0)">
@@ -1178,11 +1181,14 @@
             },
 
             validateDocument: function (files) {
+                const IMG_FORMATS = ['png', 'jpg', 'jpeg']
+                    , DOC_FORMATS = ['pdf'];
                 let fileList = new Array(...files);
+                /* legacy
                 let illegalSuffix = true;
                 if (fileList.length === 1) {
                     let suffix = fileList[0].name.split('.').pop().toLowerCase();
-                    if (suffix === 'png' || suffix === 'jpg' || suffix === 'jpeg' || suffix === 'pdf') {
+                    if (IMG_FORMATS.includes(suffix) || suffix === PDF_FORMAT) {
                         illegalSuffix = [];
                     }
                 } else {
@@ -1193,6 +1199,17 @@
                 }
                 this.forbidUpload = illegalSuffix.length !== 0;
                 this.uploaderMsg = this.forbidUpload ? `存在无效的格式：${illegalSuffix[0]}` : `已选择 ${files.length} 张图片`;
+                return !this.forbidUpload;
+                */
+                let legal_formats = [];
+                if (fileList.length === 1)  legal_formats = IMG_FORMATS.concat(DOC_FORMATS);
+                else    legal_formats = IMG_FORMATS;
+
+                let illegals = fileList.
+                                    map(file => file.name.split('.').pop().toLowerCase()).
+                                    filter(suffix => !legal_formats.includes(suffix));
+                this.forbidUpload = illegals.length > 0;
+                this.uploaderMsg = this.forbidUpload ? `存在无效的格式：${illegals[0]}` : `已选择 ${files.length} 个文件`;
                 return !this.forbidUpload;
             },
 
@@ -1549,6 +1566,9 @@
                 this.curFact.state = '未决';
                 this.refreshData();
             }
+        },
+        mounted: function () {
+            console.log('hhaha')
         }
     });
 
@@ -1557,6 +1577,7 @@
         data: {
             show: false,
             savingCompleted: true,
+            graphToggleInfo: '显示链式证据模板',
 
             tabs: [
                 {
@@ -1607,6 +1628,16 @@
                     this.savingCompleted = true;
                 });
             },
+
+            toggle: function(){
+                if(this.graphToggleInfo === '显示链式证据模板'){
+                    this.graphToggleInfo = '隐藏链式证据模板';
+                    graph.show = true;
+                }else{
+                    this.graphToggleInfo = '显示链式证据模板';
+                    graph.show = false;
+                }
+            }
         },
         mounted: function () {
             const url = `/get-case?case_id=${caseId}`;

@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from threading import Lock
+from typing import List
 
 
 class GraphData(object):
@@ -43,7 +44,7 @@ class GraphData(object):
     def fetch(self, graph_name: str) -> dict:
         return self.table.find_one({'_id': graph_name})
 
-    def get_graph_list(self) -> list:
+    def get_graph_list(self) -> List[str]:
         graph_list = []
         for i in self.table.find({}, {'名称': 1, '_id': 0}):
             graph_list.append(i['名称'])

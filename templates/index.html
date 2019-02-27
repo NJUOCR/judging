@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>链式模板系统</title>
     <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/fa/css/all.css">
     <link rel="stylesheet" href="/static/css/main-config.css">
     <link rel="stylesheet" href="/static/lib/input_file/input_file.css">
     <script src="/static/lib/vue/vue.js"></script>
@@ -19,7 +20,7 @@
                                @upload="uploadGraphFile"
                                :forbid-upload="configFileForbid"
                                :input-text="configFileName"
-                               :btn-text="`<span class='glyphicon glyphicon-plus'></span>`">
+                               :btn-text="`<span class='fas fa-upload'></span>`">
 
                 </file-uploader>
             </div>
@@ -72,7 +73,7 @@
             creatingGraph: false,
             curGraphId: -1,
             graphList: [],
-            configFileName: '选择案由配置文件',
+            configFileName: '选择链式证据模板配置文件',
             configFileForbid: true,
 
             caseList: [],
@@ -87,7 +88,7 @@
                 fetch(url, {
                     method: "get"
                 }).then((res) => {
-                    if(res.ok){
+                    if (res.ok) {
                         this.refresh();
                         this.caseList = [];
                     }
@@ -108,9 +109,14 @@
                     body: formData
                 }).then(res => {
                     if (res.ok) {
-                        res.json().then(j=>console.dir(j));
+                        res.json().then(j => {
+                            if (j['result'] === 'error') {
+                                this.configFileName = j['msg'];
+                            }
+                        });
                         this.refresh();
                     }
+                    this.configFileName = '选择链式证据模板配置文件';
                 }).catch(err => {
                     console.error(err);
                 })

@@ -1,7 +1,6 @@
 import json
 import os
 from typing import Tuple, List
-from fuzzywuzzy import fuzz
 from flask import Flask, request, jsonify, render_template, Response, send_file
 from werkzeug.datastructures import FileStorage
 from logics.indexing import match_index
@@ -11,11 +10,6 @@ from logics.judging_graph import JudgingGraph
 from service_invoker.service_invoke import ServiceInvoker
 
 app = Flask(__name__)
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
 
 
 @app.route('/index')
@@ -36,11 +30,8 @@ def get_case():
     else:
         case = JudgingCase(case_id=args['case_id'])
 
-    # case will never be none
-    if case is None:
-        return jsonify(error='指定案件不存在')
-    _ = case.get_data(lang='en')
-    return Response(json.dumps(case.get_data(lang='en')), mimetype='application/json')
+    return Response(json.dumps(case.get_data(lang='en')),
+                    mimetype='application/json') if case.exists() else jsonify(error='指定案件不存在')
 
 
 @app.route('/get-cases')
@@ -86,11 +77,6 @@ def get_graph_list():
     return jsonify(JudgingGraph.get_graph_list())
 
 
-@app.route('/test')
-def test_upload():
-    return render_template("fileinput.html")
-
-
 @app.route('/main')
 def config_graph():
     args = {**request.args}
@@ -102,13 +88,10 @@ def config_graph():
 @app.route('/upload-graph', methods=['POST'])
 def upload_graph():
     """
-    todo @杨关 因为我们的文件组件是 `multiple` 的，这边要改成多文件上传
-    > 参考 `media-upload`
-    使用多文件上传
+    接受一个`multiple`形式的文件上传请求，允许客户端一次上传多个链式证据模板配置文件
     :return:
     """
     if request.method == 'POST':
-        # multi files, use 'request.files.getlist(name)'
         file_bundle: List[Tuple[str, FileStorage]] = list(request.files.items())
         error_files = []
         for file_tuple in file_bundle:
@@ -130,7 +113,7 @@ def upload_graph():
                 'msg': '配置文件格式验证失败\n[%s]' % ', '.join(error_files),
             }, ensure_ascii=False, indent=2)
     else:
-        return jsonify(error='method should be post')
+        return jsonify(result='error', msg='method should be post')
 
 
 @app.route('/remove-graph')
