@@ -48,6 +48,9 @@
             <label title="toggle" v-text="graphToggleInfo"></label>
         </button>
     </div>
+    <div v-if="msg" class="msg-box">
+        <div v-text="msg"></div>
+    </div>
 </nav>
 <div v-if="show" id="graph-container" class="graph-container" @click="select(0, 0)">
     <!--<div class="graph-mask"></div>-->
@@ -1032,6 +1035,7 @@
                                 y1: y1,
                                 x2: x2,
                                 y2: y2,
+                                auxiliary: true,
                                 remove_lines: !!remove_lines | true
                             }]
                         })
@@ -1231,7 +1235,7 @@
                         this.getDocumentUrls();
                         res.json().then(paths => {
                             // ocr
-                            this.autoIndexing(paths);
+                            //this.autoIndexing(paths);
                         });
                     }
                     this.forbidUpload = false;
@@ -1266,6 +1270,10 @@
                 }).then(res => {
                     if (res.ok) {
                         res.json().then(j => {
+                            if(j['result'] === 'error'){
+                                nav.popMsg("OCR子系统离线");
+                                return;
+                            }
                             this.imgHeaderTexts = j['texts'];
                             this.headers = j['headers'].map(_ => {
                                 return {
@@ -1578,6 +1586,7 @@
             show: false,
             savingCompleted: true,
             graphToggleInfo: '显示链式证据模板',
+            msg: '',
 
             tabs: [
                 {
@@ -1600,6 +1609,11 @@
                         con.show = tabIdx === idx;
                     })
                 })
+            },
+
+            popMsg: function (msg) {
+                this.msg = msg;
+                setTimeout(()=>this.msg=false, 3000)
             },
 
             save: function () {
@@ -1657,7 +1671,7 @@
             })
         }
     });
-    nav.switcher(1);
+    nav.switcher(0);
 
     window.onscroll = function () {
         if (!graph.show) return;

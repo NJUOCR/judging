@@ -214,11 +214,18 @@ def ocr_indexing():
     case_id = request.json['case_id']
     param_list = request.json['imgs']
     service = ServiceInvoker.which('ocr')
-    pred = [service.invoke(param).replace('\n', '') for param in param_list]
+    # pred = [service.invoke(param).replace('\n', '') for param in param_list]
+    preds = []
+    for param in param_list:
+        pred = service.invoke(param)
+        if pred is False:
+            return jsonify(result='error', msg='ocr subsystem offline')
+        else:
+            preds.append(pred.replace('\n', ''))
     headers = JudgingCase(case_id).get_headers()
-    headers = match_index(headers, pred)
+    headers = match_index(headers, preds)
 
-    return jsonify(headers=headers, texts=pred)
+    return jsonify(headers=headers, texts=preds)
 
 
 @app.route('/upload-document', methods=['POST'])

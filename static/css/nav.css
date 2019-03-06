@@ -27,18 +27,18 @@
 }
 
 .nav-btn.nav-btn-active {
-        background-color: #6a6a6a;
+    background-color: #6a6a6a;
     color: whitesmoke;
     font-size: 1.5em;
     font-weight: bold;
 }
 
-.side-btn{
+.side-btn {
 
     border: none;
     font-size: 1.5em;
     background-color: whitesmoke;
-    box-shadow: -0.15em 0 0.3em rgba(0,0,0,.3);
+    box-shadow: -0.15em 0 0.3em rgba(0, 0, 0, .3);
     z-index: 1000;
     transition: .2s;
     outline: none;
@@ -49,7 +49,7 @@
     align-items: center;
 }
 
-#nav-side{
+#nav-side {
     display: flex;
 }
 
@@ -58,12 +58,14 @@
     color: whitesmoke;
     border-color: transparent;
 }
-#toggle-btn:hover{
+
+#toggle-btn:hover {
     background: #00B050;
     color: whitesmoke;
     border-color: transparent;
 }
-.side-btn>label{
+
+.side-btn > label {
     max-width: 0;
     max-height: 0;
     transition: .3s;
@@ -72,8 +74,49 @@
     padding: 0 .2em;
     margin: 0;
 }
-.side-btn:hover>label{
+
+.side-btn:hover > label {
     max-width: 20em;
     max-height: 2em;
     cursor: pointer;
+}
+
+/* msg */
+.msg-box {
+    position: fixed;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 5px;
+}
+
+@keyframes shaking {
+    0% {
+        left: 0;
+    }
+    25% {
+        left: -.3em;
+    }
+    75% {
+        left: .3em;
+    }
+    100% {
+        left: 0;
+    }
+}
+
+.msg-box > div {
+    position: relative;
+    min-width: 15em;
+    max-width: 30em;
+    text-align: center;
+    font-size: large;
+    background-color: #3F51B5;
+    color: whitesmoke;
+    animation: shaking .3s linear 0s 3;
+    box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, .5);
+    border: solid 2px #5d3a9c;
+    word-break: break-all;
+    padding: .3em 1em;
 }

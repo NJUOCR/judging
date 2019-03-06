@@ -60,12 +60,12 @@ if __name__ == '__main__':
     context = Context(ocr)
     print(context.invoke(
         {
-            "path": "./static/resources/documents/津津南检公诉刑诉【2017】614号/00000011.png",
-            "x1": 0.1042031523642732,
-  "y1": 0.21473551637279598,
-  "x2": 0.9001751313485113,
-  "y2": 0.29093198992443325,
-            "remove_lines": 1,
+            "path": "./static/resources/documents/津津南检公诉刑诉【2017】614号/00000139.png",
+  "x1": 0.23022432113341204,
+  "y1": 0.23121869782971619,
+  "x2": 0.7343565525383707,
+  "y2": 0.2587646076794658,
+  "remove_lines": 1,
             "auxiliary": True,
         }
     ))

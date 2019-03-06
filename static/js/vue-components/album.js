@@ -2,8 +2,8 @@ Vue.component('album', {
     // props: ['forward', 'active', 'urls', 'enableOcr', 'enableCanvas', 'boxes'],
     props: {
         forward: Boolean,
-        active: Number,
-        urls: Array,
+        active: Number,         // current url index
+        urls: Array,            // image url list
         enableCanvas: Boolean,
         /**
          * [
@@ -72,14 +72,31 @@ Vue.component('album', {
                 y1 = e.offsetY / h,
                 x2 = 0,
                 y2 = 0;
-            function move(e1){
+
+            function move(e1) {
                 x2 = e1.offsetX / w;
                 y2 = e1.offsetY / h;
-                tmpBox.style.left = x1*100 + '%';
-                tmpBox.style.top = y1*100 + '%';
-                tmpBox.style.width = (x2 - x1)*100 + '%';
-                tmpBox.style.height = (y2 - y1)*100 + "%";
+                if (x2 > x1) {
+                    tmpBox.style.left = x1 * 100 + '%';
+                    tmpBox.style.width = (x2 - x1) * 100 + '%';
+                    tmpBox.style.right = 'unset';
+                } else {
+                    // tmpBox.style.right = x1 * 100 + '%';
+                    tmpBox.style.left = x2 * 100 + '%';
+                    tmpBox.style.width = (x1 - x2) * 100 + '%';
+                }
+                if (y2 > y1){
+                    tmpBox.style.top = y1 * 100 + '%';
+                    tmpBox.style.bottom = 'unset';
+                    tmpBox.style.height = (y2 - y1) * 100 + "%";
+                }else{
+                    tmpBox.style.top = y2 * 100 + '%';
+                    tmpBox.style.height = (y1 - y2) * 100 + '%';
+                }
+                console.log(tmpBox.style.top, tmpBox.style.left, tmpBox.style.bottom, tmpBox.style.right)
+                console.log(tmpBox.style.width, tmpBox.style.height);
             }
+
             function up(e2) {
                 canvas.removeEventListener('mouseup', up);
                 canvas.removeEventListener('mousemove', move);
@@ -87,7 +104,7 @@ Vue.component('album', {
                 y2 = e2.offsetY / h;
 
                 self.$emit('draw-box', x1, y1, x2, y2);
-                tmpBox.style.height = '0';
+                // tmpBox.style.height = '0';
             }
 
             canvas.addEventListener('mousemove', move);
@@ -96,9 +113,9 @@ Vue.component('album', {
 
         getCommentBoxes: function () {
             let boxes = this.boxes;
-            if(boxes !== undefined){
+            if (boxes !== undefined) {
                 return boxes
-            }else{
+            } else {
                 return []
             }
         },
