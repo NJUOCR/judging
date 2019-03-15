@@ -12,7 +12,7 @@
 </head>
 <body>
 <main id="main">
-    <ul class="list" id="graph-list" @click="selectGraph();">
+    <ul class="list" id="graph-list" @click="selectGraph($event);">
         <!-- 新增 案由 （配置文件） -->
         <li class="graph graph-entry entry-normal">
             <div>
@@ -30,7 +30,7 @@
         <!-- 案由列表项 -->
         <li v-for="(graphName, idx) in graphList"
             :class="['entry', 'graph-entry', idx === curGraphId?'entry-selected':'entry-normal']"
-            @click="getCases(graphName, idx)">
+            @click="getCases(graphName, idx, $event)">
             <span class="entry-name" v-text="graphName"></span>
             <span @click="removeGraph(graphName)" class="entry-control entry-control-remove" v-if="idx === curGraphId">
                 <div>
@@ -77,7 +77,8 @@
             configFileForbid: true,
 
             caseList: [],
-            newCaseId: ''
+            newCaseId: '',
+
         },
         methods: {
             createGraph: function () {
@@ -134,8 +135,8 @@
                 }
                 this.configFileForbid = notJson || files.length === 0;
             },
-            getCases: function (graphName, idx) {
-                if (arguments.length > 1) window.event['graphIdx'] = idx;
+            getCases: function (graphName, idx, e) {
+                if (arguments.length > 2) (e||window.event)['graphIdx'] = idx;//window.event['graphIdx'] = idx;
 
                 const url = `/get-cases?graph-name=${graphName}`;
                 fetch(url).then((response) => {
@@ -150,8 +151,8 @@
                     })
                 })
             },
-            selectGraph: function () {
-                let idx = parseInt(window.event['graphIdx']);
+            selectGraph: function (e) {
+                let idx = parseInt((e||window.event)['graphIdx']);
                 if (idx >= 0) {
                     this.curGraphId = idx;
                 } else {
