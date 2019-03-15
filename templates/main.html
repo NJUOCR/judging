@@ -383,7 +383,7 @@
             <div class="description">
                 <p v-text="comment.description"></p>
             </div>
-            <div class="piece">
+            <div class="piece" @resize="drawPiece()">
                 <div class="piece-container" :id="'piece-container-'+cid">
                     <!-- img here -->
                 </div>
@@ -1524,7 +1524,8 @@
                 })
             },
             drawPiece: function (comments) {
-                comments.forEach((comment, cid) => {
+                let cmnts = comments || this.comments;
+                cmnts.forEach((comment, cid) => {
                     let url = comment['imgUrl'],
                         box = comment['box'],
                         container = document.querySelector(`#piece-container-${cid}`);
@@ -1595,7 +1596,7 @@
                     cons: [indexing]
                 },
                 {
-                    name: "检查事实",
+                    name: "事实检查",
                     active: true,
                     cons: [checking]
                 }
@@ -1634,10 +1635,11 @@
                     if (res.ok) {
                         //graph.updateData();
                         res.json().then(j => {
+                            this.popMsg('保存成功')
                             console.info(`[保存案件] -> ${JSON.stringify(j)}`);
                         })
                     } else {
-                        console.log("更新失败")
+                        this.popMsg('保存失败')
                     }
                     this.savingCompleted = true;
                 });
