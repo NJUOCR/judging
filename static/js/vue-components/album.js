@@ -87,7 +87,6 @@ Vue.component('album', {
                 }
                 if (y2 > y1){
                     tmpBox.style.top = y1 * 100 + '%';
-                    tmpBox.style.bottom = 'unset';
                     tmpBox.style.height = (y2 - y1) * 100 + "%";
                 }else{
                     tmpBox.style.top = y2 * 100 + '%';
