@@ -1,7 +1,7 @@
 import dao.document_data as doc_data
 from typing import Iterable, List, Tuple
 from werkzeug.datastructures import FileStorage
-
+from threading import Lock
 from dao.case_data import CaseData
 from dao.media_data import MediaData
 from logics.media_resource import MediaResource
@@ -9,6 +9,8 @@ from logics.translation import translate_json, translate_key
 
 
 class JudgingCase:
+    _list = {}
+    _list_lock = Lock()
 
     def __init__(self, case_id: str, graph_name: str = None):
         """
@@ -19,6 +21,17 @@ class JudgingCase:
         self.case_id = case_id
         self.data_obj = CaseData.fetch_case(case_id) or CaseData.create_case(graph_name, case_id)
 
+    def __new__(cls, *args, **kwargs):
+        case_id = args[0]
+        if case_id not in JudgingCase._list:
+            with JudgingCase._list_lock:
+                if case_id not in JudgingCase._list:
+                    JudgingCase._list[case_id] = object.__new__(cls)
+        return JudgingCase._list[case_id]
+
+    # @staticmethod
+    # def exists(case_id:str) -> bool:
+    #     return CaseData.fetch_case(case_id) is not None
     def exists(self) -> bool:
         return self.data_obj is not None
 
@@ -28,8 +41,9 @@ class JudgingCase:
 
     @staticmethod
     def remove_case(case_id) -> bool:
-        if JudgingCase.exists(case_id):
+        if JudgingCase(case_id).exists():
             CaseData.remove(case_id)
+            del JudgingCase._list[case_id]
             return True
         else:
             return False

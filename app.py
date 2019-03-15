@@ -26,9 +26,9 @@ def get_case():
     """
     args = request.args
     if 'graph_name' in args.keys():
-        case = JudgingCase(case_id=args['case_id'], graph_name=args['graph_name'])
+        case = JudgingCase(args['case_id'], graph_name=args['graph_name'])
     else:
-        case = JudgingCase(case_id=args['case_id'])
+        case = JudgingCase(args['case_id'])
 
     return Response(json.dumps(case.get_data(lang='en')),
                     mimetype='application/json') if case.exists() else jsonify(error='指定案件不存在')
